@@ -46,6 +46,8 @@ So the signature is calculated from these values as in this example:
 Checkout-Account:1234\n
 Checkout-Algorithm:sha512\n
 Checkout-Method:POST\n
+Checkout-Nonce:1234\n
+Checkout-Timestamp:2018-07-05T11:19:25.950Z\n
 REQUEST BODY
 ```
 
@@ -62,7 +64,9 @@ const SECRET = 'SAIPPUAKAUPPIAS';
 const headers = {
   'checkout-account': ACCOUNT,
   'checkout-algorithm': 'sha256',
-  'checkout-method': 'POST'
+  'checkout-method': 'POST',
+  'checkout-nonce': process.hrtime().join(''),
+  'checkout-timestamp': new Date().toISOString()
 };
 
 const body = {
@@ -100,9 +104,6 @@ const hmac = crypto
   .createHmac('sha256', SECRET)
   .update(hmacPayload)
   .digest('hex');
-
-// Expected HMAC:
-// 84b454005a4f087076ad86cee8b4a646b18982998de7221db57646743cda7b81
 ```
 
 ## Payments
