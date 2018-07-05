@@ -5,3 +5,9 @@
 $ npm install -g docute
 $ docute docs
 
+# Usage
+
+```
+npm i -g docute-cli
+docute docs
+```

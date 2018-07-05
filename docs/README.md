@@ -123,49 +123,49 @@ field | info | description
 --- | --- | ---
 stamp | string | Unique identifier for the order
 reference | string | Order reference
-amount | integer | todo
-currency | alpha3 | todo
-language | alpha2 | todo
-items | Item[] | todo
-customer | Customer | todo
-deliveryAddress | Address | todo
-invoicingAddress | Address | todo
-redirectUrls | callbackUrl | todo
-callbackUrls | callbackUrl | todo
+amount | integer | Total amount of the payment, in currency's minor units
+currency | alpha3 | Currency, only EUR supported at the moment
+language | alpha2 | Payment's language
+items | Item[] | Array of items
+customer | Customer | Customer information
+deliveryAddress | Address | Delivery address
+invoicingAddress | Address | Invoicing address
+redirectUrls | callbackUrl | Where to redirect browser after a payment is paid or cancelled
+callbackUrls | callbackUrl | Which url to server side after a payment is paid or cancelled
 
 
 **Item**
 
 field | type | example | description
 --- | --- | --- | ---
-unitPrice | string | 1000 | Each country's main unit, e.g. for euros use cents
+unitPrice | string | 1000 | Each country's minor unit, e.g. for euros use cents
 units | string | 5 | Quantity, how many items ordered
 productCode | string | 9a | Meta information
 deliveryDate | string | 2019-12-31 | When is this item going to be delivered
-description | string | Cat suits for adults | todo
-category | string | fur suits | todo
+description | string | Bear suits for adults | Item description
+category | string | fur suits | Item category
 stamp | string | d4aca017-f1e7-4fa5-bfb5-2906e141ebac | unique identifier for this item
-reference | string | fur-suits-5 | todo
+reference | string | fur-suits-5 | Reference
 
 **Customer**
 
 field | info | description
 --- | --- | ---
-email | string | john.doe@example.org | todo
-firstName | string | John | todo
-lastName | string | Doe | todo
-phone | string | 358451031234 | todo
-vatId | string | FI02454583 | todo
+email | string | john.doe@example.org | Email
+firstName | string | John | First name
+lastName | string | Doe | Last name
+phone | string | 358451031234 | Phone number
+vatId | string | FI02454583 | VAT ID, if any
 
 **Address**
 
 field | info | example | description
 --- | --- | --- | ---
-streetAddress | string | Fake Street 123 | todo
-postalCode | string | 00100 | todo
-city | string | Luleå | todo
-county | string | Norbotten | todo
-country | string | Sweden | todo
+streetAddress | string | Fake Street 123 | Street address
+postalCode | string | 00100 | Postal code
+city | string | Luleå | City
+county | string | Norbotten | County/State
+country | string | Sweden | Country
 
 An example payload
 ```json
@@ -225,13 +225,9 @@ An example payload
 }
 ```
 
-### List
-
-TODO
-
 ### Get
 
-`GET /payments/{transactionId}`
+`GET /payments/{transactionId}` returns the payment information
 
 
 ## Merchants
@@ -248,7 +244,3 @@ Grouped into `mobile`, `bank`, `creditcard` and `credit` payment methods.
 
 `amount (integer, optional)` specify amount if you want to get providers for specific amount
 
-
-### Lol
-
-ejeasdkpoa adshuutista
