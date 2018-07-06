@@ -231,7 +231,7 @@ An example payload
 
 ### Refund
 
-`POST /payments/{transactionId}/refund` refund a payment by transaction ID. Refund operation is asynchronous. Refund request is validated, and if the refund can be done a 201 is returned. When the refund is actually performed, the callback URL will be called with RefundCallbackPayload.
+`POST /payments/{transactionId}/refund` refund a payment by transaction ID.
 
 **Parameters**
 
@@ -286,5 +286,5 @@ Grouped into `mobile`, `bank`, `creditcard` and `credit` payment methods.
 
 * Token payments
 * Report querying
-
+* Asynchronous refunds
 
