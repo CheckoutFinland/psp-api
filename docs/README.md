@@ -196,7 +196,7 @@ The following illustrates how the user moves in the payment process.
 
 `HTTP POST /payments` creates a new open payment, returns a list of available payment methods.
 
-**Parameters**
+**HTTP Request body**
 
 field | info | description
 --- | --- | ---
@@ -311,7 +311,7 @@ An example payload
 
 `HTTP POST /payments/{transactionId}/refund` refund a payment by transaction ID.
 
-**Parameters**
+**HTTP Request body**
 
 field | info | description
 --- | --- | ---
@@ -355,10 +355,14 @@ Actions related to the merchant object are mapped to `/merchant` API endpoint.
 
 Grouped into `mobile`, `bank`, `creditcard` and `credit` payment methods.
 
-**Parameters**
+**HTTP GET query parameters**
 
-`amount (integer, optional)` specify amount if you want to get providers for specific amount
+`amount (integer, optional)` specify amount if you want to get providers for specific amount. 
 
+Example
+```
+/merchants/payment-providers?amount=1000
+```
 
 ## Upcoming features
 
@@ -366,3 +370,4 @@ Grouped into `mobile`, `bank`, `creditcard` and `credit` payment methods.
 * Settlement querying (Q4/2018)
 * Asynchronous refunds (Q4/2018)
 
+ 
