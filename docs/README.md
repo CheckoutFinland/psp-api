@@ -250,7 +250,7 @@ stamp | string | Unique stamp of the refund item
 callbackUrls | callbackUrl | Which urls to ping after the refund has been processed
 
 An example payload
-```
+```json
 {
   "amount": 1590,
   "items": [
@@ -286,6 +286,5 @@ Grouped into `mobile`, `bank`, `creditcard` and `credit` payment methods.
 
 * Token payments
 * Report querying
-
 
 
