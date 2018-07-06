@@ -1,19 +1,16 @@
-# Checkout PSP API documentation
+<img src="images/checkout-logo-vaaka-RGB.png" alt="Checkout Finland Oy" style="width: 200px;">
 
-## Checkout API
+## Checkout PSP API
 
 ### General
 
 Our payment processing service related documentation.
-
-## How does it work?
 
 <p class="tip">
 If you have any feedback regarding how we could improve the documentation, [please file an issue on Github](https://github.com/CheckoutFinland/checkoutfinland.github.io/issues).
 You can also ask for support by opening an issue on GitHub.
 Thank you!
 </p>
-
 
 ### Test credentials
 
@@ -22,7 +19,7 @@ Please note that not all payment methods support testing. The payment methods th
 * Merchant Id (MERCHANT): `375917`
 * Secret Key: `SAIPPUAKAUPPIAS`
 
-### Response summary
+### HTTP Response summary
 
 General API http status codes and what to expect of them.
 
@@ -116,7 +113,7 @@ The following illustrates how the user moves in the payment process.
 
 ### Create
 
-`POST /payments` creates a new open payment, returns a list of available payment methods.
+`HTTP POST /payments` creates a new open payment, returns a list of available payment methods.
 
 **Parameters**
 
@@ -227,11 +224,11 @@ An example payload
 
 ### Get
 
-`GET /payments/{transactionId}` returns the payment information
+`HTTP GET /payments/{transactionId}` returns the payment information
 
 ### Refund
 
-`POST /payments/{transactionId}/refund` refund a payment by transaction ID.
+`HTTP POST /payments/{transactionId}/refund` refund a payment by transaction ID.
 
 **Parameters**
 
@@ -273,7 +270,7 @@ Actions related to the merchant object are mapped to `/merchant` API endpoint.
 
 ### List providers
 
-`GET /merchants/payment-providers` returns a list of available providers for the merchant.
+`HTTP GET /merchants/payment-providers` returns a list of available providers for the merchant.
 
 Grouped into `mobile`, `bank`, `creditcard` and `credit` payment methods.
 
@@ -284,7 +281,7 @@ Grouped into `mobile`, `bank`, `creditcard` and `credit` payment methods.
 
 ## Upcoming features
 
-* Token payments
-* Report querying
-* Asynchronous refunds
+* Token payments (Q4/2018)
+* Settlement querying (Q4/2018)
+* Asynchronous refunds (Q4/2018)
 
