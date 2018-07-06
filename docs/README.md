@@ -14,7 +14,7 @@ You can also ask for support by opening an issue on GitHub.
 Thank you!
 </p>
 
-## API Endpoint
+### API Endpoint
 
 * Our new API endpoint is `api.checkout.fi`
 
