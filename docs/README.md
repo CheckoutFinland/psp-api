@@ -9,7 +9,7 @@ If you are looking for our old [legacy API documentation, see this](https://chec
 Our payment processing service related documentation.
 
 <p class="tip">
-If you have any feedback regarding how we could improve the documentation, [please file an issue on Github](https://github.com/CheckoutFinland/checkoutfinland.github.io/issues).
+If you have any feedback regarding how we could improve the documentation, [please file an issue on Github](https://github.com/CheckoutFinland/psp-api/issues).
 You can also ask for support by opening an issue on GitHub.
 Thank you!
 </p>
