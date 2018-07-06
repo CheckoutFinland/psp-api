@@ -2,6 +2,8 @@
 
 ## Checkout PSP API
 
+If you are looking for our old [legacy API documentation, see this](https://checkoutfinland.github.io/legacy-api/).
+
 ### General
 
 Our payment processing service related documentation.
@@ -11,6 +13,10 @@ If you have any feedback regarding how we could improve the documentation, [plea
 You can also ask for support by opening an issue on GitHub.
 Thank you!
 </p>
+
+## API Endpoint
+
+* Our new API endpoint is `api.checkout.fi`
 
 ### Test credentials
 
