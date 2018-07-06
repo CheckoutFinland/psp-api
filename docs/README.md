@@ -112,13 +112,13 @@ Actions related to the payment object are mapped to `/payments` API endpoint.
 
 The following illustrates how the user moves in the payment process.
 
-![mermaid diagram here](images/flow.png)
+![mermaid flow chart, illustrating the payment process](images/flow.png)
 
 ### Create
 
 `POST /payments` creates a new open payment, returns a list of available payment methods.
 
-** Parameters **
+**Parameters**
 
 field | info | description
 --- | --- | ---
@@ -132,8 +132,7 @@ customer | Customer | Customer information
 deliveryAddress | Address | Delivery address
 invoicingAddress | Address | Invoicing address
 redirectUrls | callbackUrl | Where to redirect browser after a payment is paid or cancelled
-callbackUrls | callbackUrl | Which url to server side after a payment is paid or cancelled
-
+callbackUrls | callbackUrl | Which url to ping after this payment is paid or cancelled
 
 **Item**
 
@@ -230,6 +229,43 @@ An example payload
 
 `GET /payments/{transactionId}` returns the payment information
 
+### Refund
+
+`POST /payments/{transactionId}/refund` refund a payment by transaction ID. Refund operation is asynchronous. Refund request is validated, and if the refund can be done a 201 is returned. When the refund is actually performed, the callback URL will be called with RefundCallbackPayload.
+
+**Parameters**
+
+field | info | description
+--- | --- | ---
+amount | integer | Total amount to refund, in currency's minor units
+items | RefundItem[] | Array of items to refund
+callbackUrls | callbackUrl | Which url to server side after a payment is paid or cancelled
+
+**RefundItem**
+
+field | info | description
+--- | --- | ---
+amount | integer | Total amount to refund this item, in currency's minor units
+stamp | string | Unique stamp of the refund item
+callbackUrls | callbackUrl | Which urls to ping after the refund has been processed
+
+An example payload
+```
+{
+  "amount": 1590,
+  "items": [
+    {
+      "amount": 1590,
+      "stamp": 29858472952
+    }
+  ],
+  "callbackUrls": {
+    "success": "https://ecom.example.org/success",
+    "cancel": "https://ecom.example.org/cancel"
+  }
+}
+```
+
 
 ## Merchants
 
@@ -244,4 +280,12 @@ Grouped into `mobile`, `bank`, `creditcard` and `credit` payment methods.
 **Parameters**
 
 `amount (integer, optional)` specify amount if you want to get providers for specific amount
+
+
+## Upcoming features
+
+* Token payments
+* Report querying
+
+
 
