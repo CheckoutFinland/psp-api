@@ -22,7 +22,7 @@ Thank you!
 
 Please note that not all payment methods support testing. The payment methods that support testing payments are enabled.
 
-* Merchant Id (MERCHANT): `375917`
+* Merchant Id: `375917`
 * Secret Key: `SAIPPUAKAUPPIAS`
 
 ### HTTP Response summary
@@ -245,63 +245,7 @@ city | string | Luleå | City
 county | string | Norbotten | County/State
 country | string | Sweden | Country
 
-An example payload
-```json
-{
-  "stamp": 29858472952,
-  "reference": 9187445,
-  "amount": 1590,
-  "currency": "EUR",
-  "language": "FI",
-  "items": [
-    {
-      "unitPrice": 1590,
-      "units": 1,
-      "vatPercentage": 24,
-      "productCode": "#927502759",
-      "deliveryDate": "2018-03-07",
-      "description": "Cat ladder",
-      "category": "shoe",
-      "merchant": 375917,
-      "stamp": 29858472952,
-      "reference": 9187445,
-      "commission": {
-        "merchant": "string",
-        "amount": 0
-      }
-    }
-  ],
-  "customer": {
-    "email": "john.doe@example.org",
-    "firstName": "John",
-    "lastName": "Doe",
-    "phone": 358501234567,
-    "vatId": "FI02454583"
-  },
-  "deliveryAddress": {
-    "streetAddress": "Fake street 123",
-    "postalCode": "00100",
-    "city": "Luleå",
-    "county": "Norrbotten",
-    "country": "Sweden"
-  },
-  "invoicingAddress": {
-    "streetAddress": "Fake street 123",
-    "postalCode": "00100",
-    "city": "Luleå",
-    "county": "Norrbotten",
-    "country": "Sweden"
-  },
-  "redirectUrls": {
-    "success": "https://ecom.example.org/success",
-    "cancel": "https://ecom.example.org/cancel"
-  },
-  "callbackUrls": {
-    "success": "https://ecom.example.org/success",
-    "cancel": "https://ecom.example.org/cancel"
-  }
-}
-```
+See [an example payload and response](/examples?id=create)
 
 ### Get
 
@@ -357,7 +301,7 @@ Grouped into `mobile`, `bank`, `creditcard` and `credit` payment methods.
 
 **HTTP GET query parameters**
 
-`amount (integer, optional)` specify amount if you want to get providers for specific amount. 
+`amount (integer, optional)` specify amount if you want to get providers for specific amount.
 
 Example
 ```
@@ -370,4 +314,4 @@ Example
 * Settlement querying (Q4/2018)
 * Asynchronous refunds (Q4/2018)
 
- 
+
