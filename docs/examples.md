@@ -268,7 +268,7 @@ checkout-transaction-id:0fbda2ce-8115-11e8-a3c2-1b42d60c4148
 #### Response
 
 ```json
-{ provider: 'handelsbanken',
-  status: 'ok',
-  transactionId: '258ad3a5-9711-44c3-be65-64a0ef462ba3' }
+{ provider: "handelsbanken",
+  status: "ok",
+  transactionId: "258ad3a5-9711-44c3-be65-64a0ef462ba3" }
 ```
