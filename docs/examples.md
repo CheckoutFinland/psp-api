@@ -2,15 +2,13 @@
 
 ## Checkout PSP API
 
-### General
-
-Here you can find example payloads and responses for all the requests.
+You can find example payloads and responses for all the requests here.
 
 ## Payments
 
 ### Create
 
-#### Request
+#### Request body
 
 ```json
 {
@@ -238,16 +236,18 @@ checkout-transaction-id:0fbda2ce-8115-11e8-a3c2-1b42d60c4148
 #### Response
 
 ```json
-{ id: "0fbda2ce-8115-11e8-a3c2-1b42d60c4148",
+{
+  id: "0fbda2ce-8115-11e8-a3c2-1b42d60c4148",
   status: 1,
   stamp: "572091345812938",
   reference: "3759170",
-  amount: "1525" }
+  amount: "1525"
+}
 ```
 
 ### Refund
 
-#### Request
+#### Request body
 
 ```json
 {
@@ -268,7 +268,9 @@ checkout-transaction-id:0fbda2ce-8115-11e8-a3c2-1b42d60c4148
 #### Response
 
 ```json
-{ provider: "handelsbanken",
+{
+  provider: "handelsbanken",
   status: "ok",
-  transactionId: "258ad3a5-9711-44c3-be65-64a0ef462ba3" }
+  transactionId: "258ad3a5-9711-44c3-be65-64a0ef462ba3"
+}
 ```
