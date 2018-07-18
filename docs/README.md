@@ -29,10 +29,12 @@ Please note that not all payment methods support testing, so only the payment me
 
 General API HTTP status codes and what to expect of them.
 
-* 200 – OK - Everything worked as expected.
-* 400 – Bad Request - The request was unacceptable, probably due to missing a required parameter.
-* 401 – Unauthorized - HMAC calculation failed or Merchant has no access to this feature.
-* 404 – Not Found - The requested resource doesn't exist.
+Code | Text | Description
+---- | ---- | -----------
+200  | OK   | Everything worked as expected.
+400  | Bad Request |The request was unacceptable, probably due to missing a required parameter.
+401  | Unauthorized | HMAC calculation failed or Merchant has no access to this feature.
+404  | Not Found | The requested resource doesn't exist.
 
 ### Headers and request signing
 
@@ -199,7 +201,7 @@ The following illustrates how the user moves in the payment process.
 **HTTP Request Body**
 
 field | info | description
---- | --- | ---
+----- | ---- | -----------
 stamp | string | Unique identifier for the order
 reference | string | Order reference
 amount | integer | Total amount of the payment, in currency's minor units
@@ -215,7 +217,7 @@ callbackUrls | callbackUrl | Which url to ping after this payment is paid or can
 **Item**
 
 field | type | example | description
---- | --- | --- | ---
+----- | ---- | ------- | -----------
 unitPrice | string | 1000 | Each country's minor unit, e.g. for euros use cents
 units | string | 5 | Quantity, how many items ordered
 productCode | string | 9a | Meta information
@@ -228,7 +230,7 @@ reference | string | fur-suits-5 | Reference
 **Customer**
 
 field | info | example | description
---- | --- | ---
+----- | ---- | ------- | -----------
 email | string | john.doe@example.org | Email
 firstName | string | John | First name
 lastName | string | Doe | Last name
@@ -238,7 +240,7 @@ vatId | string | FI02454583 | VAT ID, if any
 **Address**
 
 field | info | example | description
---- | --- | --- | ---
+----- | ---- | ------- | -----------
 streetAddress | string | Fake Street 123 | Street address
 postalCode | string | 00100 | Postal code
 city | string | Luleå | City
@@ -258,7 +260,7 @@ See [an example payload and response](/examples?id=create)
 **HTTP Request Body**
 
 field | info | description
---- | --- | ---
+----- | ---- | -----------
 amount | integer | Total amount to refund, in currency's minor units
 items | RefundItem[] | Array of items to refund
 callbackUrls | callbackUrl | Which url to server side after a payment is paid or cancelled
@@ -266,7 +268,7 @@ callbackUrls | callbackUrl | Which url to server side after a payment is paid or
 **RefundItem**
 
 field | info | description
---- | --- | ---
+----- | ---- | -----------
 amount | integer | Total amount to refund this item, in currency's minor units
 stamp | string | Unique stamp of the refund item
 callbackUrls | callbackUrl | Which urls to ping after the refund has been processed
@@ -301,7 +303,7 @@ Actions related to the merchant object are mapped to the `/merchant` API endpoin
 **HTTP GET query parameters**
 
 field | info | example | description
---- | --- | --- | ---
+----- | ---- | ------- | -----------
 amount | integer, optional | 1000 | specify an amount to retrieve providers for a specific payment amount
 
 Example
