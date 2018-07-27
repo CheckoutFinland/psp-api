@@ -58,7 +58,7 @@ checkout-timestamp:2018-07-05T11:19:25.950Z\n
 REQUEST BODY
 ```
 
-These are passed to the HMAC function which uses SHA512 algorithm. Carriage returns (\r) should not be used, only line feed (\n).
+These are passed to the HMAC function which uses SHA256 algorithm. Carriage returns (\r) should not be used, only line feed (\n).
 
 
 field | info | description
@@ -211,7 +211,7 @@ items | Item[] | Array of items
 customer | Customer | Customer information
 deliveryAddress | Address | Delivery address
 invoicingAddress | Address | Invoicing address
-redirectUrls | callbackUrl | Where to redirect browser after a payment is paid or cancelled
+redirectUrls | callbackUrl | Where to redirect browser after a payment is paid or cancelled.
 callbackUrls | callbackUrl | Which url to ping after this payment is paid or cancelled
 
 **Item**
@@ -246,6 +246,15 @@ postalCode | string | 00100 | Postal code
 city | string | Luleå | City
 county | string | Norbotten | County/State
 country | string | Sweden | Country
+
+**CallbackUrl**
+
+These url's must use SSL.
+
+field | info | example | description
+----- | ---- | ------- | -----------
+success | string | https://example.org/51/success | Called on successful payment
+cancel | string | https://example.org/51/cancel | Called on cancelled payment
 
 See [an example payload and response](/examples?id=create)
 
