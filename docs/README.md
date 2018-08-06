@@ -38,36 +38,38 @@ Code | Text | Description
 
 ### Headers and request signing
 
-All API calls need to be signed using HMAC and SHA256 or SHA512.
+All API calls need to be signed using HMAC and SHA-256 or SHA-512. All API responses are signed the same way allowing merchant to verify response validity.
 
-HMAC is calculated from the HTTP request's body payload using the signing secret. Header keys must be sorted alphabetically, lower-cased and included in HMAC calculation.
+HMAC is calculated from the HTTP request's headers and body payload using the signing secret. Header keys must be sorted alphabetically, lower-cased, and included in HMAC calculation.
 
 * The merchant ID needs to be in `Checkout-Account`
-* The algorithm needs to be in `Checkout-Algorithm` (SHA256 or SHA512)
+* The algorithm needs to be in `Checkout-Algorithm` (sha256 or sha512)
 * The calculated HMAC needs to be sent in each request in the HTTP header `Checkout-Signature`
 * The method header `Checkout-Method` needs to be set to `POST`, `GET` or `DELETE`
+* The transaction ID must be set in `Checkout-Transaction-ID` for requests accessing a single transaction.
 
 So the signature is calculated from these values as in this example:
 
 ```
 checkout-account:1234\n
-checkout-algorithm:SHA512\n
+checkout-algorithm:sha256\n
 checkout-method:POST\n
 checkout-nonce:1234\n
 checkout-timestamp:2018-07-05T11:19:25.950Z\n
-REQUEST BODY
+REQUEST BODY\n
 ```
 
-These are passed to the HMAC function which uses SHA256 algorithm. Carriage returns (\r) should not be used, only line feed (\n).
+These are passed to the HMAC function which uses SHA-256 algorithm. Carriage returns (\r) should not be used, only line feed (\n).
 
 
 field | info | description
 --- | --- | ---
 checkout-account | numeric | Checkout account ID
-checkout-algorithm | string | Used algorithm, either SHA256 or SHA512
+checkout-algorithm | string | Used algorithm, either sha256 or sha512
 checkout-method | string | HTTP verb of request
 checkout-nonce | string | Unique identifier for this request
 checkout-timestamp | string | ISO 8601 date time
+checkout-transaction-id | string | Checkout transaction ID when accessing single transaction
 
 The HTTP verb, nonce and timestamp are used to mitigate various replay and timing attacks.
 
@@ -81,7 +83,7 @@ const SECRET = 'SAIPPUAKAUPPIAS';
 
 const headers = {
   'checkout-account': ACCOUNT,
-  'checkout-algorithm': 'SHA256',
+  'checkout-algorithm': 'sha256',
   'checkout-method': 'POST',
   'checkout-nonce': '564635208570151',
   'checkout-timestamp': '2018-07-06T10:01:31.904Z'
