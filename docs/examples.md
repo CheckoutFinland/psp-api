@@ -2,7 +2,7 @@
 
 ## Checkout PSP API
 
-You can find example payloads and responses for all the requests here.
+You can find example payloads and responses for all the requests, as well as [code examples](#code-examples), here.
 
 ## Payments
 
@@ -273,4 +273,119 @@ checkout-transaction-id:0fbda2ce-8115-11e8-a3c2-1b42d60c4148
   "status": "ok",
   "transactionId": "258ad3a5-9711-44c3-be65-64a0ef462ba3"
 }
+```
+
+## Code examples
+
+### HMAC calculation (node.js)
+
+```javascript
+const crypto = require('crypto');
+
+const ACCOUNT = '375917';
+const SECRET = 'SAIPPUAKAUPPIAS';
+
+const headers = {
+  'checkout-account': ACCOUNT,
+  'checkout-algorithm': 'sha256',
+  'checkout-method': 'POST',
+  'checkout-nonce': '564635208570151',
+  'checkout-timestamp': '2018-07-06T10:01:31.904Z'
+};
+
+const body = {
+  stamp: 'should-be-unique-for-merchant',
+  reference: '3759170',
+  amount: 1525,
+  currency: 'EUR',
+  language:'FI',
+  items: [
+    {
+      unitPrice: 1525,
+      units: 1,
+      vatPercentage: 24,
+      productCode: '#1234',
+      deliveryDate: '2018-09-01'
+    }
+  ],
+  customer: {
+    email: 'test.customer@example.com'
+  },
+  redirectUrls: {
+    success: 'https://ecom.example.com/cart/success',
+    cancel: 'https://ecom.example.com/cart/cancel'
+  }
+};
+
+const hmacPayload =
+  Object.keys(headers)
+    .sort()
+    .map((key) => [ key, headers[key] ].join(':'))
+    .concat(JSON.stringify(body))
+    .join("\n");
+
+// Expected HMAC: e6ed7ec0889db888f3067feb57e0a831b88da547902cd4f40ecb646d2bb763ac
+const hmac = crypto
+  .createHmac('sha256', SECRET)
+  .update(hmacPayload)
+  .digest('hex');
+```
+
+### HMAC calculation (PHP)
+
+```php
+<?php
+
+$ACCOUNT = '375917';
+$SECRET = 'SAIPPUAKAUPPIAS';
+
+$headers = array(
+    'checkout-account' => $ACCOUNT,
+    'checkout-algorithm' => 'sha256',
+    'checkout-method' => 'POST',
+    'checkout-nonce' => '564635208570151',
+    'checkout-timestamp' => '2018-07-06T10:01:31.904Z'
+);
+
+// Headers must be sorted alphabetically by their key
+ksort($headers);
+
+$body = array(
+    'stamp' =>  'should-be-unique-for-merchant',
+    'reference' => '3759170',
+    'amount' => 1525,
+    'currency' => 'EUR',
+    'language' => 'FI',
+    'items' => array(
+        array(
+            'unitPrice' => 1525,
+            'units' => 1,
+            'vatPercentage' => 24,
+            'productCode' => '#1234',
+            'deliveryDate' => '2018-09-01'
+        )
+    ),
+    'customer' => array(
+        'email' => 'test.customer@example.com'
+    ),
+    'redirectUrls' => array(
+        'success' => 'https://ecom.example.com/cart/success',
+        'cancel' => 'https://ecom.example.com/cart/cancel'
+    )
+);
+
+
+$headers =
+    array_map(
+        function ($val, $key) {
+            return $key . ':' . $val;
+        },
+        $headers,
+        array_keys($headers)
+    );
+
+array_push($headers, json_encode($body, JSON_UNESCAPED_SLASHES));
+
+// string(64) "e6ed7ec0889db888f3067feb57e0a831b88da547902cd4f40ecb646d2bb763ac"
+$hmac = hash_hmac('sha256', join("\n", $headers), $SECRET);
 ```
