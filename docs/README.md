@@ -79,13 +79,29 @@ Actions related to the payment object are mapped to `/payments` API endpoint.
 
 The following illustrates how the user moves in the payment process.
 
-**TODO** The flow chart is incorrect (wrong domain, status query stuff irrelevant, callbackUrl not shown)
+<div class='mermaid'>
+sequenceDiagram
 
-![mermaid flow chart, illustrating the payment process](images/flow.png)
+Client ->> Merchant: Proceed to checkout
+Merchant ->> api.checkout.fi: Initiate new payment (POST /payments)
+api.checkout.fi ->> Merchant: JSON with payment methods
+Merchant ->> Client: Render payment method buttons
+Client ->> Payment method provider: Submits chosen payment form
+Payment method provider -->> Client: Redirect to Checkout success/cancel URL
+Client -->> api.checkout.fi: success/cancel
+
+opt Callback URL
+  api.checkout.fi ->> Merchant: Call success/cancel callback URL
+end
+
+api.checkout.fi -->> Client: Redirect to Merchant success/cancel URL
+Client ->> Merchant: Return to success/cancel
+Merchant ->> Client: Render thank you -page
+</div>
 
 ### Create
 
-`HTTP POST /payments` creates a new open payment and returns a list of available payment methods.
+`HTTP POST /payments` creates a new open payment and returns a JSON object that includes the available payment methods. The merchant web shop renders HTML forms from the response objects. The client browser will submit the form to the payment method provider.
 
 **HTTP Request Body**
 
