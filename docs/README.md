@@ -38,7 +38,7 @@ Code | Text | Description
 
 ### Headers and request signing
 
-All API calls need to be signed using HMAC and SHA-256 or SHA-512.
+All API calls need to be signed using HMAC and SHA-256 or SHA-512. When a request contains a body, the body must be valid JSON and `content-type` header with value `application/json; charset=utf-8` should be included. Other encodings may work too, but using UTF-8 is preferred.
 
 All API responses are signed the same way allowing merchant to verify response validity. In addition the reponses contain `cof-request-id` header. Saving or logging the value of this header is recommended.
 
