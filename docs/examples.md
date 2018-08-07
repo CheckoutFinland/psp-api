@@ -389,3 +389,22 @@ array_push($headers, json_encode($body, JSON_UNESCAPED_SLASHES));
 // string(64) "e6ed7ec0889db888f3067feb57e0a831b88da547902cd4f40ecb646d2bb763ac"
 $hmac = hash_hmac('sha256', join("\n", $headers), $SECRET);
 ```
+
+### Payment provider form rendering
+
+Dummy form rendering from the example [response](#response):
+
+```javascript
+const parameterToInput = (param) =>
+  `<input type='hidden' name='${param.name}' value='${param.value}' />`;
+
+const responseToHtml = (response) =>
+  response.providers
+    .map((provider) =>
+      `<form method='POST' action=${provider.url}>
+            ${provider.parameters.map(parameterToInput}
+            <button><img src='${provider.svg}' /></button>
+        </form>`
+    )
+    .join('\n');
+```

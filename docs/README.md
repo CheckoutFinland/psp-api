@@ -38,7 +38,9 @@ Code | Text | Description
 
 ### Headers and request signing
 
-All API calls need to be signed using HMAC and SHA-256 or SHA-512. All API responses are signed the same way allowing merchant to verify response validity.
+All API calls need to be signed using HMAC and SHA-256 or SHA-512.
+
+All API responses are signed the same way allowing merchant to verify response validity. In addition the reponses contain `cof-request-id` header. Saving or logging the value of this header is recommended.
 
 The signature is transmitted in `signature` HTTP header. Signature payload consists the following fields separated with a line feed (\n). Carrige returns (\r) should not be used.
 
@@ -69,7 +71,7 @@ REQUEST BODY
 
 See also code examples [HMAC calculation (node.js)](/examples#hmac-calculation-node-js) and [HMAC calculation (PHP)](/examples#hmac-calculation-php).
 
-### Return and callback URL signing
+#### Redirect and callback URL signing
 
 Return and callback URL parameters are signed as well, and the merchant *must* check signature validity. The signature is calculated the same way as for requests, but the values come in as query string parameters instead of headers. Empty string is used for the body.
 
@@ -101,9 +103,13 @@ Merchant ->> Client: Render thank you -page
 
 ### Create
 
-`HTTP POST /payments` creates a new open payment and returns a JSON object that includes the available payment methods. The merchant web shop renders HTML forms from the response objects. The client browser will submit the form to the payment method provider.
+`HTTP POST /payments` creates a new open payment and returns a JSON object that includes the available payment methods. The merchant web shop renders HTML forms from the response objects (see [example](/examples#payment-provider-form-rendering)). The client browser will submit the form to the payment method provider.
 
-**HTTP Request Body**
+Once the payment has been completed the client browser will return to the merchant provided redirect URL.
+
+The request payload is described below, as well as the redirect and callback URL parameters. [JSON example payload and response](/examples?id=create) are available on the examples tab.
+
+**Create Request Body**
 
 field | info | description
 ----- | ---- | -----------
@@ -162,6 +168,35 @@ success | string | https://example.org/51/success | Called on successful payment
 cancel | string | https://example.org/51/cancel | Called on cancelled payment
 
 See [an example payload and response](/examples?id=create)
+
+#### Redirect and callback URL parameters
+
+Once the payment is complete, or cancelled, normally the client browser is redirected to the merchant provided URL. If merchant has provided a callback URL, it will be called too.
+
+<p class="warning">
+  The URLs may be called multiple times. Merchant web shop must be able to handle multiple requests.
+</p>
+
+The payment information is available in the query string parameters of the client request. For example, if the `redirectUrls.success` value was `https://example.org`, it would be accessed with parameters appended:
+
+> https://example.org/51/success/return?checkout-account=375917&checkout-algorithm=sha256&checkout-amount=2964&checkout-stamp=15336332710015&checkout-reference=192387192837195&checkout-transaction-id=4b300af6-9a22-11e8-9184-abb6de7fd2d0&checkout-status=ok&checkout-provider=nordea&signature=b2d3ecdda2c04563a4638fcade3d4e77dfdc58829b429ad2c2cb422d0fc64080
+
+
+The query string parameters are listed below. If callback URLs were provided, same parameters are used.
+
+field | info |  description
+----- | ---- |  -----------
+checkout-account | numeric | Checkout account ID
+checkout-algorithm | string | Used signature algorithm. The same as used by merchant when creating the payment.
+checkout-amount | numeric | Payment amount in currency minor unit, eg. cents
+checkout-stamp | string | Merchant provided stamp
+checkout-reference | string | Merchant provided reference
+checkout-transaction-id | string | Checkout provided transaction ID.<br><br>**Important:** Store the value. It is needed for other actions such as refund or payment information query
+checkout-status | string | Payment status, either ok or fail
+checkout-provider | string | The payment method provider the client used
+signature | string | HMAC signature calculated from other parameter
+
+Merchant must check that signature is valid. Signature is calculated as described [above](#redirect-and-callback-url-signing).
 
 ### Get
 
