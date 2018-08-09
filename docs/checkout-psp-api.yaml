@@ -1,0 +1,881 @@
+openapi: "3.0.0"
+info:
+  version: 2.0.0
+  title: Payment service API
+  description: |
+    Payment processing API
+
+    Note: The API is currently under development. Some endpoints do not yet have all the features described
+    here, and the responses of some do not match the description here.
+  contact:
+    name: Checkout
+    url: https://github.com/CheckoutFinland/psp-api/issues
+servers:
+  - url: https://api.checkout.fi
+tags:
+- name: payments
+  description: Create, fetch or refund payments
+paths:
+  /payments:
+    get:
+      tags:
+      - payments
+      summary: Search payments
+      description: |
+        Returns all merchant's payments from the system
+      operationId: findPayments
+      parameters:
+        - name: created
+          in: query
+          description: Created date to filter by
+          example: '2018-03-08'
+          required: false
+          style: form
+          schema:
+            type: string
+            format: date
+            default: Current date
+        - name: status
+          in: query
+          description: Filter by payment status
+          example: approved
+          required: false
+          style: form
+          schema:
+            # TODO: These statuses are not enough
+            type: string
+            enum:
+            - new
+            - approved
+            - settled
+            - refunded
+        - name: limit
+          in: query
+          description: Number of results to return
+          example: 10
+          required: false
+          style: form
+          schema:
+            type: integer
+            format: int32
+            maximum: 100
+            minimum: 1
+            default: 100
+        - name: page
+          in: query
+          description: Pagination page
+          example: 2
+          required: false
+          style: form
+          schema:
+            type: integer
+            format: int32
+        - name: checkout-account
+          in: header
+          description: Merchant ID
+          example: 375917
+          schema:
+            type: integer
+            format: int32
+        - name: checkout-algorithm
+          in: header
+          description: HMAC algorithm
+          example: sha512
+          schema:
+            type: string
+            enum:
+            - sha256
+            - sha512
+        - name: checkout-method
+          in: header
+          description: HTTP method of the request
+          example: GET
+          schema:
+            type: string
+            enum:
+            - GET
+            - POST
+        - name: checkout-timestamp
+          in: header
+          description: Current timestamp in ISO 8601 format
+          example: '2018-08-08T10:10:59Z'
+          schema:
+            type: string
+            format: date-time
+        - name: checkout-nonce
+          in: header
+          description: Unique random identifier
+          example: 39da40b8-5fb0-499c-869d-35e575b9a6cd
+          schema:
+            type: string
+        - name: signature
+          in: header
+          description: HMAC signature calculated over the request headers and payload
+          schema:
+            type: string
+      responses:
+        '200':
+          description: payment response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Payment'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      tags:
+      - payments
+      summary: Create a new open payment
+      description: Create a new open payment, returns a list of available payment methods.
+      operationId: createPayment
+      parameters:
+        - name: checkout-account
+          in: header
+          description: Merchant ID
+          example: 375917
+          schema:
+            type: integer
+            format: int32
+        - name: checkout-algorithm
+          in: header
+          description: HMAC algorithm
+          example: sha512
+          schema:
+            type: string
+            enum:
+            - sha256
+            - sha512
+        - name: checkout-method
+          in: header
+          description: HTTP method of the request
+          example: POST
+          schema:
+            type: string
+            enum:
+            - GET
+            - POST
+        - name: checkout-timestamp
+          in: header
+          description: Current timestamp in ISO 8601 format
+          example: '2018-08-08T10:10:59Z'
+          schema:
+            type: string
+            format: date-time
+        - name: checkout-nonce
+          in: header
+          description: Unique random identifier
+          example: 39da40b8-5fb0-499c-869d-35e575b9a6cd
+          schema:
+            type: string
+        - name: signature
+          in: header
+          description: HMAC signature calculated over the request headers and payload
+          schema:
+            type: string
+      requestBody:
+        description: Payment body payload
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentRequest'
+      responses:
+        '201':
+          description: Payment request created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentRequestResponse'
+        '400':
+          description: Payment request not validated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /payments/{transactionId}:
+    get:
+      tags:
+      - payments
+      summary: Get a payment by Checkout transaction ID
+      description: Get a single payment
+      operationId: getPaymentByTransactionId
+      parameters:
+        - name: transactionId
+          in: path
+          description: Transaction ID of payment to fetch
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: 93ee8d18-10db-410b-92ac-7d6e49369ce3
+        - name: checkout-account
+          in: header
+          description: Merchant ID
+          example: 375917
+          schema:
+            type: integer
+            format: int32
+        - name: checkout-algorithm
+          in: header
+          description: HMAC algorithm
+          example: sha512
+          schema:
+            type: string
+            enum:
+            - sha256
+            - sha512
+        - name: checkout-method
+          in: header
+          description: HTTP method of the request
+          example: GET
+          schema:
+            type: string
+            enum:
+            - GET
+            - POST
+        - name: checkout-transaction-id
+          in: header
+          description: The same transaction ID as in route
+          schema:
+            type: string
+            format: uuid
+            example: 93ee8d18-10db-410b-92ac-7d6e49369ce3
+        - name: checkout-timestamp
+          in: header
+          description: Current timestamp in ISO 8601 format
+          example: '2018-08-08T10:10:59Z'
+          schema:
+            type: string
+            format: date-time
+        - name: checkout-nonce
+          in: header
+          description: Unique random identifier
+          example: 39da40b8-5fb0-499c-869d-35e575b9a6cd
+          schema:
+            type: string
+        - name: signature
+          in: header
+          description: HMAC signature calculated over the request headers and payload
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Payment response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /payments/{transactionId}/refund:
+    post:
+      tags:
+      - payments
+      summary: Refund a payment
+      description: |
+        Refund a payment by transaction ID. Refund operation is asynchronous. Refund request is validated,
+        and if the refund can be done a 201 is returned. When the refund is actually performed, the callback
+        URL will be called with RefundCallbackPayload
+      operationId: refundPaymentByTransactionId
+      parameters:
+        - name: transactionId
+          in: path
+          description: Transaction ID of payment to refund
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: 93ee8d18-10db-410b-92ac-7d6e49369ce3
+        - name: checkout-account
+          in: header
+          description: Merchant ID
+          example: 375917
+          schema:
+            type: integer
+            format: int32
+        - name: checkout-algorithm
+          in: header
+          description: HMAC algorithm
+          example: sha512
+          schema:
+            type: string
+            enum:
+            - sha256
+            - sha512
+        - name: checkout-method
+          in: header
+          description: HTTP method of the request
+          example: POST
+          schema:
+            type: string
+            enum:
+            - GET
+            - POST
+        - name: checkout-transaction-id
+          in: header
+          description: The same transaction ID as in route
+          schema:
+            type: string
+            format: uuid
+            example: 93ee8d18-10db-410b-92ac-7d6e49369ce3
+        - name: checkout-timestamp
+          in: header
+          description: Current timestamp in ISO 8601 format
+          example: '2018-08-08T10:10:59Z'
+          schema:
+            type: string
+            format: date-time
+        - name: checkout-nonce
+          in: header
+          description: Unique random identifier
+          example: 39da40b8-5fb0-499c-869d-35e575b9a6cd
+          schema:
+            type: string
+        - name: signature
+          in: header
+          description: HMAC signature calculated over the request headers and payload
+          schema:
+            type: string
+      requestBody:
+        description: Refund payload
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Refund'
+      responses:
+        '201':
+          description: Refund created succesfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RefundResponse'
+        '422':
+          description: Payment method provider does not support refunds
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /merchants/payment-providers:
+    get:
+      tags:
+      - payments
+      - providers
+      summary: List merchant payment methods
+      description: |
+        Returns the payment methods available for merchant without creating
+        a new payment to the system. Useful for displaying payment provider
+        icons during different phases of checkout before finally actually
+        creating the payment request when customer decides to pay
+      operationId: getPaymentProviders
+      parameters:
+        - name: checkout-account
+          in: header
+          description: Merchant ID
+          example: 375917
+          schema:
+            type: integer
+            format: int32
+        - name: checkout-algorithm
+          in: header
+          description: HMAC algorithm
+          example: sha512
+          schema:
+            type: string
+            enum:
+            - sha256
+            - sha512
+        - name: checkout-method
+          in: header
+          description: HTTP method of the request
+          example: GET
+          schema:
+            type: string
+            enum:
+            - GET
+            - POST
+        - name: checkout-timestamp
+          in: header
+          description: Current timestamp in ISO 8601 format
+          example: '2018-08-08T10:10:59Z'
+          schema:
+            type: string
+            format: date-time
+        - name: checkout-nonce
+          in: header
+          description: Unique random identifier
+          example: 39da40b8-5fb0-499c-869d-35e575b9a6cd
+          schema:
+            type: string
+        - name: signature
+          in: header
+          description: HMAC signature calculated over the request headers and payload
+          schema:
+            type: string
+        - name: amount
+          in: query
+          description: |
+            Optional amount in minor unit (eg. EUR cents) for the payment providers. Some providers have minimum
+            or maximum amounts that can be purchased.
+          example: 500
+          required: false
+          style: form
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: Payment methods available
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BasePaymentMethodProvider'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  schemas:
+    # Payment request payload
+    # Object which has not persisted and contains unvalidated user input.
+    # TODO: Support redirect to hosted GW (ie. current DEVICE)? Probably should
+    PaymentRequest:
+      type: object
+      description: Payment request
+      required:
+      - stamp
+      - reference
+      - amount
+      - currency
+      - language
+      - customer
+      - items
+      - redirectUrls
+      properties:
+        stamp:
+          type: string
+          example: 29858472952
+          description: Merchant specific unique stamp
+        reference:
+          type: string
+          example: 9187445
+          description: Merchant reference for the payment
+        amount:
+          type: integer
+          format: int64
+          example: 1590
+          description: Total amount of the payment (sum of items), VAT included
+        currency:
+          type: string
+          example: EUR
+          enum:
+          - EUR
+        language:
+          type: string
+          minLength: 2
+          maxLength: 2
+          example: FI
+          description: Alpha-2 language code for the payment process
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Item'
+        customer:
+          type: object
+          required:
+          - email
+          properties:
+            email:
+              type: string
+              format: email
+              example: john.doe@example.org
+              description: Customer email address
+            firstName:
+              type: string
+              example: John
+              description: Customer first name
+            lastName:
+              type: string
+              example: Doe
+              description: Customer last name
+            phone:
+              type: string
+              example: +358501234567
+              description: Customer phone number
+            vatId:
+              type: string
+              example: FI02454583
+              description: Company VAT ID in international format
+        deliveryAddress:
+          $ref: '#/components/schemas/Address'
+        invoicingAddress:
+          $ref: '#/components/schemas/Address'
+        redirectUrls:
+          $ref: '#/components/schemas/Callbacks'
+        callbackUrls:
+          $ref: '#/components/schemas/Callbacks'
+
+    Item:
+      type: object
+      required:
+      - unitPrice
+      - units
+      - vatPercentage
+      - productCode
+      - deliveryDate
+      properties:
+        unitPrice:
+          type: integer
+          format: int64
+          example: 1590
+          description: Unit price of an item in currency minor unit, eg. EUR cents. VAT included.
+        units:
+          type: integer
+          format: int64
+          description: Number of units
+          example: 1
+        vatPercentage:
+          type: integer
+          format: int64
+          example: 24
+          description: Item VAT percentage
+        productCode:
+          type: string
+          example: '#927502759'
+          description: Merchant specific product code
+        deliveryDate:
+          type: string
+          format: date
+          example: '2018-03-07'
+          description: Estimated delivery date
+        description:
+          type: string
+          example: Cat ladder
+          description: Merchant specific product description
+        category:
+          type: string
+          example: shoe
+          description: Item product category
+        merchant:
+          type: string
+          example: 375917
+          description: Submerchant ID. Required for shop-in-shop payments, leave out from normal payments.
+        stamp:
+          type: string
+          example: 29858472952
+          description: Submerchant specific unique stamp. Required for shop-in-shop payments, leave out from normal payments.
+        reference:
+          type: string
+          example: 9187445
+          description: Submerchant reference for the item. Required for shop-in-shop payments, leave out from normal payments.
+        commission:
+          type: object
+          properties:
+            merchant:
+              type: string
+              description: |
+                Merchant who get's the commission money. This merchant id can not be deleted, has to be active and
+                has to have same reseller with the merchant who initiated/created the webtrade.
+            amount:
+              type: integer
+              format: int32
+              description: |
+                Commission amount in currency minor unit, eg. EUR cents. VAT not applicable.
+                This field is needed only for specific shop-in-shop payments, usually not needed.
+
+
+    # Status reporting URLs, either for user browser redirect or server-to-server callback
+    # Called on various events
+    Callbacks:
+      type: object
+      required:
+      - success
+      - cancel
+      properties:
+        success:
+          type: string
+          example: "https://ecom.example.org/success"
+          description: |
+            URL to call when payment is succesfully paid.
+            Can called multiple times; one must ensure idempotency of this endpoint.
+        cancel:
+          type: string
+          example: "https://ecom.example.org/cancel"
+          description: |
+            URL to call when payment is cancelled and not fulfilled.
+            Can called multiple times; one must ensure idempotency of this endpoint.
+
+    Address:
+      type: object
+      required:
+      - streetAddress
+      - postalCode
+      - city
+      - country
+      properties:
+        streetAddress:
+          type: string
+          example: Fake street 123
+          description: Street address
+        postalCode:
+          type: string
+          pattern: '^\d+$'
+          example: '00100'
+          description: Postal code
+        city:
+          type: string
+          example: Luleå
+          description: City
+        county:
+          type: string
+          example: Norrbotten
+          description: County or top-level geographic subdivision
+        country:
+          type: string
+          example: Sweden
+          description: Country or country code
+
+    PaymentRequestResponse:
+      type: object
+      description: |
+        Response for a successful payment request. Mechant ecom site can then either redirect
+        the user to the URL given in href, or render the payment provider forms onsite. For
+        each payment method an HTML form needs to be rendered using the parameters returned
+        for each payment method provider.
+      required:
+      - transactionId
+      - href
+      - paymentMethods
+      properties:
+        transactionId:
+          type: string
+          format: uuid
+          example: 93ee8d18-10db-410b-92ac-7d6e49369ce3
+          description: Checkout assigned transaction ID for the payment.
+        href:
+          type: string
+          format: url
+          example: https://pay.checkout.fi/pay/93ee8d18-10db-410b-92ac-7d6e49369ce3
+          description: Unique URL to hosted payment gateway
+        providers:
+          type: array
+          items:
+            $ref: '#/components/schemas/PaymentMethodProvider'
+
+    BasePaymentMethodProvider:
+      type: object
+      required:
+      - name
+      - icon
+      - group
+      - svg
+      properties:
+        name:
+          type: string
+          example: Osuuspankki
+          description: Name of the payment method
+        svg:
+          type: string
+          format: url
+          example: https://payment.checkout.fi/static/img/payment-methods/op-logo.svg
+          description: URL to payment method SVG icon (recommended to be used instead if PNG)
+        icon:
+          type: string
+          format: url
+          example: https://payment.checkout.fi/static/img/op_140x75.png
+          description: URL to payment method PNG icon
+        group:
+          type: string
+          example: bank
+          enum:
+          - mobile
+          - bank
+          - creditcard
+          - credit
+          - other
+
+    PaymentMethodProvider:
+      allOf:
+        - $ref: '#/components/schemas/BasePaymentMethodProvider'
+        - description: Each payment method provider object describes an HTML form. The payment method parameters need to be posted to defined url in application/x-www-form-urlencoded format.
+        - required:
+          - name
+          - icon
+          - url
+          - group
+          - svg
+          - parameters
+          properties:
+            url:
+              type: string
+              format: url
+              example: https://api.checkout.fi/payments/93ee8d18-10db-410b-92ac-7d6e49369ce3/osuuspankki/redirect
+              description: Form action url
+            parameters:
+              type: array
+              items:
+                type: object
+                required:
+                - name
+                - value
+                properties:
+                  name:
+                    type: string
+                    example: VALUUTTALAJI
+                    description: Name of the form input
+                  value:
+                    type: string
+                    example: EUR
+                    description: Value of the form input
+
+    # Payment object
+    # This schema is used for objects which are persisted to database,
+    # i.e. ones which contain an ID
+    Payment:
+      allOf:
+        - $ref: '#/components/schemas/PaymentRequest'
+        - required:
+          - id
+          - status
+          - href
+          properties:
+            id:
+              type: string
+              format: uuid
+              example: 93ee8d18-10db-410b-92ac-7d6e49369ce3
+            status:
+              type: string
+              enum:
+              - new
+              - approved
+              - settled
+              - refunded
+            href:
+              type: string
+              format: url
+              example: https://foobar.checkout.fi/payment/93ee8d18-10db-410b-92ac-7d6e49369ce3
+              description: Unique URL to hosted payment gateway
+
+    RefundItem:
+      type: object
+      required:
+      - amount
+      - stamp
+      - reference
+      properties:
+        amount:
+          type: integer
+          format: int64
+          example: 1590
+          description: Amount to refund
+        stamp:
+          type: string
+          example: 29858472952
+          description: Original item stamp
+
+    # Refund request payload
+    # - Normal merchant:
+    #   - Only amount required, no need for item level reference
+    #     at least for now as we do not create subtrades
+    # - SiS merchants:
+    #   - Aggregate can do full refund without subtrade level info
+    #     by providing just the amount (that matches the original amount)
+    #   - Subtrade refunds require the original stamp and reference, and
+    #     amount to refund per item
+    Refund:
+      type: object
+      required:
+      - callbackUrls
+      properties:
+        amount:
+          type: integer
+          format: int64
+          example: 1590
+          description: |
+            The amount to refund. Required for normal merchant accounts.
+            SiS aggregate can refund the whole purchase by providing just the amount
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/RefundItem"
+          description: Item level refund information for SiS refunds.
+        callbackUrls:
+          $ref: '#/components/schemas/Callbacks'
+
+    # TODO: Once async, response status should be 'new'
+    RefundResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+          - ok
+          - fail
+        transactionId:
+          type: string
+          format: uuid
+          description: Checkout transaction ID for the refund
+          example: 912b13eb-c8ab-4397-a21a-9e9e1419eebe
+        provider:
+          type: string
+          description: Payment method provider
+          example: osuuspankki
+
+    # Payload with which the callback will be called once refund is complete
+    # TODO: Feature not yet implemented
+    # RefundCallbackPayload:
+    #   type: object
+    #   properties:
+    #     status:
+    #       type: string
+    #       enum:
+    #       - ok
+    #       - fail
+    #     reference:
+    #       type: string
+    #       format: int32
+    #       description: Checkout reference for the refund
+
+    Error:
+      required:
+        - status
+        - message
+      properties:
+        status:
+          type: string
+          enum:
+          - error
+        message:
+          type: string
+          description: Error description
+        meta:
+          type: array
+          items:
+            type: string
+          description: Possible detailed error descriptions
