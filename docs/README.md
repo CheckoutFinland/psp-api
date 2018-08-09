@@ -38,11 +38,11 @@ Code | Text | Description
 
 ### Headers and request signing
 
-All API calls need to be signed using HMAC and SHA-256 or SHA-512. When a request contains a body, the body must be valid JSON and `content-type` header with value `application/json; charset=utf-8` should be included. Other encodings may work too, but using UTF-8 is preferred.
+All API calls need to be signed using HMAC and SHA-256 or SHA-512. When a request contains a body, the body must be valid JSON and a `content-type` header with the value `application/json; charset=utf-8` must be included.
 
-All API responses are signed the same way allowing merchant to verify response validity. In addition the reponses contain `cof-request-id` header. Saving or logging the value of this header is recommended.
+All API responses are signed the same way, allowing merchant to verify response validity. In addition, the reponses contain `cof-request-id` header. Saving or logging the value of this header is recommended.
 
-The signature is transmitted in `signature` HTTP header. Signature payload consists the following fields separated with a line feed (\n). Carrige returns (\r) should not be used.
+The signature is transmitted in the `signature` HTTP header. Signature payload consists of the following fields separated with a line feed (\n). Carrige returns (\r) are not supported.
 
 * All `checkout-` headers in alphabetical order. The header keys must be in lowercase. Each header key and value are separated with `:`
 * HTTP body, or empty string if no body
@@ -53,12 +53,12 @@ field | info | description
 --- | --- | ---
 checkout-account | numeric | Checkout account ID, eg. 375917
 checkout-algorithm | string | Used signature algorithm, either sha256 or sha512
-checkout-method | string | HTTP verb of request, either GET or POST
+checkout-method | string | HTTP verb of the request, either GET or POST
 checkout-nonce | string | Unique identifier for this request
 checkout-timestamp | string | ISO 8601 date time
-checkout-transaction-id | string | Checkout transaction ID when accessing single transaction - not required for new payment request
+checkout-transaction-id | string | Checkout transaction ID when accessing single transaction - not required for a new payment request
 
-The HTTP verb, nonce and timestamp are used to mitigate various replay and timing attacks. Below is an example of the payload passed to a HMAC function:
+The HTTP verb, nonce and timestamp are used to mitigate various replay and timing attacks. Below is an example payload passed to a HMAC function:
 
 ```
 checkout-account:1234\n
@@ -69,11 +69,11 @@ checkout-timestamp:2018-07-05T11:19:25.950Z\n
 REQUEST BODY
 ```
 
-See also code examples [HMAC calculation (node.js)](/examples#hmac-calculation-node-js) and [HMAC calculation (PHP)](/examples#hmac-calculation-php).
+See also code examples of [HMAC calculation in node.js](/examples#hmac-calculation-node-js) and [HMAC calculation in PHP](/examples#hmac-calculation-php).
 
 #### Redirect and callback URL signing
 
-Return and callback URL parameters are signed as well, and the merchant *must* check signature validity. The signature is calculated the same way as for requests, but the values come in as query string parameters instead of headers. Empty string is used for the body.
+Return and callback URL parameters are also signed, and the merchant *must* check the signature validity. The signature is calculated the same way as for requests, but the values come in as query string parameters instead of headers. Empty string is used for the body.
 
 ## Payments
 
@@ -160,7 +160,7 @@ country | string | Sweden | Country
 
 **CallbackUrl**
 
-These url's must use HTTPS.
+These URLs must use HTTPS.
 
 field | info | example | description
 ----- | ---- | ------- | -----------
@@ -171,10 +171,10 @@ See [an example payload and response](/examples?id=create)
 
 #### Redirect and callback URL parameters
 
-Once the payment is complete, or cancelled, normally the client browser is redirected to the merchant provided URL. If merchant has provided a callback URL, it will be called too.
+Once the payment is complete, or cancelled, the client browser is normally redirected to the merchant provided URL. If merchant has provided a callback URL, it will be called too.
 
 <p class="warning">
-  The URLs may be called multiple times. Merchant web shop must be able to handle multiple requests.
+  The URLs may be called multiple times. The merchant web shop must be able to handle multiple requests for the same purchase.
 </p>
 
 The payment information is available in the query string parameters of the client request. For example, if the `redirectUrls.success` value was `https://example.org`, it would be accessed with parameters appended:

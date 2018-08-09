@@ -294,7 +294,7 @@ const headers = {
 };
 
 const body = {
-  stamp: 'should-be-unique-for-merchant',
+  stamp: 'unique-identifier-for-merchant',
   reference: '3759170',
   amount: 1525,
   currency: 'EUR',
@@ -351,7 +351,7 @@ $headers = array(
 ksort($headers);
 
 $body = array(
-    'stamp' =>  'should-be-unique-for-merchant',
+    'stamp' =>  'unique-identifier-for-merchant',
     'reference' => '3759170',
     'amount' => 1525,
     'currency' => 'EUR',
