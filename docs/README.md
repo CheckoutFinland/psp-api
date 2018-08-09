@@ -38,153 +38,42 @@ Code | Text | Description
 
 ### Headers and request signing
 
-All API calls need to be signed using HMAC and SHA256 or SHA512.
+All API calls need to be signed using HMAC and SHA-256 or SHA-512. When a request contains a body, the body must be valid JSON and a `content-type` header with the value `application/json; charset=utf-8` must be included.
 
-HMAC is calculated from the HTTP request's body payload using the signing secret. Header keys must be sorted alphabetically, lower-cased and included in HMAC calculation.
+All API responses are signed the same way, allowing merchant to verify response validity. In addition, the reponses contain `cof-request-id` header. Saving or logging the value of this header is recommended.
 
-* The merchant ID needs to be in `Checkout-Account`
-* The algorithm needs to be in `Checkout-Algorithm` (SHA256 or SHA512)
-* The calculated HMAC needs to be sent in each request in the HTTP header `Checkout-Signature`
-* The method header `Checkout-Method` needs to be set to `POST`, `GET` or `DELETE`
+The signature is transmitted in the `signature` HTTP header. Signature payload consists of the following fields separated with a line feed (\n). Carrige returns (\r) are not supported.
 
-So the signature is calculated from these values as in this example:
+* All `checkout-` headers in alphabetical order. The header keys must be in lowercase. Each header key and value are separated with `:`
+* HTTP body, or empty string if no body
+
+The headers are:
+
+field | info | description
+--- | --- | ---
+checkout-account | numeric | Checkout account ID, eg. 375917
+checkout-algorithm | string | Used signature algorithm, either sha256 or sha512
+checkout-method | string | HTTP verb of the request, either GET or POST
+checkout-nonce | string | Unique identifier for this request
+checkout-timestamp | string | ISO 8601 date time
+checkout-transaction-id | string | Checkout transaction ID when accessing single transaction - not required for a new payment request
+
+The HTTP verb, nonce and timestamp are used to mitigate various replay and timing attacks. Below is an example payload passed to a HMAC function:
 
 ```
 checkout-account:1234\n
-checkout-algorithm:SHA512\n
+checkout-algorithm:sha256\n
 checkout-method:POST\n
 checkout-nonce:1234\n
 checkout-timestamp:2018-07-05T11:19:25.950Z\n
 REQUEST BODY
 ```
 
-These are passed to the HMAC function which uses SHA256 algorithm. Carriage returns (\r) should not be used, only line feed (\n).
+See also code examples of [HMAC calculation in node.js](/examples#hmac-calculation-node-js) and [HMAC calculation in PHP](/examples#hmac-calculation-php).
 
+#### Redirect and callback URL signing
 
-field | info | description
---- | --- | ---
-checkout-account | numeric | Checkout account ID
-checkout-algorithm | string | Used algorithm, either SHA256 or SHA512
-checkout-method | string | HTTP verb of request
-checkout-nonce | string | Unique identifier for this request
-checkout-timestamp | string | ISO 8601 date time
-
-The HTTP verb, nonce and timestamp are used to mitigate various replay and timing attacks.
-
-### HMAC example (node.js)
-
-```javascript
-const crypto = require('crypto');
-
-const ACCOUNT = '375917';
-const SECRET = 'SAIPPUAKAUPPIAS';
-
-const headers = {
-  'checkout-account': ACCOUNT,
-  'checkout-algorithm': 'SHA256',
-  'checkout-method': 'POST',
-  'checkout-nonce': '564635208570151',
-  'checkout-timestamp': '2018-07-06T10:01:31.904Z'
-};
-
-const body = {
-  stamp: 'should-be-unique-for-merchant',
-  reference: '3759170',
-  amount: 1525,
-  currency: 'EUR',
-  language:'FI',
-  items: [
-    {
-      unitPrice: 1525,
-      units: 1,
-      vatPercentage: 24,
-      productCode: '#1234',
-      deliveryDate: '2018-09-01'
-    }
-  ],
-  customer: {
-    email: 'test.customer@example.com'
-  },
-  redirectUrls: {
-    success: 'https://ecom.example.com/cart/success',
-    cancel: 'https://ecom.example.com/cart/cancel'
-  }
-};
-
-const hmacPayload =
-  Object.keys(headers)
-    .sort()
-    .map((key) => [ key, headers[key] ].join(':'))
-    .concat(JSON.stringify(body))
-    .join("\n");
-
-// Expected HMAC: e6ed7ec0889db888f3067feb57e0a831b88da547902cd4f40ecb646d2bb763ac
-const hmac = crypto
-  .createHmac('sha256', SECRET)
-  .update(hmacPayload)
-  .digest('hex');
-```
-
-
-### HMAC example (PHP)
-
-```php
-<?php
-
-$ACCOUNT = '375917';
-$SECRET = 'SAIPPUAKAUPPIAS';
-
-$headers = array(
-    'checkout-account' => $ACCOUNT,
-    'checkout-algorithm' => 'sha256',
-    'checkout-method' => 'POST',
-    'checkout-nonce' => '564635208570151',
-    'checkout-timestamp' => '2018-07-06T10:01:31.904Z'
-);
-
-// Headers must be sorted alphabetically by their key
-ksort($headers);
-
-$body = array(
-    'stamp' =>  'should-be-unique-for-merchant',
-    'reference' => '3759170',
-    'amount' => 1525,
-    'currency' => 'EUR',
-    'language' => 'FI',
-    'items' => array(
-        array(
-            'unitPrice' => 1525,
-            'units' => 1,
-            'vatPercentage' => 24,
-            'productCode' => '#1234',
-            'deliveryDate' => '2018-09-01'
-        )
-    ),
-    'customer' => array(
-        'email' => 'test.customer@example.com'
-    ),
-    'redirectUrls' => array(
-        'success' => 'https://ecom.example.com/cart/success',
-        'cancel' => 'https://ecom.example.com/cart/cancel'
-    )
-);
-
-
-$headers =
-    array_map(
-        function ($val, $key) {
-            return $key . ':' . $val;
-        },
-        $headers,
-        array_keys($headers)
-    );
-
-array_push($headers, json_encode($body, JSON_UNESCAPED_SLASHES));
-
-// string(64) "e6ed7ec0889db888f3067feb57e0a831b88da547902cd4f40ecb646d2bb763ac"
-$hmac = hash_hmac('sha256', join("\n", $headers), $SECRET);
-```
-
+Return and callback URL parameters are also signed, and the merchant *must* check the signature validity. The signature is calculated the same way as for requests, but the values come in as query string parameters instead of headers. Empty string is used for the body.
 
 ## Payments
 
@@ -192,13 +81,35 @@ Actions related to the payment object are mapped to `/payments` API endpoint.
 
 The following illustrates how the user moves in the payment process.
 
-![mermaid flow chart, illustrating the payment process](images/flow.png)
+<div class='mermaid'>
+sequenceDiagram
+
+Client ->> Merchant: Proceed to checkout
+Merchant ->> api.checkout.fi: Initiate new payment (POST /payments)
+api.checkout.fi ->> Merchant: JSON with payment methods
+Merchant ->> Client: Render payment method buttons
+Client ->> Payment method provider: Submits chosen payment form
+Payment method provider -->> Client: Redirect to Checkout success/cancel URL
+Client -->> api.checkout.fi: success/cancel
+
+opt Callback URL
+  api.checkout.fi ->> Merchant: Call success/cancel callback URL
+end
+
+api.checkout.fi -->> Client: Redirect to Merchant success/cancel URL
+Client ->> Merchant: Return to success/cancel
+Merchant ->> Client: Render thank you -page
+</div>
 
 ### Create
 
-`HTTP POST /payments` creates a new open payment and returns a list of available payment methods.
+`HTTP POST /payments` creates a new open payment and returns a JSON object that includes the available payment methods. The merchant web shop renders HTML forms from the response objects (see [example](/examples#payment-provider-form-rendering)). The client browser will submit the form to the payment method provider.
 
-**HTTP Request Body**
+Once the payment has been completed the client browser will return to the merchant provided redirect URL.
+
+The request payload is described below, as well as the redirect and callback URL parameters. [JSON example payload and response](/examples?id=create) are available on the examples tab.
+
+**Create Request Body**
 
 field | info | description
 ----- | ---- | -----------
@@ -206,13 +117,13 @@ stamp | string | Unique identifier for the order
 reference | string | Order reference
 amount | integer | Total amount of the payment, in currency's minor units
 currency | alpha3 | Currency, only EUR supported at the moment
-language | alpha2 | Payment's language
+language | alpha2 | Payment's language, currently supported are FI, SV, and EN
 items | Item[] | Array of items
 customer | Customer | Customer information
 deliveryAddress | Address | Delivery address
 invoicingAddress | Address | Invoicing address
-redirectUrls | callbackUrl | Where to redirect browser after a payment is paid or cancelled.
-callbackUrls | callbackUrl | Which url to ping after this payment is paid or cancelled
+redirectUrls | CallbackUrl | Where to redirect browser after a payment is paid or cancelled.
+callbackUrls | CallbackUrl | Which url to ping after this payment is paid or cancelled
 
 **Item**
 
@@ -249,7 +160,7 @@ country | string | Sweden | Country
 
 **CallbackUrl**
 
-These url's must use SSL.
+These URLs must use HTTPS.
 
 field | info | example | description
 ----- | ---- | ------- | -----------
@@ -257,6 +168,35 @@ success | string | https://example.org/51/success | Called on successful payment
 cancel | string | https://example.org/51/cancel | Called on cancelled payment
 
 See [an example payload and response](/examples?id=create)
+
+#### Redirect and callback URL parameters
+
+Once the payment is complete, or cancelled, the client browser is normally redirected to the merchant provided URL. If merchant has provided a callback URL, it will be called too.
+
+<p class="warning">
+  The URLs may be called multiple times. The merchant web shop must be able to handle multiple requests for the same purchase.
+</p>
+
+The payment information is available in the query string parameters of the client request. For example, if the `redirectUrls.success` value was `https://example.org`, it would be accessed with parameters appended:
+
+> https://example.org/51/success/return?checkout-account=375917&checkout-algorithm=sha256&checkout-amount=2964&checkout-stamp=15336332710015&checkout-reference=192387192837195&checkout-transaction-id=4b300af6-9a22-11e8-9184-abb6de7fd2d0&checkout-status=ok&checkout-provider=nordea&signature=b2d3ecdda2c04563a4638fcade3d4e77dfdc58829b429ad2c2cb422d0fc64080
+
+
+The query string parameters are listed below. If callback URLs were provided, same parameters are used.
+
+field | info |  description
+----- | ---- |  -----------
+checkout-account | numeric | Checkout account ID
+checkout-algorithm | string | Used signature algorithm. The same as used by merchant when creating the payment.
+checkout-amount | numeric | Payment amount in currency minor unit, eg. cents
+checkout-stamp | string | Merchant provided stamp
+checkout-reference | string | Merchant provided reference
+checkout-transaction-id | string | Checkout provided transaction ID.<br><br>**Important:** Store the value. It is needed for other actions such as refund or payment information query
+checkout-status | string | Payment status, either ok or fail
+checkout-provider | string | The payment method provider the client used
+signature | string | HMAC signature calculated from other parameter
+
+Merchant must check that signature is valid. Signature is calculated as described [above](#redirect-and-callback-url-signing).
 
 ### Get
 

@@ -29,6 +29,8 @@
 <body>
   <div id="app"></div>
   <script src="https://unpkg.com/docute@3/dist/docute.js"></script>
+  <script src="https://unpkg.com/prismjs@1.6.0/components/prism-php.min.js"></script>
+  <script src="https://unpkg.com/mermaid@8.0.0-rc.8/dist/mermaid.min.js"></script>
   <script>
     docute.init({
       nav: {
@@ -44,6 +46,22 @@
       debug: true,
       twitter: 'checkoutfinland',
       repo: 'CheckoutFinland',
+      plugins: [
+        function(context) {
+          context.afterParse(function(html) {
+            // https://stackoverflow.com/a/2575797/3349511
+            return html.replace(
+              /<div class=.mermaid.>([\s\S]*?)<\/div>/g,
+              function(match, p1) {
+                // https://github.com/knsv/mermaid/issues/506
+                var hack = Math.random().toString(36).substring(7).replace(/\d/, "a")
+                // https://github.com/knsv/mermaid/blob/a4992963b3873ec7a566ba91b92596d2a360e3b9/src/mermaidAPI.js#L443
+                return mermaid.render(hack, p1, function(graph){ });
+              }
+            );
+          });
+        }
+      ]
     });
   </script>
 </body>
