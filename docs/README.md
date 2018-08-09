@@ -2,17 +2,18 @@
 
 ## Checkout PSP API
 
-If you are looking for our old [legacy API documentation, see this](https://checkoutfinland.github.io/legacy-api/).
+This is the API reference and example documentation for [Checkout Finland](https://checkout.fi/) - a Payment Service Provider with
+which ecommerce merchants can accept payments mobile and online.
 
-### General
-
-Documentation for our payment processing service.
+OpenAPI 3 specification for the API is also [available for download](checkout-psp-api.yaml).
 
 <p class="tip">
 If you have any feedback regarding how we could improve the documentation, [please file an issue on Github](https://github.com/CheckoutFinland/psp-api/issues).
 You can also ask for support by opening an issue on GitHub.
 Thank you!
 </p>
+
+If you are looking for the [legacy API documentation, see this](https://checkoutfinland.github.io/legacy-api/).
 
 ### API Endpoint
 
