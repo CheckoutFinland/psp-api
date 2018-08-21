@@ -1,6 +1,6 @@
 <img src="images/checkout-logo-vaaka-RGB.png" alt="Checkout Finland Oy" style="width: 200px;">
 
-## Checkout PSP API
+# Checkout PSP API
 
 This is the API reference and example documentation for [Checkout Finland](https://checkout.fi/) - a Payment Service Provider with
 which ecommerce merchants can accept payments mobile and online.
@@ -15,18 +15,18 @@ Thank you!
 
 If you are looking for the [legacy API documentation, see this](https://checkoutfinland.github.io/legacy-api/).
 
-### API Endpoint
+## API Endpoint
 
 * Our new API endpoint is `api.checkout.fi`
 
-### Test credentials
+## Test credentials
 
 Please note that not all payment methods support testing, so only the payment methods that support testing payments are enabled for these credentials.
 
 * Merchant Id: `375917`
 * Secret Key: `SAIPPUAKAUPPIAS`
 
-### HTTP Response summary
+## HTTP Response summary
 
 General API HTTP status codes and what to expect of them.
 
@@ -37,7 +37,7 @@ Code | Text | Description
 401  | Unauthorized | HMAC calculation failed or Merchant has no access to this feature.
 404  | Not Found | The requested resource doesn't exist.
 
-### Headers and request signing
+## Headers and request signing
 
 All API calls need to be signed using HMAC and SHA-256 or SHA-512. When a request contains a body, the body must be valid JSON and a `content-type` header with the value `application/json; charset=utf-8` must be included.
 
@@ -72,7 +72,7 @@ REQUEST BODY
 
 See also code examples of [HMAC calculation in node.js](/examples#hmac-calculation-node-js) and [HMAC calculation in PHP](/examples#hmac-calculation-php).
 
-#### Redirect and callback URL signing
+### Redirect and callback URL signing
 
 Return and callback URL parameters are also signed, and the merchant *must* check the signature validity. The signature is calculated the same way as for requests, but the values come in as query string parameters instead of headers. Empty string is used for the body.
 
@@ -110,36 +110,39 @@ Once the payment has been completed the client browser will return to the mercha
 
 The request payload is described below, as well as the redirect and callback URL parameters. [JSON example payload and response](/examples?id=create) are available on the examples tab.
 
-**Create Request Body**
+#### Create Request Body
 
 field | info | description
 ----- | ---- | -----------
-stamp | string | Unique identifier for the order
+stamp | string | Merchant unique identifier for the order
 reference | string | Order reference
-amount | integer | Total amount of the payment, in currency's minor units
-currency | alpha3 | Currency, only EUR supported at the moment
-language | alpha2 | Payment's language, currently supported are FI, SV, and EN
-items | Item[] | Array of items
-customer | Customer | Customer information
-deliveryAddress | Address | Delivery address
-invoicingAddress | Address | Invoicing address
-redirectUrls | CallbackUrl | Where to redirect browser after a payment is paid or cancelled.
-callbackUrls | CallbackUrl | Which url to ping after this payment is paid or cancelled
+amount | integer | Total amount of the payment in currency's minor units, eg. for Euros use cents. Must match the total sum of items.
+currency | alpha3 | Currency, only `EUR` supported at the moment
+language | alpha2 | Payment's language, currently supported are `FI`, `SV`, and `EN`
+items | [Item](#item)[] | Array of items
+customer | [Customer](#customer) | Customer information
+deliveryAddress | [Address](#address) | Delivery address
+invoicingAddress | [Address](#address) | Invoicing address
+redirectUrls | [CallbackUrl](#callbackurl) | Where to redirect browser after a payment is paid or cancelled.
+callbackUrls | [CallbackUrl](#callbackurl) | Which url to ping after this payment is paid or cancelled
 
-**Item**
+##### Item
 
 field | type | example | description
 ----- | ---- | ------- | -----------
-unitPrice | string | 1000 | Each country's minor unit, e.g. for euros use cents
-units | string | 5 | Quantity, how many items ordered
-productCode | string | 9a | Meta information
+unitPrice | integer | 1000 | Price per unit, VAT included, in each country's minor unit, e.g. for Euros use cents
+units | integer | 5 | Quantity, how many items ordered
+vatPercentage | integer | 24 | VAT percentage
+productCode | string | 9a | Merchant product code. May appear on invoices of certain payment methods.
 deliveryDate | string | 2019-12-31 | When is this item going to be delivered
-description | string | Bear suits for adults | Item description
-category | string | fur suits | Item category
-stamp | string | d4aca017-f1e7-4fa5-bfb5-2906e141ebac | unique identifier for this item
+description | string | Bear suits for adults | Item description. May appear on invoices of certain payment methods.
+category | string | fur suits | Merchant specific item category
+stamp | string | d4aca017-f1e7-4fa5-bfb5-2906e141ebac | Unique identifier for this item
 reference | string | fur-suits-5 | Reference
+merchant | string | - | Merchant ID for the item. Required for Shop-in-Shop payments, do not use for normal payments.
+commission | [Commission](#commission) | - | Shop-in-Shop commission. Do not use for normal payments.
 
-**Customer**
+##### Customer
 
 field | info | example | description
 ----- | ---- | ------- | -----------
@@ -149,7 +152,7 @@ lastName | string | Doe | Last name
 phone | string | 358451031234 | Phone number
 vatId | string | FI02454583 | VAT ID, if any
 
-**Address**
+##### Address
 
 field | info | example | description
 ----- | ---- | ------- | -----------
@@ -159,7 +162,7 @@ city | string | Luleå | City
 county | string | Norbotten | County/State
 country | string | Sweden | Country
 
-**CallbackUrl**
+##### CallbackUrl
 
 These URLs must use HTTPS.
 
@@ -167,6 +170,13 @@ field | info | example | description
 ----- | ---- | ------- | -----------
 success | string | https://example.org/51/success | Called on successful payment
 cancel | string | https://example.org/51/cancel | Called on cancelled payment
+
+##### Commission
+
+field | type | example | description
+----- | ---- | ------- | -----------
+merchant | string | 375917 | Merchant who gets the commission
+amount | integer | 250 | Amount of commission in currency's minor units, eg. for Euros use cents. VAT not applicable.
 
 See [an example payload and response](/examples?id=create)
 
@@ -207,15 +217,15 @@ Merchant must check that signature is valid. Signature is calculated as describe
 
 `HTTP POST /payments/{transactionId}/refund` refunds a payment by transaction ID.
 
-**HTTP Request Body**
+#### HTTP Request Body
 
 field | info | description
 ----- | ---- | -----------
 amount | integer | Total amount to refund, in currency's minor units
-items | RefundItem[] | Array of items to refund
+items | [RefundItem](#refunditem)[] | Array of items to refund
 callbackUrls | callbackUrl | Which url to server side after a payment is paid or cancelled
 
-**RefundItem**
+##### RefundItem
 
 field | info | description
 ----- | ---- | -----------
@@ -250,11 +260,11 @@ Actions related to the merchant object are mapped to the `/merchant` API endpoin
 
 `HTTP GET /merchants/payment-providers` returns a list of available providers for the merchant, grouped into `mobile`, `bank`, `creditcard` and `credit` payment methods.
 
-**HTTP GET query parameters**
+#### HTTP GET query parameters
 
 field | info | example | description
 ----- | ---- | ------- | -----------
-amount | integer, optional | 1000 | specify an amount to retrieve providers for a specific payment amount
+amount | integer, optional | 1000 | Purchase amount in currency's minor unit. Some payment methods have minimum or maximum purchase limits. When the amount is provided, only the methods suitable for the amount are returned. Otherwise, all merchant's payment methods are returned.
 
 Example
 ```
