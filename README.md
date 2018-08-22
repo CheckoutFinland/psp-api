@@ -6,7 +6,3 @@
 $ npm install -g docute-cli
 $ docute -p 8080 docs
 ```
-
-## TODOs
-
-- Generate documentation OpenAPI spec
