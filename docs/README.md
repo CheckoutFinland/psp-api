@@ -112,71 +112,71 @@ The request payload is described below, as well as the redirect and callback URL
 
 #### Create Request Body
 
-field | info | description
------ | ---- | -----------
-stamp | string | Merchant unique identifier for the order
-reference | string | Order reference
-amount | integer | Total amount of the payment in currency's minor units, eg. for Euros use cents. Must match the total sum of items.
-currency | alpha3 | Currency, only `EUR` supported at the moment
-language | alpha2 | Payment's language, currently supported are `FI`, `SV`, and `EN`
-items | [Item](#item)[] | Array of items
-customer | [Customer](#customer) | Customer information
-deliveryAddress | [Address](#address) | Delivery address
-invoicingAddress | [Address](#address) | Invoicing address
-redirectUrls | [CallbackUrl](#callbackurl) | Where to redirect browser after a payment is paid or cancelled.
-callbackUrls | [CallbackUrl](#callbackurl) | Which url to ping after this payment is paid or cancelled
+field | info | required | description
+----- | ---- | -------- | -----------
+stamp | string | <center>x</center> | Merchant unique identifier for the order
+reference | string | <center>x</center> | Order reference
+amount | integer | <center>x</center> | Total amount of the payment in currency's minor units, eg. for Euros use cents. Must match the total sum of items.
+currency | alpha3 | <center>x</center> | Currency, only `EUR` supported at the moment
+language | alpha2 | <center>x</center> | Payment's language, currently supported are `FI`, `SV`, and `EN`
+items | [Item](#item)[] | <center>x</center> | Array of items
+customer | [Customer](#customer) | <center>x</center> | Customer information
+deliveryAddress | [Address](#address) | <center>-</center> | Delivery address
+invoicingAddress | [Address](#address) | <center>-</center> | Invoicing address
+redirectUrls | [CallbackUrl](#callbackurl) | <center>x</center> | Where to redirect browser after a payment is paid or cancelled.
+callbackUrls | [CallbackUrl](#callbackurl) | <center>-</center> | Which url to ping after this payment is paid or cancelled
 
 ##### Item
 
-field | type | example | description
------ | ---- | ------- | -----------
-unitPrice | integer | 1000 | Price per unit, VAT included, in each country's minor unit, e.g. for Euros use cents
-units | integer | 5 | Quantity, how many items ordered
-vatPercentage | integer | 24 | VAT percentage
-productCode | string | 9a | Merchant product code. May appear on invoices of certain payment methods.
-deliveryDate | string | 2019-12-31 | When is this item going to be delivered
-description | string | Bear suits for adults | Item description. May appear on invoices of certain payment methods.
-category | string | fur suits | Merchant specific item category
-stamp | string | d4aca017-f1e7-4fa5-bfb5-2906e141ebac | Unique identifier for this item
-reference | string | fur-suits-5 | Reference
-merchant | string | - | Merchant ID for the item. Required for Shop-in-Shop payments, do not use for normal payments.
-commission | [Commission](#commission) | - | Shop-in-Shop commission. Do not use for normal payments.
+field | type | required | example | description
+----- | ---- | -------- | ------- | -----------
+unitPrice | integer | <center>x</center> | 1000 | Price per unit, VAT included, in each country's minor unit, e.g. for Euros use cents
+units | integer | <center>x</center> | 5 | Quantity, how many items ordered
+vatPercentage | integer | <center>x</center> | 24 | VAT percentage
+productCode | string | <center>x</center> | 9a | Merchant product code. May appear on invoices of certain payment methods.
+deliveryDate | string | <center>x</center> | 2019-12-31 | When is this item going to be delivered
+description | string | <center>-</center> | Bear suits for adults | Item description. May appear on invoices of certain payment methods.
+category | string | <center>-</center> | fur suits | Merchant specific item category
+stamp | string | <center>-</center> | d4aca017-f1e7-4fa5-bfb5-2906e141ebac | Unique identifier for this item. Required for Shop-in-Shop payments.
+reference | string | <center>-</center> | fur-suits-5 | Reference for this item. Required for Shop-in-Shop payments.
+merchant | string | <center>-</center> | <center>x</center> | Merchant ID for the item. Required for Shop-in-Shop payments, do not use for normal payments.
+commission | [Commission](#commission) | <center>-</center> | - | Shop-in-Shop commission. Do not use for normal payments.
 
 ##### Customer
 
-field | info | example | description
------ | ---- | ------- | -----------
-email | string | john.doe@example.org | Email
-firstName | string | John | First name
-lastName | string | Doe | Last name
-phone | string | 358451031234 | Phone number
-vatId | string | FI02454583 | VAT ID, if any
+field | type | required | example | description
+----- | ---- | -------- | ------- | -----------
+email | string | <center>x</center> | john.doe@example.org | Email
+firstName | string | <center>-</center> | John | First name
+lastName | string | <center>-</center> | Doe | Last name
+phone | string | <center>-</center> | 358451031234 | Phone number
+vatId | string | <center>-</center> | FI02454583 | VAT ID, if any
 
 ##### Address
 
-field | info | example | description
------ | ---- | ------- | -----------
-streetAddress | string | Fake Street 123 | Street address
-postalCode | string | 00100 | Postal code
-city | string | Luleå | City
-county | string | Norbotten | County/State
-country | string | Sweden | Country
+field | type | required | example | description
+----- | ---- | -------- | ------- | -----------
+streetAddress | string | <center>x</center> | Fake Street 123 | Street address
+postalCode | string | <center>x</center> | 00100 | Postal code
+city | string | <center>x</center> | Luleå | City
+county | string | <center>-</center> | Norbotten | County/State
+country | string | <center>x</center> | Sweden | Country
 
 ##### CallbackUrl
 
 These URLs must use HTTPS.
 
-field | info | example | description
------ | ---- | ------- | -----------
-success | string | https://example.org/51/success | Called on successful payment
-cancel | string | https://example.org/51/cancel | Called on cancelled payment
+field | type | required | example | description
+----- | ---- | -------- | ------- | -----------
+success | string | <center>x</center> | https://example.org/51/success | Called on successful payment
+cancel | string | <center>x</center> | https://example.org/51/cancel | Called on cancelled payment
 
 ##### Commission
 
-field | type | example | description
------ | ---- | ------- | -----------
-merchant | string | 375917 | Merchant who gets the commission
-amount | integer | 250 | Amount of commission in currency's minor units, eg. for Euros use cents. VAT not applicable.
+field | type | required | example | description
+----- | ---- | -------- | ------- | -----------
+merchant | string | <center>x</center> | 375917 | Merchant who gets the commission
+amount | integer | <center>x</center> | 250 | Amount of commission in currency's minor units, eg. for Euros use cents. VAT not applicable.
 
 See [an example payload and response](/examples?id=create)
 
