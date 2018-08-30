@@ -7,23 +7,78 @@
   <title>Checkout Finland API Reference</title>
   <link rel="stylesheet" href="https://unpkg.com/docute@3/dist/docute.css">
   <style>
-  h1, h2, h3, .markdown-body .markdown-heading:focus, .sidebar-headings .sidebar-heading .sidebar-heading-anchor.active, .sidebar-headings .sidebar-heading .sidebar-heading-anchor:hover {
-    color: rgb(36, 43, 113);
-  }
-  .announcement.announcement-success,
-  .announcement.announcement-success a {
-    color: rgb(36, 43, 113);
-  }
-  .announcement.announcement-success::before {
-    background-color: rgb(36, 43, 113);
-  }
-  p.tip {
-    border-left-color: rgb(36, 43, 113);
-    background-color: rgb(234, 242, 246);
-  }
-  p.tip::before {
-    background-color: rgb(36, 43, 113);
-  }
+    @font-face {
+      font-family: "OP Chevin Pro";
+      font-weight: 300;
+
+      src: url(/fonts/chevin-light.woff2) format("woff2"),
+           url(/fonts/chevin-light.woff)  format("woff"),
+           url(/fonts/chevin-light.ttf)   format("truetype");
+    }
+
+    @font-face {
+      font-family: "OP Chevin Pro";
+      font-weight: 600;
+
+      src: url(/fonts/chevin-demibold.woff2) format("woff2"),
+           url(/fonts/chevin-demibold.woff)  format("woff"),
+           url(/fonts/chevin-demibold.ttf)   format("truetype");
+    }
+    body {
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    }
+    h1, h2, h3, .markdown-body .markdown-heading:focus, .sidebar-headings .sidebar-heading .sidebar-heading-anchor.active, .sidebar-headings .sidebar-heading .sidebar-heading-anchor:hover {
+      color: #2c2e83;
+    }
+    .markdown-body h1, .markdown-body h2, .markdown-body h3, .markdown-body h4, .markdown-body h5, .markdown-body h6 {
+      font-family: "OP Chevin Pro", sans-serif, sans-serif;
+      font-weight: 300;
+    }
+    .sidebar-headings .sidebar-heading[data-level="2"] .sidebar-heading-anchor,
+    .sidebar-headings .sidebar-heading .sidebar-heading-anchor {
+      color: #2c2e83;
+    }
+    .nav-list .nav-item>a.router-link-active, .nav-list .nav-item>div.router-link-active {
+      border-bottom-color: #2c2e83;
+    }
+    .markdown-body a {
+      color: #2c2e83;
+      text-decoration: underline;
+    }
+    .markdown-body a:hover, .markdown-body a:focus {
+      color: #3f42bc;
+      text-decoration: underline;
+    }
+    .announcement.announcement-success,
+    .announcement.announcement-success a {
+      color: #2c2e83;
+    }
+    .announcement.announcement-success::before {
+      background-color: #2c2e83;
+    }
+    p.tip {
+      border-left-color: #2c2e83;
+      background-color: #ddf0f4;
+    }
+    p.tip::before {
+      background-color: #2c2e83;
+    }
+    p.warning {
+      border-left-color: #ff6a10;
+      background-color: #feece3;
+    }
+    p.warning::before {
+      background-color: #ff6a10;
+    }
+    p.danger {
+      border-left-color: #cd0b20;
+    }
+    p.danger::before {
+      background-color: #cd0b20;
+    }
+    .markdown-body code {
+      font-family: Consolas, Menlo, "Liberation Mono", Courier, monospace;
+    }
   </style>
 </head>
 <body>
