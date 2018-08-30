@@ -211,19 +211,32 @@ Merchant must check that signature is valid. Signature is calculated as describe
 
 ### Get
 
+<p class="warning">
+  The GET endpoint has not been implemented yet. The endpoint does respond but with payload that does not match any documentation.
+  <br><br>
+  It is currently intended only for the integrating partners to see at least some change in payment state when it has been paid.
+</p>
+
+
 `HTTP GET /payments/{transactionId}` returns payment information.
 
 ### Refund
 
 `HTTP POST /payments/{transactionId}/refund` refunds a payment by transaction ID.
 
+<p class="tip">
+  Asynchronous refunds are planned for later implementation. It is advised that integrating partners implement refunds with this in mind, as it will be the primary method for refunds later.
+  Technically this means that when a refund request is accepted, an OK response is sent to the caller. Later, when the refund is processed, the callback will be called with the actual outcome.
+</p>
+
+
 #### HTTP Request Body
 
 field | info | description
 ----- | ---- | -----------
 amount | integer | Total amount to refund, in currency's minor units
-items | [RefundItem](#refunditem)[] | Array of items to refund
-callbackUrls | callbackUrl | Which url to server side after a payment is paid or cancelled
+items | [RefundItem](#refunditem)[] | Array of items to refund. Use only for Shop-in-Shop payments.
+callbackUrls | [CallbackUrl](#callbackurl) | Which urls to ping after the refund has been processed
 
 ##### RefundItem
 
@@ -231,7 +244,6 @@ field | info | description
 ----- | ---- | -----------
 amount | integer | Total amount to refund this item, in currency's minor units
 stamp | string | Unique stamp of the refund item
-callbackUrls | callbackUrl | Which urls to ping after the refund has been processed
 
 An example payload:
 
