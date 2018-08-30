@@ -15,18 +15,28 @@ Thank you!
 
 If you are looking for the [legacy API documentation, see this](https://checkoutfinland.github.io/legacy-api/).
 
-## API Endpoint
+## API endpoint
 
-* Our new API endpoint is `api.checkout.fi`
+* API endpoint is `api.checkout.fi`
 
 ## Test credentials
 
 Please note that not all payment methods support testing, so only the payment methods that support testing payments are enabled for these credentials.
 
-* Merchant Id: `375917`
-* Secret Key: `SAIPPUAKAUPPIAS`
+### Normal merchant account
 
-## HTTP Response summary
+* Merchant ID: `375917`
+* Secret key: `SAIPPUAKAUPPIAS`
+
+### Shop-in-Shop merchant account
+
+*Note:* Use these only if you are setting up a [Shop-in-Shop](https://checkout.fi/verkkokauppiaalle/palvelu/shop-in-shop/) web shop.
+
+* Aggregate merchant ID: `695861`
+* Aggregate secret key: `MONISAIPPUAKAUPPIAS`
+* Shop-in-Shop merchant ID: `695874`
+
+## HTTP response summary
 
 General API HTTP status codes and what to expect of them.
 
@@ -110,7 +120,7 @@ Once the payment has been completed the client browser will return to the mercha
 
 The request payload is described below, as well as the redirect and callback URL parameters. [JSON example payload and response](/examples?id=create) are available on the examples tab.
 
-#### Create Request Body
+#### Create request body
 
 field | info | required | description
 ----- | ---- | -------- | -----------
@@ -230,7 +240,7 @@ Merchant must check that signature is valid. Signature is calculated as describe
 </p>
 
 
-#### HTTP Request Body
+#### HTTP request body
 
 field | info | description
 ----- | ---- | -----------
