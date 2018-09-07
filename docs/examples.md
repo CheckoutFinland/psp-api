@@ -324,7 +324,7 @@ const hmacPayload =
     .concat(JSON.stringify(body))
     .join("\n");
 
-// Expected HMAC: e6ed7ec0889db888f3067feb57e0a831b88da547902cd4f40ecb646d2bb763ac
+// Expected HMAC: 3708f6497ae7cc55a2e6009fc90aa10c3ad0ef125260ee91b19168750f6d74f6
 const hmac = crypto
   .createHmac('sha256', SECRET)
   .update(hmacPayload)
@@ -388,7 +388,7 @@ $hmacPayload =
 
 array_push($hmacPayload, $body);
 
-// string(64) "e6ed7ec0889db888f3067feb57e0a831b88da547902cd4f40ecb646d2bb763ac"
+// string(64) "3708f6497ae7cc55a2e6009fc90aa10c3ad0ef125260ee91b19168750f6d74f6"
 $hmac = hash_hmac('sha256', join("\n", $hmacPayload), $SECRET);
 
 $headers['signature'] = $hmac;
