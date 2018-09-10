@@ -263,7 +263,7 @@ An example payload:
   "items": [
     {
       "amount": 1590,
-      "stamp": 29858472952
+      "stamp": "29858472952"
     }
   ],
   "callbackUrls": {

@@ -324,7 +324,7 @@ const hmacPayload =
     .concat(JSON.stringify(body))
     .join("\n");
 
-// Expected HMAC: e6ed7ec0889db888f3067feb57e0a831b88da547902cd4f40ecb646d2bb763ac
+// Expected HMAC: 3708f6497ae7cc55a2e6009fc90aa10c3ad0ef125260ee91b19168750f6d74f6
 const hmac = crypto
   .createHmac('sha256', SECRET)
   .update(hmacPayload)
@@ -350,7 +350,8 @@ $headers = array(
 // Headers must be sorted alphabetically by their key
 ksort($headers);
 
-$body = array(
+$body = json_encode(
+  array(
     'stamp' =>  'unique-identifier-for-merchant',
     'reference' => '3759170',
     'amount' => 1525,
@@ -372,10 +373,11 @@ $body = array(
         'success' => 'https://ecom.example.com/cart/success',
         'cancel' => 'https://ecom.example.com/cart/cancel'
     )
+  ),
+  JSON_UNESCAPED_SLASHES
 );
 
-
-$headers =
+$hmacPayload =
     array_map(
         function ($val, $key) {
             return $key . ':' . $val;
@@ -384,10 +386,25 @@ $headers =
         array_keys($headers)
     );
 
-array_push($headers, json_encode($body, JSON_UNESCAPED_SLASHES));
+array_push($hmacPayload, $body);
 
-// string(64) "e6ed7ec0889db888f3067feb57e0a831b88da547902cd4f40ecb646d2bb763ac"
-$hmac = hash_hmac('sha256', join("\n", $headers), $SECRET);
+// string(64) "3708f6497ae7cc55a2e6009fc90aa10c3ad0ef125260ee91b19168750f6d74f6"
+$hmac = hash_hmac('sha256', join("\n", $hmacPayload), $SECRET);
+
+$headers['signature'] = $hmac;
+$headers['Content-type'] = 'application/json; charset=utf-8';
+// Header array must be "key: value" for file_get_contents
+$headers = array_map(function ($val, $key) { return $key . ': ' . $val; }, $headers, array_keys($headers));
+$opts = array('http' =>
+  array(
+    'method'        => 'POST',
+    'header'        => $headers,
+    'content'       => $body,
+    'ignore_errors' => true // Otherwise response body is missing when status != 200
+  )
+);
+$context = stream_context_create($opts);
+$response = file_get_contents('https://api.checkout.fi/payments', false, $context);
 ```
 
 ### Payment provider form rendering
