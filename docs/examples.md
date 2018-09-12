@@ -336,20 +336,31 @@ const hmac = crypto
 ```php
 <?php
 
+date_default_timezone_set('UTC');
+
 $ACCOUNT = '375917';
 $SECRET = 'SAIPPUAKAUPPIAS';
+$METHOD = 'POST';
 
+// Note: nonce and timestamp hardcoded for the expected HMAC output in comments below
 $headers = array(
     'checkout-account' => $ACCOUNT,
     'checkout-algorithm' => 'sha256',
-    'checkout-method' => 'POST',
+    'checkout-method' => $METHOD,
     'checkout-nonce' => '564635208570151',
-    'checkout-timestamp' => '2018-07-06T10:01:31.904Z'
+    'checkout-timestamp' => '2018-07-06T10:01:31.904Z',
+    'content-type' => 'application/json; charset=utf-8'
 );
 
-// Headers must be sorted alphabetically by their key
-ksort($headers);
+// Keep only checkout- headers for HMAC calculation. Filter query strings the same way.
+$includedKeys = array_filter(array_keys($headers), function($key) {
+    return preg_match('/^checkout-/', $key);
+});
 
+// Keys must be sorted alphabetically
+ksort($includedKeys);
+
+// $body = '' for GET requests
 $body = json_encode(
   array(
     'stamp' =>  'unique-identifier-for-merchant',
@@ -379,25 +390,25 @@ $body = json_encode(
 
 $hmacPayload =
     array_map(
-        function ($val, $key) {
-            return $key . ':' . $val;
+        function ($key) use ($headers) {
+            return $key . ':' . $headers[$key];
         },
-        $headers,
-        array_keys($headers)
+        $includedKeys
     );
 
 array_push($hmacPayload, $body);
 
 // string(64) "3708f6497ae7cc55a2e6009fc90aa10c3ad0ef125260ee91b19168750f6d74f6"
-$hmac = hash_hmac('sha256', join("\n", $hmacPayload), $SECRET);
+$headers['signature'] = hash_hmac('sha256', join("\n", $hmacPayload), $SECRET);
 
-$headers['signature'] = $hmac;
-$headers['Content-type'] = 'application/json; charset=utf-8';
-// Header array must be "key: value" for file_get_contents
-$headers = array_map(function ($val, $key) { return $key . ': ' . $val; }, $headers, array_keys($headers));
+// Headers to strings for file_get_contents stream
+$headers = array_map(function ($val, $key) {
+    return $key . ': ' . $val;
+}, $headers, array_keys($headers));
+
 $opts = array('http' =>
   array(
-    'method'        => 'POST',
+    'method'        => $METHOD,
     'header'        => $headers,
     'content'       => $body,
     'ignore_errors' => true // Otherwise response body is missing when status != 200
@@ -405,6 +416,11 @@ $opts = array('http' =>
 );
 $context = stream_context_create($opts);
 $response = file_get_contents('https://api.checkout.fi/payments', false, $context);
+
+echo(json_encode(json_decode($response), JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES));
+
+// Get the request ID and store it for possible debugging needs
+echo "\n\n" . array_values(preg_grep('/^cof-request-id/', $http_response_header))[0] . "\n";
 ```
 
 ### Payment provider form rendering
