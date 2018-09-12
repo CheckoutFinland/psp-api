@@ -336,8 +336,6 @@ const hmac = crypto
 ```php
 <?php
 
-date_default_timezone_set('UTC');
-
 $ACCOUNT = '375917';
 $SECRET = 'SAIPPUAKAUPPIAS';
 $METHOD = 'POST';
