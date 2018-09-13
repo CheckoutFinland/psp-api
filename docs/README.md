@@ -170,7 +170,7 @@ streetAddress | string | <center>x</center> | Fake Street 123 | Street address
 postalCode | string | <center>x</center> | 00100 | Postal code
 city | string | <center>x</center> | Luleå | City
 county | string | <center>-</center> | Norbotten | County/State
-country | string | <center>x</center> | Sweden | Country
+country | string | <center>x</center> | SE | Alpha-2 country code
 
 ##### CallbackUrl
 
