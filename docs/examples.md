@@ -247,7 +247,7 @@ checkout-transaction-id:0fbda2ce-8115-11e8-a3c2-1b42d60c4148
 
 ### Refund
 
-#### Request body
+#### Normal refund request body
 
 ```json
 {
@@ -258,6 +258,19 @@ checkout-transaction-id:0fbda2ce-8115-11e8-a3c2-1b42d60c4148
       "stamp": 29858472952
     }
   ],
+  "callbackUrls": {
+    "success": "https://ecom.example.org/success",
+    "cancel": "https://ecom.example.org/cancel"
+  }
+}
+```
+
+#### Email refund request body
+
+```json
+{
+  "amount": 1590,
+  "email": "recipient@example.com",
   "callbackUrls": {
     "success": "https://ecom.example.org/success",
     "cancel": "https://ecom.example.org/cancel"

@@ -43,9 +43,11 @@ General API HTTP status codes and what to expect of them.
 Code | Text | Description
 ---- | ---- | -----------
 200  | OK   | Everything worked as expected.
+201  | Created | A payment/refund was created successfully.
 400  | Bad Request |The request was unacceptable, probably due to missing a required parameter.
 401  | Unauthorized | HMAC calculation failed or Merchant has no access to this feature.
 404  | Not Found | The requested resource doesn't exist.
+422  | Unprocessable Entity | The requested method is not supported.
 
 ## Headers and request signing
 
@@ -118,7 +120,7 @@ Merchant ->> Client: Render thank you -page
 
 Once the payment has been completed the client browser will return to the merchant provided redirect URL.
 
-The request payload is described below, as well as the redirect and callback URL parameters. [JSON example payload and response](/examples?id=create) are available on the examples tab.
+The request payload is described below, as well as the redirect and callback URL parameters. [JSON example payload and response](/examples#create) are available on the examples tab.
 
 #### Create request body
 
@@ -188,7 +190,7 @@ field | type | required | example | description
 merchant | string | <center>x</center> | 375917 | Merchant who gets the commission
 amount | integer | <center>x</center> | 250 | Amount of commission in currency's minor units, eg. for Euros use cents. VAT not applicable.
 
-See [an example payload and response](/examples?id=create)
+See [an example payload and response](/examples#create)
 
 #### Redirect and callback URL parameters
 
@@ -239,7 +241,6 @@ Merchant must check that signature is valid. Signature is calculated as describe
   Technically this means that when a refund request is accepted, an OK response is sent to the caller. Later, when the refund is processed, the callback will be called with the actual outcome.
 </p>
 
-
 #### HTTP request body
 
 field | info | description
@@ -255,24 +256,31 @@ field | info | description
 amount | integer | Total amount to refund this item, in currency's minor units
 stamp | string | Unique stamp of the refund item
 
-An example payload:
+See [an example payload and response](/examples#refund)
 
-```json
-{
-  "amount": 1590,
-  "items": [
-    {
-      "amount": 1590,
-      "stamp": "29858472952"
-    }
-  ],
-  "callbackUrls": {
-    "success": "https://ecom.example.org/success",
-    "cancel": "https://ecom.example.org/cancel"
-  }
-}
-```
+#### Response
 
+Status code | Explanation
+------------|------------
+201 | Refund created successfully
+400 | Something went wrong
+422 | Used payment method provider does not support refunds
+
+Note, that at the moment HTTP 400 may occur also for 3rd party reasons - eg. bacause Nordea test API does not support refunds.
+
+### Email refund
+
+`HTTP POST /payments/{transactionId}/refund/email` refunds a payment by transaction ID by email and IBAN.
+
+Since not all payment method providers support refunds (name, S-pankki, Ålandsbanken, and AinaPay) an email refund API is provided. Email refund API sends a link to the intended recipient where they input their IBAN, authenticate using Tupas, and then receive the refund in 1-3 days. Email refund is supported for all Finnish banks, and AinaPay.
+
+#### Response
+
+Status code | Explanation
+------------|------------
+201 | Refund created successfully
+400 | Something went wrong
+422 | Used payment method provider does not support email refunds
 
 ## Merchants
 
@@ -295,8 +303,7 @@ Example
 
 ## Upcoming features
 
+* Single API refunds (fallback to emil refund if requested) (Q4/2018)
 * Token payments (Q4/2018)
 * Settlement querying (Q4/2018)
 * Asynchronous refunds (Q4/2018)
-
-
