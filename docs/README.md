@@ -21,7 +21,7 @@ If you are looking for the [legacy API documentation, see this](https://checkout
 
 ## Test credentials
 
-Please note that not all payment methods support testing, so only the payment methods that support testing payments are enabled for these credentials.
+Please note that not all payment methods support testing, so only the payment methods that support testing payments are enabled for these credentials. Provider specific credentials for approving payments can be found from [providers tab](/payment-method-providers#test-credentials).
 
 ### Normal merchant account
 

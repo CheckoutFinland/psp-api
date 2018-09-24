@@ -3,6 +3,6 @@
 ## Developing locally
 
 ```
-$ npm install -g docute-cli
-$ docute -p 8080 docs
+$ npm install docute-cli
+$ npx docute -p 8080 docs
 ```
