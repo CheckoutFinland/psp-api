@@ -1,6 +1,6 @@
 <img src="images/checkout-logo-vaaka-RGB.png" alt="Checkout Finland Oy" style="width: 200px;">
 
-## Checkout PSP API
+# Checkout PSP API
 
 You can find example payloads and responses for all the requests, as well as [code examples](#code-examples), here.
 
