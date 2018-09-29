@@ -377,7 +377,7 @@ function calculateHmac($secret, $params, $body = '')
     $hmacPayload =
         array_map(
             function ($key) use ($params) {
-                return join(':', array($key, $params[$key]));
+                return join(':', [ $key, $params[$key] ]);
             },
             $includedKeys
         );
@@ -388,40 +388,40 @@ function calculateHmac($secret, $params, $body = '')
 }
 
 // Note: nonce and timestamp hardcoded for the expected HMAC output in comments below
-$headers = array(
+$headers = [
     'checkout-account' => $ACCOUNT,
     'checkout-algorithm' => 'sha256',
     'checkout-method' => $METHOD,
     'checkout-nonce' => '564635208570151',
     'checkout-timestamp' => '2018-07-06T10:01:31.904Z',
     'content-type' => 'application/json; charset=utf-8'
-);
+];
 
 // $body = '' for GET requests
 $body = json_encode(
-    array(
+    [
         'stamp' =>  'unique-identifier-for-merchant',
         'reference' => '3759170',
         'amount' => 1525,
         'currency' => 'EUR',
         'language' => 'FI',
-        'items' => array(
-            array(
+        'items' => [
+            [
                 'unitPrice' => 1525,
                 'units' => 1,
                 'vatPercentage' => 24,
                 'productCode' => '#1234',
                 'deliveryDate' => '2018-09-01'
-            )
-        ),
-        'customer' => array(
+            ]
+        ],
+        'customer' => [
             'email' => 'test.customer@example.com'
-        ),
-        'redirectUrls' => array(
+        ],
+        'redirectUrls' => [
             'success' => 'https://ecom.example.com/cart/success',
             'cancel' => 'https://ecom.example.com/cart/cancel'
-        )
-    ),
+        ]
+    ],
     JSON_UNESCAPED_SLASHES
 );
 
