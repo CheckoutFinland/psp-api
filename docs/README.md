@@ -272,7 +272,7 @@ Note, that at the moment HTTP 400 may occur also for 3rd party reasons - eg. bac
 
 `HTTP POST /payments/{transactionId}/refund/email` refunds a payment by transaction ID by email and IBAN.
 
-Since not all payment method providers support refunds (name, S-pankki, Ålandsbanken, and AinaPay) an email refund API is provided. Email refund API sends a link to the intended recipient where they input their IBAN, authenticate using Tupas, and then receive the refund in 1-3 days. Email refund is supported for all Finnish banks, and AinaPay.
+Since not all payment method providers support refunds (namely, S-pankki, Ålandsbanken, and AinaPay) an email refund API is provided. Email refund API sends a link to the intended recipient where they input their IBAN, authenticate using Tupas, and then receive the refund in 1-3 days. Email refund is supported for all Finnish banks, and AinaPay.
 
 #### Response
 
