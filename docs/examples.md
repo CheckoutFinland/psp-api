@@ -440,6 +440,7 @@ try {
 }
 
 echo(json_encode(json_decode($response->getBody()->getContents()), JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES));
+// Storing the request ID is recommended for debugging purposes
 echo "\n\nRequest ID: {$response->getHeader('cof-request-id')[0]}\n\n";
 ```
 
