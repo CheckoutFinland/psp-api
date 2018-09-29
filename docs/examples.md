@@ -377,7 +377,7 @@ function calculateHmac($secret, $params, $body = '')
     $hmacPayload =
         array_map(
             function ($key) use ($params) {
-                return $key . ':' . $params[$key];
+                return join(':', array($key, $params[$key]));
             },
             $includedKeys
         );
@@ -439,8 +439,18 @@ try {
     }
 }
 
-echo(json_encode(json_decode($response->getBody()->getContents()), JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES));
-// Storing the request ID is recommended for debugging purposes
+$responseBody = $response->getBody()->getContents();
+// Flatten Guzzle response headers
+$responseHeaders = array_column(array_map(function ($key, $value) {
+    return [ $key, $value[0] ];
+}, array_keys($response->getHeaders()), array_values($response->getHeaders())), 1, 0);
+
+$responseHmac = calculateHmac($SECRET, $responseHeaders, $responseBody);
+if ($responseHmac !== $response->getHeader('signature')[0]) {
+    echo "Response HMAC signature mismatch!";
+} else {
+    echo(json_encode(json_decode($responseBody), JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES));
+}
 echo "\n\nRequest ID: {$response->getHeader('cof-request-id')[0]}\n\n";
 ```
 
