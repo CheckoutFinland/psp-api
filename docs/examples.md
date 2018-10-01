@@ -349,6 +349,9 @@ const hmac = crypto
 ```php
 <?php
 // Use Guzzle HTTP client v6 installed with Composer https://github.com/guzzle/guzzle/
+// We recommend using Guzzle HTTP client through composer as default HTTP client for PHP because it has
+// well documented and nice api. You can use any HTTP library to connect into Checkout API.
+// Alternatively, if you can't install composer packages you can use http://php.net/manual/en/book.curl.php
 require 'vendor/autoload.php';
 
 $ACCOUNT = '375917';
