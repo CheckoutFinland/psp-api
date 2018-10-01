@@ -348,90 +348,113 @@ const hmac = crypto
 
 ```php
 <?php
+// Use Guzzle HTTP client v6 installed with Composer https://github.com/guzzle/guzzle/
+// We recommend using Guzzle HTTP client through composer as default HTTP client for PHP because it has
+// well documented and nice api. You can use any HTTP library to connect into Checkout API.
+// Alternatively, if you can't install composer packages you can use http://php.net/manual/en/book.curl.php
+require 'vendor/autoload.php';
 
 $ACCOUNT = '375917';
 $SECRET = 'SAIPPUAKAUPPIAS';
 $METHOD = 'POST';
 
+/**
+ * Calculate Checkout HMAC
+ *
+ * @param string                $secret Merchant shared secret key
+ * @param array[string]string   $params HTTP headers or query string
+ * @param string                $body HTTP request body, empty string for GET requests
+ * @return string SHA-256 HMAC
+ */
+function calculateHmac($secret, $params, $body = '')
+{
+    // Keep only checkout- params, more relevant for response validation. Filter query
+    // string parameters the same way - the signature includes only checkout- values.
+    $includedKeys = array_filter(array_keys($params), function ($key) {
+        return preg_match('/^checkout-/', $key);
+    });
+
+    // Keys must be sorted alphabetically
+    ksort($includedKeys);
+
+    $hmacPayload =
+        array_map(
+            function ($key) use ($params) {
+                return join(':', [ $key, $params[$key] ]);
+            },
+            $includedKeys
+        );
+
+    array_push($hmacPayload, $body);
+
+    return hash_hmac('sha256', join("\n", $hmacPayload), $secret);
+}
+
 // Note: nonce and timestamp hardcoded for the expected HMAC output in comments below
-$headers = array(
+$headers = [
     'checkout-account' => $ACCOUNT,
     'checkout-algorithm' => 'sha256',
     'checkout-method' => $METHOD,
     'checkout-nonce' => '564635208570151',
     'checkout-timestamp' => '2018-07-06T10:01:31.904Z',
     'content-type' => 'application/json; charset=utf-8'
-);
-
-// Keep only checkout- headers for HMAC calculation. Filter query strings the same way.
-$includedKeys = array_filter(array_keys($headers), function($key) {
-    return preg_match('/^checkout-/', $key);
-});
-
-// Keys must be sorted alphabetically
-ksort($includedKeys);
+];
 
 // $body = '' for GET requests
 $body = json_encode(
-  array(
-    'stamp' =>  'unique-identifier-for-merchant',
-    'reference' => '3759170',
-    'amount' => 1525,
-    'currency' => 'EUR',
-    'language' => 'FI',
-    'items' => array(
-        array(
-            'unitPrice' => 1525,
-            'units' => 1,
-            'vatPercentage' => 24,
-            'productCode' => '#1234',
-            'deliveryDate' => '2018-09-01'
-        )
-    ),
-    'customer' => array(
-        'email' => 'test.customer@example.com'
-    ),
-    'redirectUrls' => array(
-        'success' => 'https://ecom.example.com/cart/success',
-        'cancel' => 'https://ecom.example.com/cart/cancel'
-    )
-  ),
-  JSON_UNESCAPED_SLASHES
+    [
+        'stamp' =>  'unique-identifier-for-merchant',
+        'reference' => '3759170',
+        'amount' => 1525,
+        'currency' => 'EUR',
+        'language' => 'FI',
+        'items' => [
+            [
+                'unitPrice' => 1525,
+                'units' => 1,
+                'vatPercentage' => 24,
+                'productCode' => '#1234',
+                'deliveryDate' => '2018-09-01'
+            ]
+        ],
+        'customer' => [
+            'email' => 'test.customer@example.com'
+        ],
+        'redirectUrls' => [
+            'success' => 'https://ecom.example.com/cart/success',
+            'cancel' => 'https://ecom.example.com/cart/cancel'
+        ]
+    ],
+    JSON_UNESCAPED_SLASHES
 );
-
-$hmacPayload =
-    array_map(
-        function ($key) use ($headers) {
-            return $key . ':' . $headers[$key];
-        },
-        $includedKeys
-    );
-
-array_push($hmacPayload, $body);
 
 // string(64) "3708f6497ae7cc55a2e6009fc90aa10c3ad0ef125260ee91b19168750f6d74f6"
-$headers['signature'] = hash_hmac('sha256', join("\n", $hmacPayload), $SECRET);
+$headers['signature'] = calculateHmac($SECRET, $headers, $body);
 
-// Headers to strings for file_get_contents stream
-$headers = array_map(function ($val, $key) {
-    return $key . ': ' . $val;
-}, $headers, array_keys($headers));
+$client = new \GuzzleHttp\Client([ 'headers' => $headers ]);
+$response = null;
+try {
+    $response = $client->post('https://api.checkout.fi/payments', [ 'body' => $body ]);
+} catch (\GuzzleHttp\Exception\ClientException $e) {
+    if ($e->hasResponse()) {
+        $response = $e->getResponse();
+        echo "Unexpected HTTP status code: {$response->getStatusCode()}\n\n";
+    }
+}
 
-$opts = array('http' =>
-  array(
-    'method'        => $METHOD,
-    'header'        => $headers,
-    'content'       => $body,
-    'ignore_errors' => true // Otherwise response body is missing when status != 200
-  )
-);
-$context = stream_context_create($opts);
-$response = file_get_contents('https://api.checkout.fi/payments', false, $context);
+$responseBody = $response->getBody()->getContents();
+// Flatten Guzzle response headers
+$responseHeaders = array_column(array_map(function ($key, $value) {
+    return [ $key, $value[0] ];
+}, array_keys($response->getHeaders()), array_values($response->getHeaders())), 1, 0);
 
-echo(json_encode(json_decode($response), JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES));
-
-// Get the request ID and store it for possible debugging needs
-echo "\n\n" . array_values(preg_grep('/^cof-request-id/', $http_response_header))[0] . "\n";
+$responseHmac = calculateHmac($SECRET, $responseHeaders, $responseBody);
+if ($responseHmac !== $response->getHeader('signature')[0]) {
+    echo "Response HMAC signature mismatch!";
+} else {
+    echo(json_encode(json_decode($responseBody), JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES));
+}
+echo "\n\nRequest ID: {$response->getHeader('cof-request-id')[0]}\n\n";
 ```
 
 ### Payment provider form rendering
