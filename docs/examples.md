@@ -375,7 +375,7 @@ function calculateHmac($secret, $params, $body = '')
     });
 
     // Keys must be sorted alphabetically
-    ksort($includedKeys);
+    sort($includedKeys, SORT_STRING);
 
     $hmacPayload =
         array_map(
