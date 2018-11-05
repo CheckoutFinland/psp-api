@@ -6,6 +6,10 @@ The payment methods that can be tested without real money transactions have been
 
 ## Test credentials
 
+<p class="tip">
+  Handelsbanken, POP, Säästöpankki, and OmaSP test credentials do not work at the moment. Samlink has identified the problem but fixing it is not scheduled.
+</p>
+
 Provider | Credentials
 ---------| -----------
 Masterpass | Use *IE English* Masterpass wallet and one of the [provided credit cards](https://developer.mastercard.com/page/masterpass-sandbox-testing-guidelines)
