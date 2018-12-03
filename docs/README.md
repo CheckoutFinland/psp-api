@@ -194,7 +194,7 @@ See [an example payload and response](/examples#create)
 
 #### Redirect and callback URL parameters
 
-Once the payment is complete, or cancelled, the client browser is normally redirected to the merchant provided URL. If merchant has provided a callback URL, it will be called too.
+Once the payment is complete, or cancelled, the client browser is normally redirected to the merchant provided URL. If merchant has provided a callback URL, it will be called too. The callback is called with `HTTP GET` and with the same query string parameters as in the redirect. The callback URL should respond with `HTTP 20x`.
 
 <p class="warning">
   The URLs may be called multiple times. The merchant web shop must be able to handle multiple requests for the same purchase.
@@ -247,7 +247,7 @@ field | info | description
 ----- | ---- | -----------
 amount | integer | Total amount to refund, in currency's minor units
 items | [RefundItem](#refunditem)[] | Array of items to refund. Use only for Shop-in-Shop payments.
-callbackUrls | [CallbackUrl](#callbackurl) | Which urls to ping after the refund has been processed
+callbackUrls | [CallbackUrl](#callbackurl) | Which urls to ping after the refund has been processed. The callback is called with `HTTP GET` and with the same query string parameters as in the [payment request callback](#redirect-and-callback-url-parameters). The server should respond with `HTTP 20x`.
 
 ##### RefundItem
 
