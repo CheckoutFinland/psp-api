@@ -303,7 +303,7 @@ Example
 
 ## Upcoming features
 
-* Single API refunds (fallback to emil refund if requested) (Q4/2018)
-* Token payments (Q4/2018)
-* Settlement querying (Q4/2018)
-* Asynchronous refunds (Q4/2018)
+* Single API refunds (fallback to email refund if requested) (Q1/2019)
+* Token payments (Q1/2019)
+* Settlement querying (Q1/2019)
+* Asynchronous refunds (Q1/2019)

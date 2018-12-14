@@ -247,7 +247,21 @@ checkout-transaction-id:0fbda2ce-8115-11e8-a3c2-1b42d60c4148
 
 ### Refund
 
-#### Normal refund request body
+#### Refund request body
+
+##### Normal merchant
+
+```json
+{
+  "amount": 1590,
+  "callbackUrls": {
+    "success": "https://ecom.example.org/refund/success",
+    "cancel": "https://ecom.example.org/refund/cancel"
+  }
+}
+```
+
+##### Shop-in-shop merchant
 
 ```json
 {
@@ -259,13 +273,15 @@ checkout-transaction-id:0fbda2ce-8115-11e8-a3c2-1b42d60c4148
     }
   ],
   "callbackUrls": {
-    "success": "https://ecom.example.org/success",
-    "cancel": "https://ecom.example.org/cancel"
+    "success": "https://ecom.example.org/refund/success",
+    "cancel": "https://ecom.example.org/refund/cancel"
   }
 }
 ```
 
 #### Email refund request body
+
+Email refund payload is otherwise the same (ie. for shop-in-shop merchants there must be items), but with added property `email`.
 
 ```json
 {
@@ -297,6 +313,27 @@ const crypto = require('crypto');
 
 const ACCOUNT = '375917';
 const SECRET = 'SAIPPUAKAUPPIAS';
+
+/**
+ * Calculate HMAC
+ *
+ * @param {string} secret Merchant shared secret
+ * @param {object} params Headers or query string parameters
+ * @param {object|undefined} body Request body or empty string for GET requests
+ */
+const calculateHmac = (secret, params, body) => {
+  const hmacPayload =
+    Object.keys(params)
+      .sort()
+      .map((key) => [ key, params[key] ].join(':'))
+      .concat(body ? JSON.stringify(body) : '')
+      .join("\n");
+
+  return crypto
+    .createHmac('sha256', secret)
+    .update(hmacPayload)
+    .digest('hex');
+};
 
 const headers = {
   'checkout-account': ACCOUNT,
@@ -330,18 +367,8 @@ const body = {
   }
 };
 
-const hmacPayload =
-  Object.keys(headers)
-    .sort()
-    .map((key) => [ key, headers[key] ].join(':'))
-    .concat(JSON.stringify(body))
-    .join("\n");
-
 // Expected HMAC: 3708f6497ae7cc55a2e6009fc90aa10c3ad0ef125260ee91b19168750f6d74f6
-const hmac = crypto
-  .createHmac('sha256', SECRET)
-  .update(hmacPayload)
-  .digest('hex');
+calculateHmac(SECRET, headers, body);
 ```
 
 ### HMAC calculation (PHP)
