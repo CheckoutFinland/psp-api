@@ -24,7 +24,7 @@ Danske | Danske test account login requires using real Danske credentials
 Visa | Card number: 4153013999700024<br>Expiry date: 11/2023<br>CVC: 024
 Mastercard | Card number: 5353299308701770<br>Expiry date: 11/2023<br>CVC: 770
 American Express | Card number: 373953192351004<br>Expiry date: 12/2023<br>CVC: 1004
-Collector | Social security number: 010380-000P
+Collector<br>Collector B2B | Social security number: 010380-000P
 Mash | Generate a social security number with [Mash provided service](https://sc-rel.mash.com/My/Test/GenerateSsnForTesting?age=34&tps=651)
 
 ## Provider limitations
