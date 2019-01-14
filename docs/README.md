@@ -219,7 +219,7 @@ checkout-status | string | Payment status, either ok or fail
 checkout-provider | string | The payment method provider the client used
 signature | string | HMAC signature calculated from other parameter
 
-Merchant must check that signature is valid. Signature is calculated as described [above](#redirect-and-callback-url-signing).
+Merchant must check that signature is valid. Signature is calculated as described [above](#redirect-and-callback-url-signing). **Do not** implement the HMAC validation with hardcoded query string parameters since new ones may be added later. Instead, filter parameters by name (include all that begin with `checkout-`), then sort, and calculate the HMAC.
 
 ### Get
 
