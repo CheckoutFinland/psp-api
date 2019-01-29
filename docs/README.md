@@ -82,6 +82,8 @@ checkout-timestamp:2018-07-05T11:19:25.950Z\n
 REQUEST BODY
 ```
 
+In addition to headers included in HMAC calculation `cof-plugin-version` header can be provided. Checkout kindly requests that ecommerce platform plugin or marketplace integrations would set the header for both statistical and customer service reasons.
+
 See also code examples of [HMAC calculation in node.js](/examples#hmac-calculation-node-js) and [HMAC calculation in PHP](/examples#hmac-calculation-php).
 
 ### Redirect and callback URL signing
