@@ -10,22 +10,29 @@ The payment methods that can be tested without real money transactions have been
   Handelsbanken, POP, Säästöpankki, and OmaSP test credentials do not work at the moment. Samlink has identified the problem but fix schedule is not known.
 </p>
 
-Provider | Credentials
----------| -----------
-Masterpass | Use *IE English* Masterpass wallet and one of the [provided credit cards](https://developer.mastercard.com/page/masterpass-sandbox-testing-guidelines)
-MobilePay | Use your own phone number and MobilePay application, charges are not made with test credentials
-Osuuspankki | Username: 123456<br>Password: 7890<br>Security code: any
-Nordea | Username: 123456<br>Password: 1111<br>Security code: any
-Handelsbanken<br>POP Pankki<br>Säästöpankki<br>OmaSP | Username: 11111111<br>Password: 123456<br>Security code: 123456
-Aktia | Username: 12345678<br>Password: 123456<br>Security code: 1234
-S-Pankki | Username: 12345678<br>Password: 9999<br>Security code: 1234
-Ålandsbanken | Username: 12345678<br>Password: 1234<br>Security code: any
-Danske | Danske test account login requires using real Danske credentials
-Visa | Card number: 4153013999700024<br>Expiry date: 11/2023<br>CVC: 024
-Mastercard | Card number: 5353299308701770<br>Expiry date: 11/2023<br>CVC: 770
-American Express | Card number: 373953192351004<br>Expiry date: 12/2023<br>CVC: 1004
-Collector<br>Collector B2B | Social security number: 010380-000P
-Mash | Generate a social security number with [Mash provided service](https://sc-rel.mash.com/My/Test/GenerateSsnForTesting?age=34&tps=651)
+`checkout-provider` values are provided too, but they are subject to change without notice.
+
+Provider | `checkout-provider` | Credentials
+---------| --------------------| -------------
+Masterpass | `masterpass` |  Use *IE English* Masterpass wallet and one of the [provided credit cards](https://developer.mastercard.com/page/masterpass-sandbox-testing-guidelines)
+MobilePay | `mobilepay` |  Use your own phone number and MobilePay application, charges are not made with test credentials
+OP | `osuuspankki` |  Username: 123456<br>Password: 7890<br>Security code: any
+Nordea | `nordea` |  Username: 123456<br>Password: 1111<br>Security code: any
+Handelsbanken<br>POP Pankki<br>Säästöpankki<br>OmaSP | `handelsbanken`<br>`pop`<br>`saastopankki`<br>`omasp` |  Username: 11111111<br>Password: 123456<br>Security code: 123456
+Aktia | `aktia` |  Username: 12345678<br>Password: 123456<br>Security code: 1234
+S-Pankki | `spankki` |  Username: 12345678<br>Password: 9999<br>Security code: 1234
+Ålandsbanken | `alandsbanken`|  Username: 12345678<br>Password: 1234<br>Security code: any
+Danske | `danske` |  Danske test account login requires using real Danske credentials
+Visa | `creditcard` |  Card number: 4153013999700024<br>Expiry date: 11/2023<br>CVC: 024
+Mastercard | `creditcard` |  Card number: 5353299308701770<br>Expiry date: 11/2023<br>CVC: 770
+American Express | `amex` |  Card number: 373953192351004<br>Expiry date: 12/2023<br>CVC: 1004
+Collector<br>Collector B2B | `collectorb2c`<br>`collectorb2b` |  Social security number: 010380-000P
+Mash | `mash` |  Generate a social security number with [Mash provided service](https://sc-rel.mash.com/My/Test/GenerateSsnForTesting?age=34&tps=651)
+Pivo | `pivo` | Testing is not possible
+Siirto | `siirto` | Testing is not possible
+AinaPay | `ainapay` | Testing is not possible
+OP Lasku | `oplasku` | Testing is not possible
+Jousto | `jousto` | Testing is not possible
 
 ## Provider limitations
 
