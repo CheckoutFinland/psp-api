@@ -64,12 +64,12 @@ The headers are:
 
 field | info | description
 --- | --- | ---
-checkout-account | numeric | Checkout account ID, eg. 375917
-checkout-algorithm | string | Used signature algorithm, either sha256 or sha512
-checkout-method | string | HTTP verb of the request, either GET or POST
-checkout-nonce | string | Unique identifier for this request
-checkout-timestamp | string | ISO 8601 date time
-checkout-transaction-id | string | Checkout transaction ID when accessing single transaction - not required for a new payment request
+`checkout-account` | numeric | Checkout account ID, eg. 375917
+`checkout-algorithm` | string | Used signature algorithm, either `sha256` or `sha512`
+`checkout-method` | string | HTTP verb of the request, either `GET` or `POST`
+`checkout-nonce` | string | Unique identifier for this request
+`checkout-timestamp` | string | ISO 8601 date time
+`checkout-transaction-id` | string | Checkout transaction ID when accessing single transaction - not required for a new payment request
 
 The HTTP verb, nonce and timestamp are used to mitigate various replay and timing attacks. Below is an example payload passed to a HMAC function:
 
@@ -151,7 +151,7 @@ description | string | <center>-</center> | Bear suits for adults | Item descrip
 category | string | <center>-</center> | fur suits | Merchant specific item category
 stamp | string | <center>-</center> | d4aca017-f1e7-4fa5-bfb5-2906e141ebac | Unique identifier for this item. Required for Shop-in-Shop payments.
 reference | string | <center>-</center> | fur-suits-5 | Reference for this item. Required for Shop-in-Shop payments.
-merchant | string | <center>-</center> | <center>x</center> | Merchant ID for the item. Required for Shop-in-Shop payments, do not use for normal payments.
+merchant | string | <center>-</center> | 695874 | Merchant ID for the item. Required for Shop-in-Shop payments, do not use for normal payments.
 commission | [Commission](#commission) | <center>-</center> | - | Shop-in-Shop commission. Do not use for normal payments.
 
 ##### Customer
@@ -187,7 +187,7 @@ cancel | string | <center>x</center> | https://example.org/51/cancel | Called on
 
 field | type | required | example | description
 ----- | ---- | -------- | ------- | -----------
-merchant | string | <center>x</center> | 375917 | Merchant who gets the commission
+merchant | string | <center>x</center> | 695874 | Merchant who gets the commission
 amount | integer | <center>x</center> | 250 | Amount of commission in currency's minor units, eg. for Euros use cents. VAT not applicable.
 
 See [an example payload and response](/examples#create)
@@ -209,15 +209,15 @@ The query string parameters are listed below. If callback URLs were provided, sa
 
 field | info |  description
 ----- | ---- |  -----------
-checkout-account | numeric | Checkout account ID
-checkout-algorithm | string | Used signature algorithm. The same as used by merchant when creating the payment.
-checkout-amount | numeric | Payment amount in currency minor unit, eg. cents
-checkout-stamp | string | Merchant provided stamp
-checkout-reference | string | Merchant provided reference
-checkout-transaction-id | string | Checkout provided transaction ID.<br><br>**Important:** Store the value. It is needed for other actions such as refund or payment information query
-checkout-status | string | Payment status, either `ok`, `pending`, or `fail`. Pending transactions should eventually be reported as successful or failed via the callbacks, or if not provided, using the redirect URLs.
-checkout-provider | string | The payment method provider the client used
-signature | string | HMAC signature calculated from other parameter
+`checkout-account` | numeric | Checkout account ID
+`checkout-algorithm` | string | Used signature algorithm. The same as used by merchant when creating the payment.
+`checkout-amount` | numeric | Payment amount in currency minor unit, eg. cents
+`checkout-stamp` | string | Merchant provided stamp
+`checkout-reference` | string | Merchant provided reference
+`checkout-transaction-id` | string | Checkout provided transaction ID.<br><br>**Important:** Store the value. It is needed for other actions such as refund or payment information query
+`checkout-status` | string | Payment status, either `ok`, `pending`, or `fail`. Pending transactions should eventually be reported as successful or failed via the callbacks, or if not provided, using the redirect URLs.
+`checkout-provider` | string | The payment method provider the client used. Current values are documented on [providers tab](/payment-method-providers#test-credentials). The values are subject to change without notice.
+`signature` | string | HMAC signature calculated from other parameter
 
 Merchant must check that signature is valid. Signature is calculated as described [above](#redirect-and-callback-url-signing). **Do not** implement the HMAC validation with hardcoded query string parameters since new ones may be added later. Instead, filter parameters by name (include all that begin with `checkout-`), then sort, and calculate the HMAC.
 
@@ -288,7 +288,7 @@ Actions related to the merchant object are mapped to the `/merchant` API endpoin
 
 ### List providers
 
-`HTTP GET /merchants/payment-providers` returns a list of available providers for the merchant, grouped into `mobile`, `bank`, `creditcard` and `credit` payment methods.
+`HTTP GET /merchants/payment-providers` returns a list of available providers for the merchant, grouped into `mobile`, `bank`, `creditcard`, `credit`, and `other` payment methods.
 
 #### HTTP GET query parameters
 
