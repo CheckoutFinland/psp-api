@@ -215,7 +215,7 @@ checkout-amount | numeric | Payment amount in currency minor unit, eg. cents
 checkout-stamp | string | Merchant provided stamp
 checkout-reference | string | Merchant provided reference
 checkout-transaction-id | string | Checkout provided transaction ID.<br><br>**Important:** Store the value. It is needed for other actions such as refund or payment information query
-checkout-status | string | Payment status, either ok or fail
+checkout-status | string | Payment status, either `ok`, `pending`, or `fail`. Pending transactions should eventually be reported as successful or failed via the callbacks, or if not provided, using the redirect URLs.
 checkout-provider | string | The payment method provider the client used
 signature | string | HMAC signature calculated from other parameter
 

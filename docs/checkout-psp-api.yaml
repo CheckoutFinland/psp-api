@@ -828,7 +828,7 @@ components:
         callbackUrls:
           $ref: '#/components/schemas/Callbacks'
 
-    # TODO: Once async, response status should be 'new'
+    # TODO: Once async, response status should be 'pending'
     RefundResponse:
       type: object
       properties:
@@ -836,6 +836,7 @@ components:
           type: string
           enum:
           - ok
+          - pending
           - fail
         transactionId:
           type: string
