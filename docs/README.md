@@ -133,6 +133,7 @@ reference | string | <center>x</center> | Order reference
 amount | integer | <center>x</center> | Total amount of the payment in currency's minor units, eg. for Euros use cents. Must match the total sum of items.
 currency | alpha3 | <center>x</center> | Currency, only `EUR` supported at the moment
 language | alpha2 | <center>x</center> | Payment's language, currently supported are `FI`, `SV`, and `EN`
+orderId | string | <center>-</center> | Order ID. Used for eg. Collector payments order ID. If not given, merchant reference is used instead.
 items | [Item](#item)[] | <center>x</center> | Array of items
 customer | [Customer](#customer) | <center>x</center> | Customer information
 deliveryAddress | [Address](#address) | <center>-</center> | Delivery address
@@ -151,6 +152,7 @@ productCode | string | <center>x</center> | 9a | Merchant product code. May appe
 deliveryDate | string | <center>x</center> | 2019-12-31 | When is this item going to be delivered
 description | string | <center>-</center> | Bear suits for adults | Item description. May appear on invoices of certain payment methods.
 category | string | <center>-</center> | fur suits | Merchant specific item category
+orderId | string |  <center>-</center> |  | Item level order ID (suborder ID). Mainly useful for Shop-in-Shop purchases.
 stamp | string | <center>-</center> | d4aca017-f1e7-4fa5-bfb5-2906e141ebac | Unique identifier for this item. Required for Shop-in-Shop payments.
 reference | string | <center>-</center> | fur-suits-5 | Reference for this item. Required for Shop-in-Shop payments.
 merchant | string | <center>-</center> | 695874 | Merchant ID for the item. Required for Shop-in-Shop payments, do not use for normal payments.
@@ -248,6 +250,7 @@ Merchant must check that signature is valid. Signature is calculated as describe
 field | info | description
 ----- | ---- | -----------
 amount | integer | Total amount to refund, in currency's minor units
+email | string | Email address. Accepted only if using [email refund API](#email-refund)
 items | [RefundItem](#refunditem)[] | Array of items to refund. Use only for Shop-in-Shop payments.
 callbackUrls | [CallbackUrl](#callbackurl) | Which urls to ping after the refund has been processed. The callback is called with `HTTP GET` and with the same query string parameters as in the [payment request callback](#redirect-and-callback-url-parameters). The server should respond with `HTTP 20x`.
 
@@ -257,6 +260,14 @@ field | info | description
 ----- | ---- | -----------
 amount | integer | Total amount to refund this item, in currency's minor units
 stamp | string | Unique stamp of the refund item
+commission | [RefundCommission](#RefundCommission) | Shop-in-Shop commission return. In refunds, the given amount is returned from the given commission account to the item merchant account.
+
+##### RefundCommission
+
+field | type | required | example | description
+----- | ---- | -------- | ------- | -----------
+merchant | string | <center>x</center> | 695874 | Merchant from whom the commission is returned to the submerchant.
+amount | integer | <center>x</center> | 250 | Amount of commission in currency's minor units, eg. for Euros use cents. VAT not applicable.
 
 See [an example payload and response](/examples#refund)
 
