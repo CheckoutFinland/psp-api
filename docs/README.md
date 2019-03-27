@@ -219,7 +219,7 @@ field | info |  description
 `checkout-stamp` | string | Merchant provided stamp
 `checkout-reference` | string | Merchant provided reference
 `checkout-transaction-id` | string | Checkout provided transaction ID.<br><br>**Important:** Store the value. It is needed for other actions such as refund or payment information query
-`checkout-status` | string | Payment status, either `ok`, `pending`, or `fail`. Pending transactions should eventually be reported as successful or failed via the callbacks, or if not provided, using the redirect URLs.
+`checkout-status` | string | Payment status, either `ok`, `pending`, or `fail`. Pending transactions should eventually be reported as successful or failed via the callbacks, if provided, and using the redirect URLs.
 `checkout-provider` | string | The payment method provider the client used. Current values are documented on [providers tab](/payment-method-providers#test-credentials). The values are subject to change without notice.
 `signature` | string | HMAC signature calculated from other parameter
 
