@@ -2,7 +2,7 @@
 
 ## Developing locally
 
-```
+```bash
 npm install docute-cli
 npx docute -p 8080 docs
 ```
