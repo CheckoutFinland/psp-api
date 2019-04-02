@@ -573,7 +573,7 @@ paths:
       - payment reports
       summary: Request a payment report
       description: |
-        Request a report of payments to be sent to the given callback url
+        Request a report of payments to be sent to the given callback url. Callback schema defined in PaymentReportCallbackJSON.
       operationId: requestPaymentReport
       parameters:
         - name: checkout-account
@@ -645,7 +645,7 @@ paths:
       - payment reports
       summary: Request a report of payments contained in a given settlement
       description: |
-        Request a report of payments contained in a given settlement to be sent to the given callback url
+        Request a report of payments contained in a given settlement to be sent to the given callback url. Callback schema defined in PaymentReportCallbackJSON.
       operationId: requestPaymentReportBySettlementId
       parameters:
         - name: checkout-account
@@ -1189,10 +1189,9 @@ components:
           description: Limit the amount of fields included in the report. By default all fields are included.
           items:
             type: string
-            enum: [entryDate, created, amount, status, firstname, familyname, description,
-                  reference, paymentMethod, stamp, address, postcode, postoffice, country, checkoutReference,
-                  archiveNumber, nameFromBank, currency, invoiceId, invoiceDate, refundAmount, expenseFee,
-                  expenseProvision, invoiceAggregateItemAmount, invoiceAggregateItemProvision, language]
+            enum: [created, amount, status, firstname, familyname, description, reference, paymentMethod, stamp,
+                  address, postcode, postoffice, country, checkoutReference, archiveNumber, settlementId,
+                  settlementDate, refundAmount, fee, provision]
 
     PaymentReportBySettlementIdRequest:
       type: object
@@ -1218,10 +1217,9 @@ components:
           description: Limit the amount of fields included in the report. By default all fields are included.
           items:
             type: string
-            enum: [entryDate, created, amount, status, firstname, familyname, description,
-                  reference, paymentMethod, stamp, address, postcode, postoffice, country, checkoutReference,
-                  archiveNumber, nameFromBank, currency, invoiceId, invoiceDate, refundAmount, expenseFee,
-                  expenseProvision, invoiceAggregateItemAmount, invoiceAggregateItemProvision, language]
+            enum: [created, amount, status, firstname, familyname, description, reference, paymentMethod, stamp,
+                  address, postcode, postoffice, country, checkoutReference, archiveNumber, settlementId,
+                  settlementDate, refundAmount, fee, provision]
 
     PaymentReportRequestResponse:
       required:
@@ -1230,6 +1228,95 @@ components:
         requestId:
           type: string
           description: Request id
+
+    PaymentReportCallbackJSON:
+      description: The returned fields can be filtered out by specifying "reportFields" parameter
+      properties:
+        created:
+          type: string
+          format: HH:mm
+          description: Hour and minute of the payment creation
+          example: "11:31"
+        amount:
+          type: integer
+          description: Payment amount in cents
+          example: 1590
+        status:
+          type: string
+          enum: [New, Paid, waiting for approval, Cancelled, Timeout, Halted, Delayed, Paid and settled]
+          description: Payment status
+          example: Paid
+        firstname:
+          type: string
+          description: First name
+          example: John
+        familyname:
+          type: string
+          description: Last name
+          example: Doe
+        description:
+          type: string
+          format: datetime
+          description: Payment description
+          example: Cat food and rubber boots
+        reference:
+          type: string
+          description: Merchant's reference
+          example: 12345-abc
+        paymentMethod:
+          type: string
+          description: Payment method
+          example: Osuuspankki
+        stamp:
+          type: string
+          description: Payment Stamp
+          example: CO~1554204687711
+        address:
+          type: string
+          description: Delivery address
+          example: Hämeenkatu 16
+        postcode:
+          type: string
+          description: Postal code
+          example: "33100"
+        postoffice:
+          type: string
+          description: Post office
+          example: Tampere
+        country:
+          type: string
+          description: Country of delivery
+          example: Finland
+        checkoutReference:
+          type: string
+          description: Checkout reference
+          example: '1031751'
+        archiveNumber:
+          type: string
+          description: Archive number
+          example: '81295824808952395'
+        settlementId:
+          type: string
+          description: Settlement (report) id
+          example: 1235678
+        settlementDate:
+          type: string
+          description: When the payment is settled
+          example: "2019-04-04"
+        refundAmount:
+          type: string
+          description: Refund amount in cents
+          example: 0
+        fee:
+          type: number
+          format: float
+          description: Transaction fee in Euros
+          example: 0.12
+        provision:
+          type: number
+          format: float
+          description: Provision amount in Euros
+          example: 0.024
 
     Error:
       required:
