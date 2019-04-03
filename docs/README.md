@@ -303,7 +303,7 @@ The endpoint supports specifying whether the result will be delivered as a JSON 
 
 ### Payment report request
 
-Send a `POST` to `/payments/report`, containing the `checkout-headers` and the following payload:
+`HTTP POST /payments/report` results in a callback containing the payment report.
 
 field | info | required | default | description
 ----- | ---- | -------- | ------- | -----------
@@ -324,7 +324,7 @@ Status code | Explanation
 
 ### Payment report request by settlement ID
 
-Send a `POST` to `/settlements/:id/payments/report`, containing the `checkout-headers` and the following payload:
+`HTTP POST /settlements/:id/payments/report` results in a callback containing the payment report.
 
 field | info | required | default | description
 ----- | ---- | -------- | ------- | -----------
@@ -341,9 +341,7 @@ Status code | Explanation
 
 ## Settlements
 
-Checkout provides an endpoint for fetching settlement IDs.
-
-Make a `GET` request to `/settlements` containing the `checkout-headers`. Maximum of 100 settlement IDs are returned, starting from the most recent settelements. The endpoint supports the following `query`-parameters:
+`HTTP GET /settlements` returns merchant's settlement IDs. Maximum of 100 settlement IDs are returned, starting from the most recent settelements. The endpoint supports the following `query`-parameters:
 
 field | required | description
 ----- | -------- | -----------
