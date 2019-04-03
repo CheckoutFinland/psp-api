@@ -303,7 +303,7 @@ The endpoint supports specifying whether the result will be delivered as a JSON 
 
 ### Payment report request
 
-Send a `POST` to `/payments/report`, containing the `checkout-headers` and the following payload:
+`HTTP POST /payments/report` results in a callback containing the payment report.
 
 field | info | required | default | description
 ----- | ---- | -------- | ------- | -----------
@@ -324,7 +324,7 @@ Status code | Explanation
 
 ### Payment report request by settlement ID
 
-Send a `POST` to `/settlements/:id/payments/report`, containing the `checkout-headers` and the following payload:
+`HTTP POST /settlements/:id/payments/report` results in a callback containing the payment report.
 
 field | info | required | default | description
 ----- | ---- | -------- | ------- | -----------
@@ -341,16 +341,19 @@ Status code | Explanation
 
 ## Settlements
 
-Checkout provides an endpoint for fetching settlement IDs.
-
-Make a `GET` request to `/settlements` containing the `checkout-headers`. Maximum of 100 settlement IDs are returned, starting from the most recent settelements. The endpoint supports the following `query`-parameters:
+`HTTP GET /settlements` returns merchant's settlement IDs. Maximum of 100 settlement IDs are returned, starting from the most recent settelements. The endpoint supports the following `query`-parameters:
 
 field | required | description
 ----- | -------- | -----------
 startDate | <center></center> | Only settlements created after on on this date will be included in the response. Must follow the following format: `YYYY-MM-DD`.
-endate | <center></center> | Only settlements created before or on this date will be included in the response. Must follow the following format: `YYYY-MM-DD`.
+endDate | <center></center> | Only settlements created before or on this date will be included in the response. Must follow the following format: `YYYY-MM-DD`.
 bankReference | <center></center> | Only include settlements that were settled with this bank reference.
 limit | <center></center> | Limit the number of settlement IDs returned. `Limit 1` will only include the most recent settlement.
+
+Example
+```
+/settlements?bankReference=kissa&startDate=2019-01-01&endDate=2019-02-01
+```
 
 #### Response
 

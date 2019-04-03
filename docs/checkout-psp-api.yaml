@@ -294,8 +294,7 @@ paths:
       summary: Refund a payment
       description: |
         Refund a payment by transaction ID. Refund operation is asynchronous. Refund request is validated,
-        and if the refund can be done a 201 is returned. When the refund is actually performed, the callback
-        URL will be called with RefundCallbackPayload
+        and if the refund can be done a 201 is returned.
       operationId: refundPaymentByTransactionId
       parameters:
         - name: transactionId
@@ -639,6 +638,25 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+      callbacks:
+        reportReady:
+          '{$request.body#/callbackUrl}':
+            post:
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/PaymentReportCallbackJSON'
+                  application/csv:
+                    schema:
+                      description: The report as a CSV file
+                      type: string
+              responses:   # Expected responses to the callback message
+                '200':
+                  description: Your server returns this code if it can accept the callback
+                default:
+                  description: Your server can not handle callback - will result in re-sending of the report to the given callback url.
   /settlements/{settlementId}/payments/report:
     post:
       tags:
@@ -711,7 +729,25 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-
+      callbacks:
+        reportReady:
+          '{$request.body#/callbackUrl}':
+            post:
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/PaymentReportCallbackJSON'
+                  application/csv:
+                    schema:
+                      description: The report as a CSV file
+                      type: string
+              responses:   # Expected responses to the callback message
+                '200':
+                  description: Your server returns this code if it can accept the callback
+                default:
+                  description: Your server can not handle callback - will result in re-sending of the report to the given callback url.
 components:
   schemas:
     # Payment request payload
