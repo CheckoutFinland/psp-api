@@ -295,6 +295,70 @@ Status code | Explanation
 400 | Something went wrong
 422 | Used payment method provider does not support email refunds
 
+## Payment Reports
+
+Checkout provides an API for asynchronous payment report generation. A merchant can view their payments in this report. A call to the endpoint must contain a callback URL where the payment report will be delivered to once it has been generated.
+
+The endpoint supports specifying whether the result will be delivered as a JSON payload or as a CSV file. It also supports field filtering and some result filtering.
+
+### Payment report request
+
+Send a `POST` to `/payments/report`, containing the `checkout-headers` and the following payload:
+
+field | info | required | default | description
+----- | ---- | -------- | ------- | -----------
+requestType | string | <center>x</center> | | In which format will the response be delivered in, currently supported are `json` and `csv`.
+callbackUrl | string | <center>x</center> | | The url the system will send the report to as a `POST` request.
+paymentStatus | string | <center></center> | `default` | How are the payments statuses filtered. `default` includes both paid and settled payments, `paid` includes paid payments that have not been settled yet, `all` includes everything, for example unpaid or failed payments and `settled` only includes settled payments.
+startDate | string | <center></center> | | Only trades created after this datetime will be included in the report. Expects date as `ISO` format.
+endDate | string | <center></center> | | Only trades created before this datetime will be included in the report. Expects date as `ISO` format.
+limit | integer | <center></center> | `50000` | Limit the amount of payments included in the report. Maximum 50000.
+reportFields | string[] | <center></center> | all | Limit the fields that will be included in the report. Leaving this empty will include all fields. Possible values: `created`, `amount`, `status`, `firstname`, `familyname`, `description`, `reference`, `paymentMethod`, `stamp`, `address`, `postcode`, `postoffice`, `country`, `checkoutReference`, `archiveNumber`, `settlementId`, `settlementDate`, `refundAmount`, `fee` and `provision`.
+
+#### Response
+
+Status code | Explanation
+------------|------------
+200 | Payment report generation initiated successfully
+400 | Something went wrong
+
+### Payment report request by settlement ID
+
+Send a `POST` to `/settlements/:id/payments/report`, containing the `checkout-headers` and the following payload:
+
+field | info | required | default | description
+----- | ---- | -------- | ------- | -----------
+requestType | string | <center>x</center> | | In which format will the response be delivered in, currently supported are `json` and `csv`.
+callbackUrl | string | <center>x</center> | | The url the system will send the report to as a `POST` request.
+reportFields | string[] | <center></center> | all | Limit the fields that will be included in the report. Leaving this empty will include all fields. Possible values: `created`, `amount`, `status`, `firstname`, `familyname`, `description`, `reference`, `paymentMethod`, `stamp`, `address`, `postcode`, `postoffice`, `country`, `checkoutReference`, `archiveNumber`, `settlementId`, `settlementDate`, `refundAmount`, `fee` and `provision`.
+
+#### Response
+
+Status code | Explanation
+------------|------------
+200 | Payment report generation initiated successfully
+400 | Something went wrong
+
+## Settlements
+
+Checkout provides an endpoint for fetching settlement IDs.
+
+Make a `GET` request to `/settlements` containing the `checkout-headers`. Maximum of 100 settlement IDs are returned, starting from the most recent settelements. The endpoint supports the following `query`-parameters:
+
+field | required | description
+----- | -------- | -----------
+startDate | <center></center> | Only settlements created after on on this date will be included in the response. Must follow the following format: `YYYY-MM-DD`.
+endate | <center></center> | Only settlements created before or on this date will be included in the response. Must follow the following format: `YYYY-MM-DD`.
+bankReference | <center></center> | Only include settlements that were settled with this bank reference.
+limit | <center></center> | Limit the number of settlement IDs returned. `Limit 1` will only include the most recent settlement.
+
+#### Response
+
+Status code | Explanation
+------------|------------
+200 | Settlement IDs fetched successfully
+400 | Something went wrong
+
 ## Merchants
 
 Actions related to the merchant object are mapped to the `/merchant` API endpoint.

@@ -15,6 +15,10 @@ servers:
 tags:
 - name: payments
   description: Create, fetch or refund payments
+- name: payment reports
+  description: Request a payment report
+- name: settlements
+  description: List settlement IDs
 paths:
   /payments:
     get:
@@ -460,6 +464,254 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /settlements:
+    get:
+      tags:
+        - settlements
+      summary: List settlement IDs
+      description: |
+        Returns settlement IDs
+      operationId: listSettlementIds
+      parameters:
+        - name: startDate
+          in: query
+          description: Filter out settlements created before given date.
+          example: '2019-01-01'
+          required: false
+          style: form
+          schema:
+            type: string
+            format: date
+        - name: endDate
+          in: query
+          description: Filter out settlements created after given date.
+          example: '2019-01-01'
+          required: false
+          style: form
+          schema:
+            type: string
+            format: date
+        - name: bankReference
+          in: query
+          description: Only include settlements with the given bank reference
+          example: '1234567890-1111'
+          required: false
+          style: form
+          maxLength: 20
+          schema:
+            type: string
+        - name: limit
+          in: query
+          description: Limit the number of settlement IDs returned
+          example: '1'
+          required: false
+          style: form
+          schema:
+            type: string
+            format: integer
+        - name: checkout-account
+          in: header
+          description: Merchant ID
+          example: 375917
+          schema:
+            type: integer
+            format: int32
+        - name: checkout-algorithm
+          in: header
+          description: HMAC algorithm
+          example: sha512
+          schema:
+            type: string
+            enum:
+            - sha256
+            - sha512
+        - name: checkout-method
+          in: header
+          description: HTTP method of the request
+          example: POST
+          schema:
+            type: string
+            enum:
+            - GET
+            - POST
+        - name: checkout-timestamp
+          in: header
+          description: Current timestamp in ISO 8601 format
+          example: '2018-08-08T10:10:59Z'
+          schema:
+            type: string
+            format: date-time
+        - name: signature
+          in: header
+          description: HMAC signature calculated over the request headers and payload
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of settlement IDs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SettlementIdItem'
+        '400':
+          description: Invalid list settlements request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /payments/report:
+    post:
+      tags:
+      - payment reports
+      summary: Request a payment report
+      description: |
+        Request a report of payments to be sent to the given callback url. Callback schema defined in PaymentReportCallbackJSON.
+      operationId: requestPaymentReport
+      parameters:
+        - name: checkout-account
+          in: header
+          description: Merchant ID
+          example: 375917
+          schema:
+            type: integer
+            format: int32
+        - name: checkout-algorithm
+          in: header
+          description: HMAC algorithm
+          example: sha512
+          schema:
+            type: string
+            enum:
+            - sha256
+            - sha512
+        - name: checkout-method
+          in: header
+          description: HTTP method of the request
+          example: POST
+          schema:
+            type: string
+            enum:
+            - GET
+            - POST
+        - name: checkout-timestamp
+          in: header
+          description: Current timestamp in ISO 8601 format
+          example: '2018-08-08T10:10:59Z'
+          schema:
+            type: string
+            format: date-time
+        - name: signature
+          in: header
+          description: HMAC signature calculated over the request headers and payload
+          schema:
+            type: string
+      requestBody:
+        description: Payment body payload
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentReportRequest'
+      responses:
+        '200':
+          description: Payment report request response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentReportRequest'
+        '400':
+          description: Invalid payment report request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /settlements/{settlementId}/payments/report:
+    post:
+      tags:
+      - payment reports
+      summary: Request a report of payments contained in a given settlement
+      description: |
+        Request a report of payments contained in a given settlement to be sent to the given callback url. Callback schema defined in PaymentReportCallbackJSON.
+      operationId: requestPaymentReportBySettlementId
+      parameters:
+        - name: checkout-account
+          in: header
+          description: Merchant ID
+          example: 375917
+          schema:
+            type: integer
+            format: int32
+        - name: checkout-algorithm
+          in: header
+          description: HMAC algorithm
+          example: sha512
+          schema:
+            type: string
+            enum:
+            - sha256
+            - sha512
+        - name: checkout-method
+          in: header
+          description: HTTP method of the request
+          example: POST
+          schema:
+            type: string
+            enum:
+            - GET
+            - POST
+        - name: checkout-timestamp
+          in: header
+          description: Current timestamp in ISO 8601 format
+          example: '2018-08-08T10:10:59Z'
+          schema:
+            type: string
+            format: date-time
+        - name: signature
+          in: header
+          description: HMAC signature calculated over the request headers and payload
+          schema:
+            type: string
+      requestBody:
+        description: Payment body payload
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentReportBySettlementIdRequest'
+      responses:
+        '200':
+          description: Payment report request response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentReportRequestResponse'
+        '400':
+          description: Invalid payment report request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
 components:
   schemas:
     # Payment request payload
@@ -862,6 +1114,209 @@ components:
     #       type: string
     #       format: int32
     #       description: Checkout reference for the refund
+
+    SettlementIdItem:
+      type: object
+      description: Settlement ID
+      required:
+        - id
+        - createdAt
+        - settledAt
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 123456
+          description: ID of a settlement
+        createdAt:
+          type: string
+          format: datetime
+          example: '2019-01-01T00:00:00+02:00'
+          description: When the settlement was formed
+        settledAt:
+          type: string
+          format: datetime
+          example: '2019-01-02T04:00:00+02:00'
+          description: When the settlement was paid
+
+    PaymentReportRequest:
+      type: object
+      description: Payment report request
+      required:
+        - requestType
+        - callbackUrl
+      properties:
+        requestType:
+          type: string
+          example: json
+          description: In which format is the report delivered in
+          enum:
+            - json
+            - csv
+        callbackUrl:
+          type: string
+          format: url
+          example: https://example.com/payment-reports/
+          description: To which URL is the report delivered to
+        paymentStatus:
+          type: string
+          example: default
+          description: How are the payments statuses filtered. "Default" includes both paid and settled payments. "Paid" includes paid payments that have not been settled yet. "All" includes everything, for example unpaid or failed payments.
+          enum:
+            - default
+            - all
+            - paid
+            - settled
+          default: default
+        startDate:
+          type: string
+          format: datetime
+          example: '2019-01-01T18:00:00'
+          description: Filter out payments created before given datetime.
+        endDate:
+          type: string
+          format: datetime
+          example: '2019-01-02T20:00:00'
+          description: Filter out payments created after given datetime.
+        limit:
+          type: integer
+          example: 1000
+          description: Limit the amount of payments included in the report.
+          maximum: 50000
+          default: 50000
+        reportFields:
+          type: array
+          description: Limit the amount of fields included in the report. By default all fields are included.
+          items:
+            type: string
+            enum: [created, amount, status, firstname, familyname, description, reference, paymentMethod, stamp,
+                  address, postcode, postoffice, country, checkoutReference, archiveNumber, settlementId,
+                  settlementDate, refundAmount, fee, provision]
+
+    PaymentReportBySettlementIdRequest:
+      type: object
+      description: Payment report request
+      required:
+        - requestType
+        - callbackUrl
+      properties:
+        requestType:
+          type: string
+          example: json
+          description: In which format is the report delivered in
+          enum:
+            - json
+            - csv
+        callbackUrl:
+          type: string
+          format: url
+          example: https://example.com/payment-reports/
+          description: To which URL is the report delivered to
+        reportFields:
+          type: array
+          description: Limit the amount of fields included in the report. By default all fields are included.
+          items:
+            type: string
+            enum: [created, amount, status, firstname, familyname, description, reference, paymentMethod, stamp,
+                  address, postcode, postoffice, country, checkoutReference, archiveNumber, settlementId,
+                  settlementDate, refundAmount, fee, provision]
+
+    PaymentReportRequestResponse:
+      required:
+        - requestId
+      properties:
+        requestId:
+          type: string
+          description: Request id
+
+    PaymentReportCallbackJSON:
+      description: The returned fields can be filtered out by specifying "reportFields" parameter
+      properties:
+        created:
+          type: string
+          format: HH:mm
+          description: Hour and minute of the payment creation
+          example: "11:31"
+        amount:
+          type: integer
+          description: Payment amount in cents
+          example: 1590
+        status:
+          type: string
+          enum: [New, Paid, waiting for approval, Cancelled, Timeout, Halted, Delayed, Paid and settled]
+          description: Payment status
+          example: Paid
+        firstname:
+          type: string
+          description: First name
+          example: John
+        familyname:
+          type: string
+          description: Last name
+          example: Doe
+        description:
+          type: string
+          format: datetime
+          description: Payment description
+          example: Cat food and rubber boots
+        reference:
+          type: string
+          description: Merchant's reference
+          example: 12345-abc
+        paymentMethod:
+          type: string
+          description: Payment method
+          example: Osuuspankki
+        stamp:
+          type: string
+          description: Payment Stamp
+          example: CO~1554204687711
+        address:
+          type: string
+          description: Delivery address
+          example: Hämeenkatu 16
+        postcode:
+          type: string
+          description: Postal code
+          example: "33100"
+        postoffice:
+          type: string
+          description: Post office
+          example: Tampere
+        country:
+          type: string
+          description: Country of delivery
+          example: Finland
+        checkoutReference:
+          type: string
+          description: Checkout reference
+          example: '1031751'
+        archiveNumber:
+          type: string
+          description: Archive number
+          example: '81295824808952395'
+        settlementId:
+          type: string
+          description: Settlement (report) id
+          example: 1235678
+        settlementDate:
+          type: string
+          description: When the payment is settled
+          example: "2019-04-04"
+        refundAmount:
+          type: string
+          description: Refund amount in cents
+          example: 0
+        fee:
+          type: number
+          format: float
+          description: Transaction fee in Euros
+          example: 0.12
+        provision:
+          type: number
+          format: float
+          description: Provision amount in Euros
+          example: 0.024
 
     Error:
       required:
