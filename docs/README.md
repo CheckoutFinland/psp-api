@@ -380,10 +380,3 @@ Example
 ```
 /merchants/payment-providers?amount=1000
 ```
-
-## Upcoming features
-
-* Single API refunds (fallback to email refund if requested) (Q1/2019)
-* Token payments (Q1/2019)
-* Settlement querying (Q1/2019)
-* Asynchronous refunds (Q1/2019)
