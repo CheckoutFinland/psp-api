@@ -6,10 +6,6 @@ The payment methods that can be tested without real money transactions have been
 
 ## Test credentials
 
-<p class="tip">
-  Handelsbanken, POP, Säästöpankki, and OmaSP test credentials do not work at the moment. Samlink has identified the problem but fix schedule is not known.
-</p>
-
 `checkout-provider` values are provided too, but they are subject to change without notice.
 
 Provider | `checkout-provider` | Credentials
