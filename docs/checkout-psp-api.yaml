@@ -946,8 +946,8 @@ components:
           description: County or top-level geographic subdivision
         country:
           type: string
-          example: Sweden
-          description: Country or country code
+          example: SE
+          description: Alpha-2 country code
 
     PaymentRequestResponse:
       type: object

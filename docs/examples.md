@@ -47,14 +47,14 @@ You can find example payloads and responses for all the requests, as well as [co
     "postalCode": "00100",
     "city": "Luleå",
     "county": "Norrbotten",
-    "country": "Sweden"
+    "country": "SE"
   },
   "invoicingAddress": {
     "streetAddress": "Fake street 123",
     "postalCode": "00100",
     "city": "Luleå",
     "county": "Norrbotten",
-    "country": "Sweden"
+    "country": "SE"
   },
   "redirectUrls": {
     "success": "https://ecom.example.org/success",
@@ -75,7 +75,7 @@ You can find example payloads and responses for all the requests, as well as [co
   "href": "https://api.checkout.fi/pay/80621392",
   "providers": [
     {
-      "url": "https://api.checkout.fi/payments/80621392/pivo/redirect",
+      "url": "https://maksu.pivo.fi/api/payments",
       "icon": "https://payment.checkout.fi/static/img/pivo_140x75.png",
       "svg": "https://payment.checkout.fi/static/img/payment-methods/pivo-siirto.svg",
       "name": "Pivo",
@@ -133,7 +133,7 @@ You can find example payloads and responses for all the requests, as well as [co
       ]
     },
     {
-      "url": "https://api.checkout.fi/payments/80621392/masterpass/redirect",
+      "url": "https://v1.api.paymenthighway.io/form/view/masterpass",
       "icon": "https://payment.checkout.fi/static/img/masterpass_arrow_140x75.png",
       "svg": "https://payment.checkout.fi/static/img/payment-methods/masterpass.svg",
       "name": "Masterpass",
