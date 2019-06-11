@@ -1369,7 +1369,7 @@ components:
           type: number
           format: float
           description: Payment method commission amount in Euros
-          example: 44
+          example: 0.8
         shopInShopCommissionVatPercentage:
           type: number
           format: float
@@ -1379,7 +1379,7 @@ components:
           type: number
           format: float
           description: Payment method commission VAT amount in Euros
-          example: 0.02
+          example: 0.192
 
     Error:
       required:
