@@ -12,8 +12,8 @@ You can find example payloads and responses for all the requests, as well as [co
 
 ```json
 {
-  "stamp": 29858472952,
-  "reference": 9187445,
+  "stamp": "29858472953",
+  "reference": "9187445",
   "amount": 1590,
   "currency": "EUR",
   "language": "FI",
@@ -25,36 +25,32 @@ You can find example payloads and responses for all the requests, as well as [co
       "productCode": "#927502759",
       "deliveryDate": "2018-03-07",
       "description": "Cat ladder",
-      "category": "shoe",
-      "merchant": 375917,
-      "stamp": 29858472952,
-      "reference": 9187445,
-      "commission": {
-        "merchant": "string",
-        "amount": 0
-      }
+      "category": "Pet supplies",
+      "merchant": "375917",
+      "stamp": "29858472952",
+      "reference": "9187445"
     }
   ],
   "customer": {
-    "email": "john.doe@example.org",
-    "firstName": "John",
-    "lastName": "Doe",
-    "phone": 358501234567,
-    "vatId": "FI02454583"
+    "email": "erja.esimerkki@example.org",
+    "firstName": "Erja",
+    "lastName": "Esimerkki",
+    "phone": "+358501234567",
+    "vatId": "FI12345671"
   },
   "deliveryAddress": {
-    "streetAddress": "Fake street 123",
-    "postalCode": "00100",
-    "city": "Luleå",
-    "county": "Norrbotten",
-    "country": "SE"
+    "streetAddress": "Eteläpuisto 2 C",
+    "postalCode": "33200",
+    "city": "Tampere",
+    "county": "Pirkanmaa",
+    "country": "FI"
   },
   "invoicingAddress": {
-    "streetAddress": "Fake street 123",
-    "postalCode": "00100",
-    "city": "Luleå",
-    "county": "Norrbotten",
-    "country": "SE"
+    "streetAddress": "Gebhardinaukio 1",
+    "postalCode": "00510",
+    "city": "Helsinki",
+    "county": "Uusimaa",
+    "country": "FI"
   },
   "redirectUrls": {
     "success": "https://ecom.example.org/success",
