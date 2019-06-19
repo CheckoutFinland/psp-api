@@ -301,6 +301,8 @@ Checkout provides an API for asynchronous payment report generation. A merchant 
 
 The endpoint supports specifying whether the result will be delivered as a JSON payload or as a CSV file. It also supports field filtering and some result filtering.
 
+A Shop-in-Shop aggregate merchant can also fetch its submerchant's payment report.
+
 ### Payment report request
 
 `HTTP POST /payments/report` results in a callback containing the payment report.
@@ -313,7 +315,8 @@ paymentStatus | string | <center></center> | `default` | How are the payments st
 startDate | string | <center></center> | | Only trades created after this datetime will be included in the report. Expects date as `ISO` format.
 endDate | string | <center></center> | | Only trades created before this datetime will be included in the report. Expects date as `ISO` format.
 limit | integer | <center></center> | `50000` | Limit the amount of payments included in the report. Maximum 50000.
-reportFields | string[] | <center></center> | all | Limit the fields that will be included in the report. Leaving this empty will include all fields. Possible values: `created`, `amount`, `status`, `firstname`, `familyname`, `description`, `reference`, `paymentMethod`, `stamp`, `address`, `postcode`, `postoffice`, `country`, `checkoutReference`, `archiveNumber`, `settlementId`, `settlementDate`, `refundAmount`, `fee` and `provision`.
+reportFields | string[] | <center></center> | all | Limit the fields that will be included in the report. Leaving this empty will include all fields. Possible values: `entryDate`,`created`,`amount`,`status`,`firstname`,`familyname`,`description`,`reference`,`paymentMethod`,`stamp`,`address`,`postcode`,`postoffice`,`country`,`checkoutReference`,`archiveNumber`,`payerName`,`settlementId`,`settlementDate`,`originalTradeReference`,`vatPercentage`,`vatAmount`,`paymentMethodFee`,`paymentMethodCommission`,`shopInShopCommission`,`shopInShopCommissionVatPercentage` and `shopInShopCommissionVatAmount`
+submerchant | integer | <center></center> | | Get submerchant's payment report (aggregate only)
 
 #### Response
 
@@ -321,6 +324,38 @@ Status code | Explanation
 ------------|------------
 200 | Payment report generation initiated successfully
 400 | Something went wrong
+
+#### Callback example
+
+```json
+[ { entryDate: '19-06-2019',
+    created: '22:41',
+    amount: 25.55,
+    status: 'Paid',
+    firstname: 'Mikko',
+    familyname: 'Mallikas',
+    description: 'Webshop test payment',
+    reference: '12345-545454',
+    paymentMethod: 'Osuuspankki',
+    stamp: '11-1560973275',
+    address: 'Mallikkaankatu 1',
+    postcode: '33100',
+    postoffice: 'Tampere',
+    country: 'Suomi',
+    checkoutReference: '1255939828',
+    archiveNumber: '201906195937310000',
+    payerName: 'MALLIKASMIK',
+    originalTradeReference: null,
+    vatPercentage: 24,
+    vatAmount: 6.132
+    paymentMethodFee: 0.12,
+    paymentMethodCommission: 0.024,
+    settlementId: 123456,
+    settlementDate: '31-06-2019',
+    shopInShopCommission: 0.8,
+    shopInShopCommissionVatPercentage: 24,
+    shopInShopCommissionVatAmount: 0.192 } ]
+```
 
 ### Payment report request by settlement ID
 
