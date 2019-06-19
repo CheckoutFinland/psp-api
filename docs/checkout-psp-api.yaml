@@ -625,7 +625,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PaymentReportRequest'
+                $ref: '#/components/schemas/PaymentReportRequestResponse'
         '400':
           description: Invalid payment report request
           content:
@@ -1225,9 +1225,10 @@ components:
           description: Limit the amount of fields included in the report. By default all fields are included.
           items:
             type: string
-            enum: [created, amount, status, firstname, familyname, description, reference, paymentMethod, stamp,
-                  address, postcode, postoffice, country, checkoutReference, archiveNumber, settlementId,
-                  settlementDate, refundAmount, fee, provision]
+            enum: [entryDate, created, amount, status, firstname, familyname, description, reference, paymentMethod,
+                   stamp, address, postcode, postoffice, country, checkoutReference, archiveNumber, payerName,
+                   settlementId, settlementDate, refundAmount, paymentMethodFee, paymentMethodCommission,
+                   shopInShopCommission, shopInShopCommissionVatPercentage, shopInShopCommissionVatAmount]
 
     PaymentReportBySettlementIdRequest:
       type: object
@@ -1253,9 +1254,10 @@ components:
           description: Limit the amount of fields included in the report. By default all fields are included.
           items:
             type: string
-            enum: [created, amount, status, firstname, familyname, description, reference, paymentMethod, stamp,
-                  address, postcode, postoffice, country, checkoutReference, archiveNumber, settlementId,
-                  settlementDate, refundAmount, fee, provision]
+            enum: [entryDate, created, amount, status, firstname, familyname, description, reference, paymentMethod,
+                   stamp, address, postcode, postoffice, country, checkoutReference, archiveNumber, payerName,
+                   settlementId, settlementDate, refundAmount, paymentMethodFee, paymentMethodCommission,
+                   shopInShopCommission, shopInShopCommissionVatPercentage, shopInShopCommissionVatAmount]
 
     PaymentReportRequestResponse:
       required:
@@ -1268,15 +1270,20 @@ components:
     PaymentReportCallbackJSON:
       description: The returned fields can be filtered out by specifying "reportFields" parameter
       properties:
+        entryDate:
+          type: string
+          format: DD-MM-YYYY
+          description: When the payment was paid or initialized
+          example: "11-06-2019"
         created:
           type: string
           format: HH:mm
           description: Hour and minute of the payment creation
           example: "11:31"
         amount:
-          type: integer
-          description: Payment amount in cents
-          example: 1590
+          type: float
+          description: Payment amount in Euros
+          example: 15.95
         status:
           type: string
           enum: [New, Paid, waiting for approval, Cancelled, Timeout, Halted, Delayed, Paid and settled]
@@ -1331,28 +1338,48 @@ components:
           type: string
           description: Archive number
           example: '81295824808952395'
-        settlementId:
+        payerName:
           type: string
+          description: Name from bank
+          example: 'DOEJOHN'
+        settlementId:
+          type: number
           description: Settlement (report) id
           example: 1235678
         settlementDate:
           type: string
           description: When the payment is settled
+          format: DD-MM-YYYY
           example: "2019-04-04"
-        refundAmount:
+        originalTradeReference:
           type: string
-          description: Refund amount in cents
-          example: 0
-        fee:
+          description: Merchant's reference of the original payment in case of refund
+          example: 12345-abc
+        paymentMethodFee:
           type: number
           format: float
-          description: Transaction fee in Euros
+          description: Payment method fee in Euros
           example: 0.12
-        provision:
+        paymentMethodCommission:
           type: number
           format: float
-          description: Provision amount in Euros
+          description: Payment method commission amount in Euros
           example: 0.024
+        shopInShopCommission:
+          type: number
+          format: float
+          description: Payment method commission amount in Euros
+          example: 0.8
+        shopInShopCommissionVatPercentage:
+          type: number
+          format: float
+          description: Payment method commission VAT percentage
+          example: 24
+        shopInShopCommissionVatAmount:
+          type: number
+          format: float
+          description: Payment method commission VAT amount in Euros
+          example: 0.192
 
     Error:
       required:
