@@ -1226,9 +1226,14 @@ components:
           items:
             type: string
             enum: [entryDate, created, amount, status, firstname, familyname, description, reference, paymentMethod,
-                   stamp, address, postcode, postoffice, country, checkoutReference, archiveNumber, payerName,
-                   settlementId, settlementDate, refundAmount, paymentMethodFee, paymentMethodCommission,
-                   shopInShopCommission, shopInShopCommissionVatPercentage, shopInShopCommissionVatAmount]
+                  stamp, address, postcode, postoffice, country, checkoutReference, archiveNumber, payerName,
+                  settlementId, settlementDate, originalTradeReference, vatPercentage, vatAmount, paymentMethodFee,
+                  paymentMethodCommission, shopInShopCommission, shopInShopCommissionVatPercentage,
+                  shopInShopCommissionVatAmount]
+        submerchant:
+          type: integer
+          example: 695874
+          description: Get submerchant's payment report
 
     PaymentReportBySettlementIdRequest:
       type: object
@@ -1255,9 +1260,14 @@ components:
           items:
             type: string
             enum: [entryDate, created, amount, status, firstname, familyname, description, reference, paymentMethod,
-                   stamp, address, postcode, postoffice, country, checkoutReference, archiveNumber, payerName,
-                   settlementId, settlementDate, refundAmount, paymentMethodFee, paymentMethodCommission,
-                   shopInShopCommission, shopInShopCommissionVatPercentage, shopInShopCommissionVatAmount]
+                  stamp, address, postcode, postoffice, country, checkoutReference, archiveNumber, payerName,
+                  settlementId, settlementDate, originalTradeReference, vatPercentage, vatAmount, paymentMethodFee,
+                  paymentMethodCommission, shopInShopCommission, shopInShopCommissionVatPercentage,
+                  shopInShopCommissionVatAmount]
+        submerchant:
+          type: integer
+          example: 695874
+          description: Get submerchant's payment report
 
     PaymentReportRequestResponse:
       required:
@@ -1355,6 +1365,16 @@ components:
           type: string
           description: Merchant's reference of the original payment in case of refund
           example: 12345-abc
+        vatPercentage:
+          type: number
+          format: float
+          description: Payment VAT percentage
+          example: 24
+        vatAmount:
+          type: number
+          format: float
+          description: Payment VAT amount in Euros
+          example: 0.192
         paymentMethodFee:
           type: number
           format: float
