@@ -219,11 +219,23 @@ field | info |  description
 `checkout-stamp` | string | Merchant provided stamp
 `checkout-reference` | string | Merchant provided reference
 `checkout-transaction-id` | string | Checkout provided transaction ID.<br><br>**Important:** Store the value. It is needed for other actions such as refund or payment information query
-`checkout-status` | string | Payment status, either `ok`, `pending`, or `fail`. Pending transactions should eventually be reported as successful or failed via the callbacks, if provided, and using the redirect URLs.
+`checkout-status` | string | Payment status, either `ok`, `pending`, `delayed`, or `fail`. See [statuses](#statuses) section for more information.
 `checkout-provider` | string | The payment method provider the client used. Current values are documented on [providers tab](/payment-method-providers#test-credentials). The values are subject to change without notice.
 `signature` | string | HMAC signature calculated from other parameter
 
 Merchant must check that signature is valid. Signature is calculated as described [above](#redirect-and-callback-url-signing). **Do not** implement the HMAC validation with hardcoded query string parameters since new ones may be added later. Instead, filter parameters by name (include all that begin with `checkout-`), then sort, and calculate the HMAC.
+
+##### Statuses
+
+The currently possible payment statuses are:
+
+status | description
+-------|------------
+`ok` | Payment was accepted by the provider and confirmed successfully
+`fail` | Payment was cancelled by the user or rejected by the provider
+`pending` | Payment was initially approved by the provider but further processing is needed. `pending` payments are reported as either `ok` or `fail` via callbacks, if provided, and using the redirect URLs.
+`delayed` | A rare status related to a single payment method that is not generally enabled. May take days to complete. If completed, will be reported as `ok` via the callback *or* the redirect URL. This can be handled the same way as `pending`.
+
 
 ### Get
 
