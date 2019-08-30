@@ -291,7 +291,7 @@ Status code | Explanation
 400 | Something went wrong
 422 | Used payment method provider does not support refunds
 
-Note, that at the moment HTTP 400 may occur also for 3rd party reasons - eg. bacause Nordea test API does not support refunds.
+Note, that at the moment HTTP 400 may occur also for 3rd party reasons - eg. bacause Nordea test API does not support refunds. See all provider limitations from [providers tab](/payment-method-providers#refunds).
 
 ### Email refund
 
