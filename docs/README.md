@@ -82,9 +82,11 @@ checkout-timestamp:2018-07-05T11:19:25.950Z\n
 REQUEST BODY
 ```
 
-In addition to headers included in HMAC calculation `cof-plugin-version` header can be provided. Checkout kindly requests that ecommerce platform plugin or marketplace integrations would set the header for both statistical and customer service reasons.
-
 See also code examples of [HMAC calculation in node.js](/examples#hmac-calculation-node-js) and [HMAC calculation in PHP](/examples#hmac-calculation-php).
+
+#### For plugin developers
+
+In addition to headers included in HMAC calculation `cof-plugin-version` header can be provided. This is optional, but highly recommended for customer service and debugging reasons.
 
 ### Redirect and callback URL signing
 
@@ -140,6 +142,7 @@ deliveryAddress | [Address](#address) | <center>-</center> | Delivery address
 invoicingAddress | [Address](#address) | <center>-</center> | Invoicing address
 redirectUrls | [CallbackUrl](#callbackurl) | <center>x</center> | Where to redirect browser after a payment is paid or cancelled.
 callbackUrls | [CallbackUrl](#callbackurl) | <center>-</center> | Which url to ping after this payment is paid or cancelled
+callbackDelay | number | <center>-</center> | Callback URL polling delay in seconds. If callback URLs are given, the call can be delayed up to 900 seconds. Default: 0
 
 ##### Item
 
@@ -195,6 +198,38 @@ merchant | string | <center>x</center> | 695874 | Merchant who gets the commissi
 amount | integer | <center>x</center> | 250 | Amount of commission in currency's minor units, eg. for Euros use cents. VAT not applicable.
 
 See [an example payload and response](/examples#create)
+
+#### Response
+
+The response JSON object contains the transaction ID of the payment and list of provider forms. It is highly recommended to render the icons and forms in the shop, but if this is not possible the response also contains a link to the hosted payment gateway. The response contains also HMAC verification headers and `cof-request-id` header. Storing or logging the request ID header is advised for possible debug needs.
+
+field | type | description
+------|------|------------
+transactionId | string | Assigned transaction ID for the payment
+href | string | URL to hosted payment gateway. Redirect user here if the payment forms cannot be rendered directly inside the web shop.
+providers | [Provider](#provider) | Array of providers. Render these elements as HTML forms
+
+##### Provider
+
+Each provider describes a HTML form which the customer browser submits when performing the payment. Rendering the forms embedded in the web shop is the preferred way for the payment flow.
+
+field | type | description
+------|------|------------
+url | string | Form target URL. Use `POST` as method.
+icon | string | URL to PNG version of the provider icon
+svg | string | URL to SVG version of the provider icon. Using the SVG icon is preferred.
+group | string | Provider group. Provider groups allow presenting same type of providers in separate groups which usually makes it easier for the customer to select a payment method. Groups are: `mobile`, `bank`, `creditcard`, `credit`, and `other`.
+name | string | Name of the provider.
+parameters | [FormField](#formfield) | Array of form fields
+
+##### FormField
+
+The form field values are rendered as hidden `<input>` elements in the form. See form rendering [example](/examples#payment-provider-form-rendering)
+
+field | type | description
+------|------|------------
+name | string | Name of the input
+value | string | Value of the input
 
 #### Redirect and callback URL parameters
 
@@ -261,8 +296,8 @@ status | description
 
 field | info | description
 ----- | ---- | -----------
-amount | integer | Total amount to refund, in currency's minor units
-email | string | Email address. Accepted only if using [email refund API](#email-refund)
+amount | integer | Total amount to refund, in currency's minor units (ie. EUR cents)
+email | string | Refund recipient email address. Some payment methods [do not support API refunds](/payment-method-providers#refunds), and some have refund related limitations. If email address is given, email refund will be executed as a fallback method if API refund is unsuccessful, or as the default method if the provider does not support API refunds.
 items | [RefundItem](#refunditem)[] | Array of items to refund. Use only for Shop-in-Shop payments.
 callbackUrls | [CallbackUrl](#callbackurl) | Which urls to ping after the refund has been processed. The callback is called with `HTTP GET` and with the same query string parameters as in the [payment request callback](#redirect-and-callback-url-parameters). The server should respond with `HTTP 20x`.
 
@@ -270,7 +305,7 @@ callbackUrls | [CallbackUrl](#callbackurl) | Which urls to ping after the refund
 
 field | info | description
 ----- | ---- | -----------
-amount | integer | Total amount to refund this item, in currency's minor units
+amount | integer | Total amount to refund this item, in currency's minor units (ie. EUR cents)
 stamp | string | Unique stamp of the refund item
 commission | [RefundCommission](#RefundCommission) | Shop-in-Shop commission return. In refunds, the given amount is returned from the given commission account to the item merchant account.
 
@@ -293,11 +328,6 @@ Status code | Explanation
 
 Note, that at the moment HTTP 400 may occur also for 3rd party reasons - eg. bacause Nordea test API does not support refunds. See all provider limitations from [providers tab](/payment-method-providers#refunds).
 
-### Email refund
-
-`HTTP POST /payments/{transactionId}/refund/email` refunds a payment by transaction ID by email and IBAN.
-
-Since not all payment method providers support refunds (namely, S-pankki, Ålandsbanken, and AinaPay) an email refund API is provided. Email refund API sends a link to the intended recipient where they input their IBAN, authenticate using Tupas, and then receive the refund in 1-3 days. Email refund is supported for all Finnish banks, and AinaPay.
 
 #### Response
 
