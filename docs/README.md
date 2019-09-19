@@ -328,15 +328,6 @@ Status code | Explanation
 
 Note, that at the moment HTTP 400 may occur also for 3rd party reasons - eg. bacause Nordea test API does not support refunds. See all provider limitations from [providers tab](/payment-method-providers#refunds).
 
-
-#### Response
-
-Status code | Explanation
-------------|------------
-201 | Refund created successfully
-400 | Something went wrong
-422 | Used payment method provider does not support email refunds
-
 ## Payment Reports
 
 Checkout provides an API for asynchronous payment report generation. A merchant can view their payments in this report. A call to the endpoint must contain a callback URL where the payment report will be delivered to once it has been generated.
