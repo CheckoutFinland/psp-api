@@ -397,8 +397,9 @@ Status code | Explanation
 field | info | required | default | description
 ----- | ---- | -------- | ------- | -----------
 requestType | string | <center>x</center> | | In which format will the response be delivered in, currently supported are `json` and `csv`.
-callbackUrl | string | <center>x</center> | | The url the system will send the report to as a `POST` request.
+callbackUrl | string | <center>x</center> | | The url the system will send the report to as a `POST` request. Callback URLs must use HTTPS.
 reportFields | string[] | <center></center> | all | Limit the fields that will be included in the report. Leaving this empty will include all fields. Possible values: `created`, `amount`, `status`, `firstname`, `familyname`, `description`, `reference`, `paymentMethod`, `stamp`, `address`, `postcode`, `postoffice`, `country`, `checkoutReference`, `archiveNumber`, `settlementId`, `settlementDate`, `refundAmount`, `fee` and `provision`.
+submerchant | integer | <center></center> | | Get submerchant's payment report (aggregate only)
 
 #### Response
 
@@ -417,6 +418,7 @@ startDate | <center></center> | Only settlements created after on on this date w
 endDate | <center></center> | Only settlements created before or on this date will be included in the response. Must follow the following format: `YYYY-MM-DD`.
 bankReference | <center></center> | Only include settlements that were settled with this bank reference.
 limit | <center></center> | Limit the number of settlement IDs returned. `Limit 1` will only include the most recent settlement.
+submerchant | <center></center> | Get submerchant's payment report (aggregate only)
 
 Example
 ```

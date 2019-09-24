@@ -508,6 +508,15 @@ paths:
           schema:
             type: string
             format: integer
+        - name: submerchant
+          in: header
+          description: Get submerchant's payment report
+          example: '695874'
+          required: false
+          style: form
+          schema:
+            type: string
+            format: integer
         - name: checkout-account
           in: header
           description: Merchant ID
@@ -1193,7 +1202,7 @@ components:
           type: string
           format: url
           example: https://example.com/payment-reports/
-          description: To which URL is the report delivered to
+          description: To which URL is the report delivered to. Callback URLs must use HTTPS
         paymentStatus:
           type: string
           example: default
