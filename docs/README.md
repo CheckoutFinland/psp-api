@@ -294,20 +294,24 @@ status | description
 
 #### HTTP request body
 
-field | info | description
------ | ---- | -----------
-amount | integer | Total amount to refund, in currency's minor units (ie. EUR cents)
-email | string | Refund recipient email address. Some payment methods [do not support API refunds](/payment-method-providers#refunds), and some have refund related limitations. If email address is given, email refund will be executed as a fallback method if API refund is unsuccessful, or as the default method if the provider does not support API refunds.
-items | [RefundItem](#refunditem)[] | Array of items to refund. Use only for Shop-in-Shop payments.
-callbackUrls | [CallbackUrl](#callbackurl) | Which urls to ping after the refund has been processed. The callback is called with `HTTP GET` and with the same query string parameters as in the [payment request callback](#redirect-and-callback-url-parameters). The server should respond with `HTTP 20x`.
+field | type | required | description
+----- | ---- | -------- | -----------
+amount | integer | <center>-/x</center> | Total amount to refund, in currency's minor units (ie. EUR cents). Required for normal payment refunds. Shop-in-Shop payments can be refunded to full amount by giving the full payment amount here without items.
+email | string | <center>-</center> | Refund recipient email address. Some payment methods [do not support API refunds](/payment-method-providers#refunds), and some have refund related limitations. If email address is given, email refund will be executed as a fallback method if API refund is unsuccessful, or as the default method if the provider does not support API refunds.
+refundStamp | string | <center>-</center> |  Merchant unique identifier for the refund
+refundReference | string | <center>-</center> | Refund reference
+items | [RefundItem](#refunditem)[] | <center>-</center> | Array of items to refund. Use only for Shop-in-Shop payments.
+callbackUrls | [CallbackUrl](#callbackurl) | <center>x</center> | Which urls to ping after the refund has been processed. The callback is called with `HTTP GET` and with the same query string parameters as in the [payment request callback](#redirect-and-callback-url-parameters). The server should respond with `HTTP 20x`.
 
 ##### RefundItem
 
-field | info | description
------ | ---- | -----------
-amount | integer | Total amount to refund this item, in currency's minor units (ie. EUR cents)
-stamp | string | Unique stamp of the refund item
-commission | [RefundCommission](#RefundCommission) | Shop-in-Shop commission return. In refunds, the given amount is returned from the given commission account to the item merchant account.
+field | type | required | description
+----- | ---- | ---------| -----------
+amount | integer | <center>x</center> | Total amount to refund this item, in currency's minor units (ie. EUR cents)
+stamp | string | <center>x</center> | The item unique identifier
+refundStamp | string | <center>-</center> |  Merchant unique identifier for the refund
+refundReference | string | <center>-</center> | Refund reference
+commission | [RefundCommission](#RefundCommission) | <center>-</center> | Shop-in-Shop commission return. In refunds, the given amount is returned from the given commission account to the item merchant account.
 
 ##### RefundCommission
 
