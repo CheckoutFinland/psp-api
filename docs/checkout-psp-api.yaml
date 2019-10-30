@@ -21,117 +21,6 @@ tags:
   description: List settlement IDs
 paths:
   /payments:
-    get:
-      tags:
-      - payments
-      summary: Search payments
-      description: |
-        Returns all merchant's payments from the system
-      operationId: findPayments
-      parameters:
-        - name: created
-          in: query
-          description: Created date to filter by
-          example: '2018-03-08'
-          required: false
-          style: form
-          schema:
-            type: string
-            format: date
-            default: Current date
-        - name: status
-          in: query
-          description: Filter by payment status
-          example: approved
-          required: false
-          style: form
-          schema:
-            # TODO: These statuses are not enough
-            type: string
-            enum:
-            - new
-            - approved
-            - settled
-            - refunded
-        - name: limit
-          in: query
-          description: Number of results to return
-          example: 10
-          required: false
-          style: form
-          schema:
-            type: integer
-            format: int32
-            maximum: 100
-            minimum: 1
-            default: 100
-        - name: page
-          in: query
-          description: Pagination page
-          example: 2
-          required: false
-          style: form
-          schema:
-            type: integer
-            format: int32
-        - name: checkout-account
-          in: header
-          description: Merchant ID
-          example: 375917
-          schema:
-            type: integer
-            format: int32
-        - name: checkout-algorithm
-          in: header
-          description: HMAC algorithm
-          example: sha512
-          schema:
-            type: string
-            enum:
-            - sha256
-            - sha512
-        - name: checkout-method
-          in: header
-          description: HTTP method of the request
-          example: GET
-          schema:
-            type: string
-            enum:
-            - GET
-            - POST
-        - name: checkout-timestamp
-          in: header
-          description: Current timestamp in ISO 8601 format
-          example: '2018-08-08T10:10:59Z'
-          schema:
-            type: string
-            format: date-time
-        - name: checkout-nonce
-          in: header
-          description: Unique random identifier
-          example: 39da40b8-5fb0-499c-869d-35e575b9a6cd
-          schema:
-            type: string
-        - name: signature
-          in: header
-          description: HMAC signature calculated over the request headers and payload
-          schema:
-            type: string
-      responses:
-        '200':
-          description: payment response
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Payment'
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
     post:
       tags:
       - payments
@@ -197,17 +86,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/PaymentRequestResponse'
         '400':
-          description: Payment request not validated successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
+          $ref: '#/components/responses/Error'
+
   /payments/{transactionId}:
     get:
       tags:
@@ -281,12 +165,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Payment'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
         default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
+          $ref: '#/components/responses/Error'
+
   /payments/{transactionId}/refund:
     post:
       tags:
@@ -369,6 +256,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RefundResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
         '422':
           description: Payment method provider does not support refunds
           content:
@@ -376,11 +269,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
+          $ref: '#/components/responses/Error'
+
   /merchants/payment-providers:
     get:
       tags:
@@ -457,12 +347,11 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/BasePaymentMethodProvider'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
+          $ref: '#/components/responses/Error'
+
   /settlements:
     get:
       tags:
@@ -564,17 +453,14 @@ paths:
                 items:
                   $ref: '#/components/schemas/SettlementIdItem'
         '400':
-          description: Invalid list settlements request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
         default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
+          $ref: '#/components/responses/Error'
+
   /payments/report:
     post:
       tags:
@@ -636,17 +522,14 @@ paths:
               schema:
                 $ref: '#/components/schemas/PaymentReportRequestResponse'
         '400':
-          description: Invalid payment report request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
         default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
+          $ref: '#/components/responses/Error'
+
       callbacks:
         reportReady:
           '{$request.body#/callbackUrl}':
@@ -666,6 +549,7 @@ paths:
                   description: Your server returns this code if it can accept the callback
                 default:
                   description: Your server can not handle callback - will result in re-sending of the report to the given callback url.
+
   /settlements/{settlementId}/payments/report:
     post:
       tags:
@@ -727,17 +611,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/PaymentReportRequestResponse'
         '400':
-          description: Invalid payment report request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
         default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
+          $ref: '#/components/responses/Error'
       callbacks:
         reportReady:
           '{$request.body#/callbackUrl}':
@@ -757,14 +637,13 @@ paths:
                   description: Your server returns this code if it can accept the callback
                 default:
                   description: Your server can not handle callback - will result in re-sending of the report to the given callback url.
+
 components:
   schemas:
     # Payment request payload
-    # Object which has not persisted and contains unvalidated user input.
-    # TODO: Support redirect to hosted GW (ie. current DEVICE)? Probably should
     PaymentRequest:
       type: object
-      description: Payment request
+      description: Payment request payload
       required:
       - stamp
       - reference
@@ -778,15 +657,19 @@ components:
         stamp:
           type: string
           example: 29858472952
+          maxLength: 200
           description: Merchant specific unique stamp
         reference:
           type: string
           example: 9187445
+          maxLength: 200
           description: Merchant reference for the payment
         amount:
           type: integer
           format: int64
           example: 1590
+          minimum: 0
+          maximum: 99999999
           description: Total amount of the payment (sum of items), VAT included
         currency:
           type: string
@@ -795,10 +678,16 @@ components:
           - EUR
         language:
           type: string
-          minLength: 2
-          maxLength: 2
           example: FI
+          enum:
+          - FI
+          - SV
+          - EN
           description: Alpha-2 language code for the payment process
+        orderId:
+          type: string
+          maxLength: 60
+          description: Order ID. Used for eg. Collector payments order ID. If not given, merchant reference is used instead.
         items:
           type: array
           items:
@@ -837,6 +726,12 @@ components:
           $ref: '#/components/schemas/Callbacks'
         callbackUrls:
           $ref: '#/components/schemas/Callbacks'
+        callbackDelay:
+          type: integer
+          minimum: 0
+          maximum: 900
+          example: 60
+          description: Callback delay in seconds. If callback URLs and delay are provided, callbacks will be called after the delay.
 
     Item:
       type: object
@@ -851,20 +746,26 @@ components:
           type: integer
           format: int64
           example: 1590
+          minimum: 0
+          maximum: 99999999
           description: Unit price of an item in currency minor unit, eg. EUR cents. VAT included.
         units:
           type: integer
           format: int64
-          description: Number of units
           example: 1
+          minimum: 1
+          description: Number of units
         vatPercentage:
           type: integer
           format: int64
           example: 24
+          minimum: 0
+          maximum: 100
           description: Item VAT percentage
         productCode:
           type: string
           example: '#927502759'
+          maxLength: 100
           description: Merchant specific product code
         deliveryDate:
           type: string
@@ -874,10 +775,12 @@ components:
         description:
           type: string
           example: Cat ladder
+          maxLength: 1000
           description: Merchant specific product description
         category:
           type: string
           example: shoe
+          maxLength: 100
           description: Item product category
         merchant:
           type: string
@@ -886,11 +789,17 @@ components:
         stamp:
           type: string
           example: 29858472952
+          maxLength: 200
           description: Submerchant specific unique stamp. Required for shop-in-shop payments, leave out from normal payments.
         reference:
           type: string
           example: 9187445
+          maxLength: 200
           description: Submerchant reference for the item. Required for shop-in-shop payments, leave out from normal payments.
+        orderId:
+          type: string
+          maxLength: 60
+          description: Order ID. Used for eg. Collector payments order ID. If not given, merchant reference is used instead.
         commission:
           type: object
           properties:
@@ -905,7 +814,6 @@ components:
               description: |
                 Commission amount in currency minor unit, eg. EUR cents. VAT not applicable.
                 This field is needed only for specific shop-in-shop payments, usually not needed.
-
 
     # Status reporting URLs, either for user browser redirect or server-to-server callback
     # Called on various events
@@ -939,24 +847,157 @@ components:
         streetAddress:
           type: string
           example: Fake street 123
+          maxLength: 200
           description: Street address
         postalCode:
           type: string
           pattern: '^\d+$'
           example: '00100'
+          maxLength: 15
           description: Postal code
         city:
           type: string
           example: Luleå
+          maxLength: 200
           description: City
         county:
           type: string
           example: Norrbotten
+          maxLength: 200
           description: County or top-level geographic subdivision
         country:
           type: string
           example: SE
+          maxLength: 2
           description: Alpha-2 country code
+
+    # Refund request payload
+    # - Normal merchant:
+    #   - Only amount required, no need for item level reference
+    #     at least for now as we do not create subtrades
+    # - SiS merchants:
+    #   - Aggregate can do full refund without subtrade level info
+    #     by providing just the amount (that matches the original amount)
+    #   - Subtrade refunds require the original stamp and reference, and
+    #     amount to refund per item
+    Refund:
+      type: object
+      required:
+      - callbackUrls
+      properties:
+        amount:
+          type: integer
+          format: int64
+          example: 1590
+          minimum: 1
+          description: |
+            The amount to refund. Required for normal merchant accounts.
+            SiS aggregate can refund the whole purchase by providing just the amount
+        refundStamp:
+          type: string
+          example: 981346945
+          maxLength: 200
+          description: Merchant specific unique stamp for the refund
+        refundReference:
+          type: string
+          example: 4723652
+          maxLength: 200
+          description: Merchant reference for the refund
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/RefundItem"
+          description: Item level refund information for SiS refunds.
+        callbackUrls:
+          $ref: '#/components/schemas/Callbacks'
+
+    RefundItem:
+      type: object
+      required:
+      - amount
+      - stamp
+      - reference
+      properties:
+        amount:
+          type: integer
+          format: int64
+          example: 1590
+          minimum: 1
+          description: Amount to refund
+        stamp:
+          type: string
+          example: 29858472952
+          description: Original item stamp
+        refundStamp:
+          type: string
+          example: 7358134945
+          maxLength: 200
+          description: Merchant specific unique stamp for the refund
+        refundReference:
+          type: string
+          example: 94753246
+          maxLength: 200
+          description: Merchant reference for the refund
+
+    PaymentReportRequest:
+      type: object
+      description: Payment report request
+      required:
+        - requestType
+        - callbackUrl
+      properties:
+        requestType:
+          type: string
+          example: json
+          description: In which format is the report delivered in
+          enum:
+            - json
+            - csv
+        callbackUrl:
+          type: string
+          format: url
+          example: https://example.com/payment-reports/
+          description: To which URL is the report delivered to. Callback URLs must use HTTPS
+        paymentStatus:
+          type: string
+          example: default
+          description: How are the payments statuses filtered. "Default" includes both paid and settled payments. "Paid" includes paid payments that have not been settled yet. "All" includes everything, for example unpaid or failed payments.
+          enum:
+            - default
+            - all
+            - paid
+            - settled
+          default: default
+        startDate:
+          type: string
+          format: datetime
+          example: '2019-01-01T18:00:00'
+          description: Filter out payments created before given datetime.
+        endDate:
+          type: string
+          format: datetime
+          example: '2019-01-02T20:00:00'
+          description: Filter out payments created after given datetime.
+        limit:
+          type: integer
+          example: 1000
+          description: Limit the amount of payments included in the report.
+          maximum: 50000
+          default: 50000
+        reportFields:
+          type: array
+          description: Limit the amount of fields included in the report. By default all fields are included.
+          items:
+            type: string
+            enum: [entryDate, created, amount, status, firstname, familyname, description, reference, paymentMethod,
+                  stamp, address, postcode, postoffice, country, checkoutReference, archiveNumber, payerName,
+                  settlementId, settlementDate, originalTradeReference, vatPercentage, vatAmount, paymentMethodFee,
+                  paymentMethodCommission, shopInShopCommission, shopInShopCommissionVatPercentage,
+                  shopInShopCommissionVatAmount]
+        submerchant:
+          type: integer
+          example: 695874
+          description: Get submerchant's payment report
 
     PaymentRequestResponse:
       type: object
@@ -1051,79 +1092,57 @@ components:
                     example: EUR
                     description: Value of the form input
 
-    # Payment object
-    # This schema is used for objects which are persisted to database,
-    # i.e. ones which contain an ID
     Payment:
-      allOf:
-        - $ref: '#/components/schemas/PaymentRequest'
-        - required:
-          - id
-          - status
-          - href
-          properties:
-            id:
-              type: string
-              format: uuid
-              example: 93ee8d18-10db-410b-92ac-7d6e49369ce3
-            status:
-              type: string
-              enum:
-              - new
-              - approved
-              - settled
-              - refunded
-            href:
-              type: string
-              format: url
-              example: https://foobar.checkout.fi/payment/93ee8d18-10db-410b-92ac-7d6e49369ce3
-              description: Unique URL to hosted payment gateway
-
-    RefundItem:
       type: object
-      required:
-      - amount
-      - stamp
-      - reference
       properties:
+        id:
+          type: string
+          example: 93ee8d18-10db-410b-92ac-7d6e49369ce3
+          description: Transaction ID
+        status:
+          type: string
+          enum:
+          - new
+          - ok
+          - fail
+          - pending
+          - delayed
+          description: Transaction status
         amount:
           type: integer
           format: int64
           example: 1590
-          description: Amount to refund
+        currency:
+          type: string
+          example: EUR
+          enum:
+          - EUR
         stamp:
           type: string
           example: 29858472952
-          description: Original item stamp
+        reference:
+          type: string
+          example: 9187445
+        createdAt:
+          type: string
+          example: '2019-10-30T09:13:00'
+        href:
+          type: string
+          format: url
+          example: https://pay.checkout.fi/pay/93ee8d18-10db-410b-92ac-7d6e49369ce3
+          description: If transaction is in status 'new', link to the hosted payment gateway
+        provider:
+          type: string
+          example: osuuspankki
+          description: If processed, the name of the payment method provider
+        filingCode:
+          type: string
+          description: If paid, the filing code issued by the payment method provider
+        paidAt:
+          type: string
+          example: '2019-10-30T09:14:28'
+          description: Timestamp when the transaction was paid
 
-    # Refund request payload
-    # - Normal merchant:
-    #   - Only amount required, no need for item level reference
-    #     at least for now as we do not create subtrades
-    # - SiS merchants:
-    #   - Aggregate can do full refund without subtrade level info
-    #     by providing just the amount (that matches the original amount)
-    #   - Subtrade refunds require the original stamp and reference, and
-    #     amount to refund per item
-    Refund:
-      type: object
-      required:
-      - callbackUrls
-      properties:
-        amount:
-          type: integer
-          format: int64
-          example: 1590
-          description: |
-            The amount to refund. Required for normal merchant accounts.
-            SiS aggregate can refund the whole purchase by providing just the amount
-        items:
-          type: array
-          items:
-            $ref: "#/components/schemas/RefundItem"
-          description: Item level refund information for SiS refunds.
-        callbackUrls:
-          $ref: '#/components/schemas/Callbacks'
 
     # TODO: Once async, response status should be 'pending'
     RefundResponse:
@@ -1144,21 +1163,6 @@ components:
           type: string
           description: Payment method provider
           example: osuuspankki
-
-    # Payload with which the callback will be called once refund is complete
-    # TODO: Feature not yet implemented
-    # RefundCallbackPayload:
-    #   type: object
-    #   properties:
-    #     status:
-    #       type: string
-    #       enum:
-    #       - ok
-    #       - fail
-    #     reference:
-    #       type: string
-    #       format: int32
-    #       description: Checkout reference for the refund
 
     SettlementIdItem:
       type: object
@@ -1183,66 +1187,6 @@ components:
           format: datetime
           example: '2019-01-02T04:00:00+02:00'
           description: When the settlement was paid
-
-    PaymentReportRequest:
-      type: object
-      description: Payment report request
-      required:
-        - requestType
-        - callbackUrl
-      properties:
-        requestType:
-          type: string
-          example: json
-          description: In which format is the report delivered in
-          enum:
-            - json
-            - csv
-        callbackUrl:
-          type: string
-          format: url
-          example: https://example.com/payment-reports/
-          description: To which URL is the report delivered to. Callback URLs must use HTTPS
-        paymentStatus:
-          type: string
-          example: default
-          description: How are the payments statuses filtered. "Default" includes both paid and settled payments. "Paid" includes paid payments that have not been settled yet. "All" includes everything, for example unpaid or failed payments.
-          enum:
-            - default
-            - all
-            - paid
-            - settled
-          default: default
-        startDate:
-          type: string
-          format: datetime
-          example: '2019-01-01T18:00:00'
-          description: Filter out payments created before given datetime.
-        endDate:
-          type: string
-          format: datetime
-          example: '2019-01-02T20:00:00'
-          description: Filter out payments created after given datetime.
-        limit:
-          type: integer
-          example: 1000
-          description: Limit the amount of payments included in the report.
-          maximum: 50000
-          default: 50000
-        reportFields:
-          type: array
-          description: Limit the amount of fields included in the report. By default all fields are included.
-          items:
-            type: string
-            enum: [entryDate, created, amount, status, firstname, familyname, description, reference, paymentMethod,
-                  stamp, address, postcode, postoffice, country, checkoutReference, archiveNumber, payerName,
-                  settlementId, settlementDate, originalTradeReference, vatPercentage, vatAmount, paymentMethodFee,
-                  paymentMethodCommission, shopInShopCommission, shopInShopCommissionVatPercentage,
-                  shopInShopCommissionVatAmount]
-        submerchant:
-          type: integer
-          example: 695874
-          description: Get submerchant's payment report
 
     PaymentReportBySettlementIdRequest:
       type: object
@@ -1427,3 +1371,29 @@ components:
           items:
             type: string
           description: Possible detailed error descriptions
+
+  responses:
+    BadRequest:
+      description: Request did not pass input validation
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: The specified resource was not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Error:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
