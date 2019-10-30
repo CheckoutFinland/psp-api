@@ -385,9 +385,9 @@ paths:
           example: '1234567890-1111'
           required: false
           style: form
-          maxLength: 20
           schema:
             type: string
+            maxLength: 20
         - name: limit
           in: query
           description: Limit the number of settlement IDs returned
@@ -559,6 +559,13 @@ paths:
         Request a report of payments contained in a given settlement to be sent to the given callback url. Callback schema defined in PaymentReportCallbackJSON.
       operationId: requestPaymentReportBySettlementId
       parameters:
+        - name: settlementId
+          in: path
+          description: Settlement ID
+          required: true
+          schema:
+            type: string
+            example: '2397548234'
         - name: checkout-account
           in: header
           description: Merchant ID
@@ -1097,6 +1104,7 @@ components:
       properties:
         id:
           type: string
+          format: uuid
           example: 93ee8d18-10db-410b-92ac-7d6e49369ce3
           description: Transaction ID
         status:
