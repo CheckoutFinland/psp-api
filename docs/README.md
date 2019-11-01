@@ -270,7 +270,7 @@ status | description
 -------|------------
 `ok` | Payment was accepted by the provider and confirmed successfully
 `fail` | Payment was cancelled by the user or rejected by the provider
-`pending` | Payment was initially approved by the provider but further processing is needed. `pending` payments are reported as either `ok` or `fail` via callbacks, if provided, and using the redirect URLs.
+`pending` | Payment was initially approved by the provider but further processing is needed. `pending` payments are reported as either `ok` or `fail` via callbacks, if provided, and using the redirect URLs. Currently this is Collector only, and rarely takes more than seconds or minutes to get an `ok` or  `fail`.
 `delayed` | A rare status related to a single payment method that is not generally enabled. May take days to complete. If completed, will be reported as `ok` via the callback *or* the redirect URL. This can be handled the same way as `pending`.
 
 
