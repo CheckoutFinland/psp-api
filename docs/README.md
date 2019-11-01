@@ -126,6 +126,8 @@ Once the payment has been completed the client browser will return to the mercha
 
 The request payload is described below, as well as the redirect and callback URL parameters. [JSON example payload and response](/examples#create) are available on the examples tab.
 
+[List providers](#list-providers) endpoint can be used to receive available payment methods without opening a new payment.
+
 #### Create request body
 
 field | info | required | description
@@ -455,7 +457,7 @@ Actions related to the merchant object are mapped to the `/merchant` API endpoin
 
 ### List providers
 
-`HTTP GET /merchants/payment-providers` returns a list of available providers for the merchant, grouped into `mobile`, `bank`, `creditcard`, `credit`, and `other` payment methods.
+`HTTP GET /merchants/payment-providers` returns a list of available providers for the merchant, grouped into `mobile`, `bank`, `creditcard`, `credit`, and `other` payment methods. This endpoint can be used for example to show available payment methods in checkout without initializing a new payment before the user actually proceeds to pay their order.
 
 #### HTTP GET query parameters
 
