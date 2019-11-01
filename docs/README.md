@@ -274,14 +274,27 @@ status | description
 
 ### Get
 
-<p class="warning">
-  The GET endpoint has not been implemented yet. The endpoint does respond but with payload that does not match any documentation.
-  <br><br>
-  It is currently intended only for the integrating partners to see at least some change in payment state when it has been paid.
-</p>
-
-
 `HTTP GET /payments/{transactionId}` returns payment information.
+
+Get transaction info. Payments are reported primarily via callbacks, and implementations should mainly rely on receiving the info via them. All received payments will be eventually reported.
+
+#### Response
+
+field | type | description
+------|------|------------
+transactionId | string | Assigned transaction ID for the payment
+status | string | `new`, `ok`, `fail`, `pending`, or `delayed`. `new` is for transactions that have been created but nothing further has happened. Other statuses are desribed [above](#statuses).
+amount | integer | Total amount of the payment in currency's minor units, eg. for Euros use cents
+currency | alpha3 | Currency
+stamp | string | Merchant unique identifier for the order
+reference | string | Order reference
+createdAt | string | Transaction creation timestamp
+href | string | If transaction is in status `new`, link to the hosted payment gateway
+provider | string | If processed, the name of the payment method provider
+filingCode | string | If paid, the filing code issued by the payment method provider
+paidAt | string | Timestamp when the transaction was paid
+
+See [example response](/examples#get) from examples tab.
 
 ### Refund
 
