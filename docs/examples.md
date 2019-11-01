@@ -219,7 +219,7 @@ You can find example payloads and responses for all the requests, as well as [co
 #### Request
 
 ```
-GET /payments/0fbda2ce-8115-11e8-a3c2-1b42d60c4148
+GET /payments/681538c4-fc84-11e9-83bc-2ffcef4c3453
 checkout-account: 375917
 checkout-algorithm: sha256
 checkout-method: GET
@@ -234,14 +234,14 @@ signature: 4d84e3aedaa847b23e672ff3bc9c57ae5d1c1e84aec251ce39914eaf250bb8b2
 
 ```json
 {
-  "id": "0fbda2ce-8115-11e8-a3c2-1b42d60c4148",
+  "id": "681538c4-fc84-11e9-83bc-2ffcef4c3453",
   "status": "new",
   "amount": 1689,
   "currency": "EUR",
   "reference": "4940046476",
   "stamp": "15725981193483",
   "createdAt": "2019-11-01T10:48:39.979Z",
-  "href": "https://pay.dev.checkout-developer.fi/pay/0fbda2ce-8115-11e8-a3c2-1b42d60c4148"
+  "href": "https://pay.checkout.fi/pay/681538c4-fc84-11e9-83bc-2ffcef4c3453"
 }
 ```
 

@@ -208,7 +208,7 @@ The response JSON object contains the transaction ID of the payment and list of 
 field | type | description
 ------|------|------------
 transactionId | string | Assigned transaction ID for the payment
-href | string | URL to hosted payment gateway. Redirect user here if the payment forms cannot be rendered directly inside the web shop.
+href | string | URL to hosted payment gateway. Redirect (`HTTP GET`) user here if the payment forms cannot be rendered directly inside the web shop.
 providers | [Provider](#provider) | Array of providers. Render these elements as HTML forms
 
 ##### Provider
