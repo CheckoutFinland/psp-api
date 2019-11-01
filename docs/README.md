@@ -126,6 +126,8 @@ Once the payment has been completed the client browser will return to the mercha
 
 The request payload is described below, as well as the redirect and callback URL parameters. [JSON example payload and response](/examples#create) are available on the examples tab.
 
+[List providers](#list-providers) endpoint can be used to receive available payment methods without opening a new payment.
+
 #### Create request body
 
 field | info | required | description
@@ -206,7 +208,7 @@ The response JSON object contains the transaction ID of the payment and list of 
 field | type | description
 ------|------|------------
 transactionId | string | Assigned transaction ID for the payment
-href | string | URL to hosted payment gateway. Redirect user here if the payment forms cannot be rendered directly inside the web shop.
+href | string | URL to hosted payment gateway. Redirect (`HTTP GET`) user here if the payment forms cannot be rendered directly inside the web shop.
 providers | [Provider](#provider) | Array of providers. Render these elements as HTML forms
 
 ##### Provider
@@ -274,14 +276,27 @@ status | description
 
 ### Get
 
-<p class="warning">
-  The GET endpoint has not been implemented yet. The endpoint does respond but with payload that does not match any documentation.
-  <br><br>
-  It is currently intended only for the integrating partners to see at least some change in payment state when it has been paid.
-</p>
-
-
 `HTTP GET /payments/{transactionId}` returns payment information.
+
+Get transaction info. Payments are reported primarily via callbacks, and implementations should mainly rely on receiving the info via them. All received payments will be eventually reported.
+
+#### Response
+
+field | type | description
+------|------|------------
+transactionId | string | Assigned transaction ID for the payment
+status | string | `new`, `ok`, `fail`, `pending`, or `delayed`. `new` is for transactions that have been created but nothing further has happened. Other statuses are desribed [above](#statuses).
+amount | integer | Total amount of the payment in currency's minor units, eg. for Euros use cents
+currency | alpha3 | Currency
+stamp | string | Merchant unique identifier for the order
+reference | string | Order reference
+createdAt | string | Transaction creation timestamp
+href | string | If transaction is in status `new`, link to the hosted payment gateway
+provider | string | If processed, the name of the payment method provider
+filingCode | string | If paid, the filing code issued by the payment method provider
+paidAt | string | Timestamp when the transaction was paid
+
+See [example response](/examples#get) from examples tab.
 
 ### Refund
 
@@ -294,20 +309,24 @@ status | description
 
 #### HTTP request body
 
-field | info | description
------ | ---- | -----------
-amount | integer | Total amount to refund, in currency's minor units (ie. EUR cents)
-email | string | Refund recipient email address. Some payment methods [do not support API refunds](/payment-method-providers#refunds), and some have refund related limitations. If email address is given, email refund will be executed as a fallback method if API refund is unsuccessful, or as the default method if the provider does not support API refunds.
-items | [RefundItem](#refunditem)[] | Array of items to refund. Use only for Shop-in-Shop payments.
-callbackUrls | [CallbackUrl](#callbackurl) | Which urls to ping after the refund has been processed. The callback is called with `HTTP GET` and with the same query string parameters as in the [payment request callback](#redirect-and-callback-url-parameters). The server should respond with `HTTP 20x`.
+field | type | required | description
+----- | ---- | -------- | -----------
+amount | integer | <center>-/x</center> | Total amount to refund, in currency's minor units (ie. EUR cents). Required for normal payment refunds. Shop-in-Shop payments can be refunded to full amount by giving the full payment amount here without items.
+email | string | <center>-</center> | Refund recipient email address. Some payment methods [do not support API refunds](/payment-method-providers#refunds), and some have refund related limitations. If email address is given, email refund will be executed as a fallback method if API refund is unsuccessful, or as the default method if the provider does not support API refunds.
+refundStamp | string | <center>-</center> |  Merchant unique identifier for the refund
+refundReference | string | <center>-</center> | Refund reference
+items | [RefundItem](#refunditem)[] | <center>-</center> | Array of items to refund. Use only for Shop-in-Shop payments.
+callbackUrls | [CallbackUrl](#callbackurl) | <center>x</center> | Which urls to ping after the refund has been processed. The callback is called with `HTTP GET` and with the same query string parameters as in the [payment request callback](#redirect-and-callback-url-parameters). The server should respond with `HTTP 20x`.
 
 ##### RefundItem
 
-field | info | description
------ | ---- | -----------
-amount | integer | Total amount to refund this item, in currency's minor units (ie. EUR cents)
-stamp | string | Unique stamp of the refund item
-commission | [RefundCommission](#RefundCommission) | Shop-in-Shop commission return. In refunds, the given amount is returned from the given commission account to the item merchant account.
+field | type | required | description
+----- | ---- | ---------| -----------
+amount | integer | <center>x</center> | Total amount to refund this item, in currency's minor units (ie. EUR cents)
+stamp | string | <center>x</center> | The item unique identifier
+refundStamp | string | <center>-</center> |  Merchant unique identifier for the refund
+refundReference | string | <center>-</center> | Refund reference
+commission | [RefundCommission](#RefundCommission) | <center>-</center> | Shop-in-Shop commission return. In refunds, the given amount is returned from the given commission account to the item merchant account.
 
 ##### RefundCommission
 
@@ -438,7 +457,7 @@ Actions related to the merchant object are mapped to the `/merchant` API endpoin
 
 ### List providers
 
-`HTTP GET /merchants/payment-providers` returns a list of available providers for the merchant, grouped into `mobile`, `bank`, `creditcard`, `credit`, and `other` payment methods.
+`HTTP GET /merchants/payment-providers` returns a list of available providers for the merchant, grouped into `mobile`, `bank`, `creditcard`, `credit`, and `other` payment methods. This endpoint can be used for example to show available payment methods in checkout without initializing a new payment before the user actually proceeds to pay their order.
 
 #### HTTP GET query parameters
 

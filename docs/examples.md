@@ -219,13 +219,14 @@ You can find example payloads and responses for all the requests, as well as [co
 #### Request
 
 ```
-GET /payments/0fbda2ce-8115-11e8-a3c2-1b42d60c4148
-checkout-account:375917
-checkout-algorithm:sha256
-checkout-method:GET
-checkout-nonce:572119423466676
-checkout-timestamp:2018-07-06T12:06:45.799Z
-checkout-transaction-id:0fbda2ce-8115-11e8-a3c2-1b42d60c4148
+GET /payments/681538c4-fc84-11e9-83bc-2ffcef4c3453
+checkout-account: 375917
+checkout-algorithm: sha256
+checkout-method: GET
+checkout-timestamp: 2019-11-01T08:48:50.832Z
+checkout-transaction-id: 681538c4-fc84-11e9-83bc-2ffcef4c3453
+checkout-nonce: 87ac41e1-e6e6-4789-b8e0-c83930cfc447
+signature: 4d84e3aedaa847b23e672ff3bc9c57ae5d1c1e84aec251ce39914eaf250bb8b2
 
 ```
 
@@ -233,11 +234,14 @@ checkout-transaction-id:0fbda2ce-8115-11e8-a3c2-1b42d60c4148
 
 ```json
 {
-  "id": "0fbda2ce-8115-11e8-a3c2-1b42d60c4148",
-  "status": 1,
-  "stamp": "572091345812938",
-  "reference": "3759170",
-  "amount": "1525"
+  "id": "681538c4-fc84-11e9-83bc-2ffcef4c3453",
+  "status": "new",
+  "amount": 1689,
+  "currency": "EUR",
+  "reference": "4940046476",
+  "stamp": "15725981193483",
+  "createdAt": "2019-11-01T10:48:39.979Z",
+  "href": "https://pay.checkout.fi/pay/681538c4-fc84-11e9-83bc-2ffcef4c3453"
 }
 ```
 
@@ -250,6 +254,8 @@ checkout-transaction-id:0fbda2ce-8115-11e8-a3c2-1b42d60c4148
 ```json
 {
   "amount": 1590,
+  "refundStamp": "88907910-7b85-4940-8563-202b93d5ca79",
+  "refundReference": "your reference",
   "callbackUrls": {
     "success": "https://ecom.example.org/refund/success",
     "cancel": "https://ecom.example.org/refund/cancel"
@@ -261,11 +267,12 @@ checkout-transaction-id:0fbda2ce-8115-11e8-a3c2-1b42d60c4148
 
 ```json
 {
-  "amount": 1590,
+  "refundStamp": "28b9a1fb-4b27-4e5f-90b3-9029fc57dcee",
+  "refundReference": "your reference",
   "items": [
     {
       "amount": 1590,
-      "stamp": 29858472952
+      "stamp": "29858472952",
     }
   ],
   "callbackUrls": {
@@ -283,6 +290,8 @@ Email refund payload is otherwise the same (ie. for shop-in-shop merchants there
 {
   "amount": 1590,
   "email": "recipient@example.com",
+  "refundStamp": "bd71d096-94b6-4e1b-b4a3-d7cea73738ac",
+  "refundReference": "your reference",
   "callbackUrls": {
     "success": "https://ecom.example.org/success",
     "cancel": "https://ecom.example.org/cancel"
