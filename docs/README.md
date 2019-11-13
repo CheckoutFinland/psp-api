@@ -58,7 +58,7 @@ All API responses are signed the same way, allowing merchant to verify response 
 The signature is transmitted in the `signature` HTTP header. Signature payload consists of the following fields separated with a line feed (\n). Carrige returns (\r) are not supported.
 
 * All `checkout-` headers in alphabetical order. The header keys must be in lowercase. Each header key and value are separated with `:`
-* HTTP body, or empty string if no body
+* HTTP body in exactly the same format as it will be sent, or empty string if no body
 
 The headers are:
 
