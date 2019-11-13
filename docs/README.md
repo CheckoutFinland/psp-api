@@ -269,11 +269,11 @@ The currently possible payment statuses are:
 
 status | description
 -------|------------
+`new` | Payment has been created but nothing more. Never returned as a result, but can be received from the `GET /payments/{transactionId}` endpoint
 `ok` | Payment was accepted by the provider and confirmed successfully
 `fail` | Payment was cancelled by the user or rejected by the provider
 `pending` | Payment was initially approved by the provider but further processing is needed. `pending` payments are reported as either `ok` or `fail` via callbacks, if provided, and using the redirect URLs. Currently this is Collector only, and rarely takes more than seconds or minutes to get an `ok` or  `fail`.
 `delayed` | A rare status related to a single payment method that is not generally enabled. May take days to complete. If completed, will be reported as `ok` via the callback *or* the redirect URL. This can be handled the same way as `pending`.
-
 
 ### Get
 
@@ -294,7 +294,7 @@ reference | string | Order reference
 createdAt | string | Transaction creation timestamp
 href | string | If transaction is in status `new`, link to the hosted payment gateway
 provider | string | If processed, the name of the payment method provider
-filingCode | string | If paid, the filing code issued by the payment method provider
+filingCode | string | If paid, the filing code issued by the payment method provider if any. Some providers do not return the filing code.
 paidAt | string | Timestamp when the transaction was paid
 
 See [example response](/examples#get) from examples tab.
