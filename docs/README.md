@@ -72,6 +72,7 @@ field | info | description
 `checkout-nonce` | string | Unique identifier for this request
 `checkout-timestamp` | string | ISO 8601 date time
 `checkout-transaction-id` | string | Checkout transaction ID when accessing single transaction - not required for a new payment request
+`cof-plugin-version` | string | For SaaS services, use the marketing name of the platform. For eCommerce platform plugins, use the platform name, your identifier, and plugin version (for example, `woocommerce-yourcompany-1.1.0`). Platform information helps customer service to provide better assistance for the merchants using the plugin.
 
 The HTTP verb, nonce and timestamp are used to mitigate various replay and timing attacks. Below is an example payload passed to a HMAC function:
 
@@ -85,10 +86,6 @@ REQUEST BODY
 ```
 
 See also code examples of [HMAC calculation in node.js](/examples#hmac-calculation-node-js) and [HMAC calculation in PHP](/examples#hmac-calculation-php).
-
-#### For plugin developers
-
-In addition to headers included in HMAC calculation `cof-plugin-version` header can be provided. This is optional, but highly recommended for customer service and debugging reasons.
 
 ### Redirect and callback URL signing
 
