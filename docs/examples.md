@@ -67,8 +67,8 @@ You can find example payloads and responses for all the requests, as well as [co
 
 ```json
 {
-  "transactionId": "80621392",
-  "href": "https://api.checkout.fi/pay/80621392",
+  "transactionId": "5770642a-9a02-4ca2-8eaa-cc6260a78eb6",
+  "href": "https://api.checkout.fi/pay/5770642a-9a02-4ca2-8eaa-cc6260a78eb6",
   "providers": [
     {
       "url": "https://maksu.pivo.fi/api/payments",
@@ -178,27 +178,27 @@ You can find example payloads and responses for all the requests, as well as [co
         },
         {
           "name": "sph-success-url",
-          "value": "https://api.checkout.fi/payments/80621392/masterpass/success"
+          "value": "https://api.checkout.fi/payments/5770642a-9a02-4ca2-8eaa-cc6260a78eb6/masterpass/success"
         },
         {
           "name": "sph-cancel-url",
-          "value": "https://api.checkout.fi/payments/80621392/masterpass/cancel"
+          "value": "https://api.checkout.fi/payments/5770642a-9a02-4ca2-8eaa-cc6260a78eb6/masterpass/cancel"
         },
         {
           "name": "sph-failure-url",
-          "value": "https://api.checkout.fi/payments/80621392/masterpass/failure"
+          "value": "https://api.checkout.fi/payments/5770642a-9a02-4ca2-8eaa-cc6260a78eb6/masterpass/failure"
         },
         {
           "name": "sph-webhook-success-url",
-          "value": "https://api.checkout.fi/payments/80621392/masterpass/callback/success"
+          "value": "https://api.checkout.fi/payments/5770642a-9a02-4ca2-8eaa-cc6260a78eb6/masterpass/callback/success"
         },
         {
           "name": "sph-webhook-cancel-url",
-          "value": "https://api.checkout.fi/payments/80621392/masterpass/callback/cancel"
+          "value": "https://api.checkout.fi/payments/5770642a-9a02-4ca2-8eaa-cc6260a78eb6/masterpass/callback/cancel"
         },
         {
           "name": "sph-webhook-failure-url",
-          "value": "https://api.checkout.fi/payments/80621392/masterpass/callback/failure"
+          "value": "https://api.checkout.fi/payments/5770642a-9a02-4ca2-8eaa-cc6260a78eb6/masterpass/callback/failure"
         },
         {
           "name": "sph-webhook-delay",
