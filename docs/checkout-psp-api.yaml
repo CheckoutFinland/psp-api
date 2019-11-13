@@ -1106,8 +1106,16 @@ components:
 
     Payment:
       type: object
+      required:
+      - transctionId
+      - status
+      - amount
+      - currency
+      - stamp
+      - reference
+      - createdAt
       properties:
-        id:
+        transactionId:
           type: string
           format: uuid
           example: 93ee8d18-10db-410b-92ac-7d6e49369ce3
@@ -1150,7 +1158,7 @@ components:
           description: If processed, the name of the payment method provider
         filingCode:
           type: string
-          description: If paid, the filing code issued by the payment method provider
+          description: If paid, the filing code issued by the payment method provider if any
         paidAt:
           type: string
           example: '2019-10-30T09:14:28'

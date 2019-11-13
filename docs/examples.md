@@ -234,7 +234,7 @@ signature: 4d84e3aedaa847b23e672ff3bc9c57ae5d1c1e84aec251ce39914eaf250bb8b2
 
 ```json
 {
-  "id": "681538c4-fc84-11e9-83bc-2ffcef4c3453",
+  "transactionId": "681538c4-fc84-11e9-83bc-2ffcef4c3453",
   "status": "new",
   "amount": 1689,
   "currency": "EUR",
