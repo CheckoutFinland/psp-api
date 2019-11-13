@@ -217,11 +217,12 @@ Each provider describes a HTML form which the customer browser submits when perf
 
 field | type | description
 ------|------|------------
-url | string | Form target URL. Use `POST` as method.
-icon | string | URL to PNG version of the provider icon
-svg | string | URL to SVG version of the provider icon. Using the SVG icon is preferred.
+url   | string | Form target URL. Use `POST` as method.
+icon  | string | URL to PNG version of the provider icon
+svg   | string | URL to SVG version of the provider icon. Using the SVG icon is preferred.
 group | string | Provider group. Provider groups allow presenting same type of providers in separate groups which usually makes it easier for the customer to select a payment method. Groups are: `mobile`, `bank`, `creditcard`, `credit`, and `other`.
-name | string | Name of the provider.
+name  | string | Display name of the provider.
+id    | string | ID of the provider
 parameters | [FormField](#formfield) | Array of form fields
 
 ##### FormField
@@ -388,7 +389,7 @@ Status code | Explanation
     familyname: 'Mallikas',
     description: 'Webshop test payment',
     reference: '12345-545454',
-    paymentMethod: 'Osuuspankki',
+    paymentMethod: 'OP',
     stamp: '11-1560973275',
     address: 'Mallikkaankatu 1',
     postcode: '33100',

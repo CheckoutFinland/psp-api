@@ -1036,15 +1036,20 @@ components:
     BasePaymentMethodProvider:
       type: object
       required:
+      - id
       - name
       - icon
       - group
       - svg
       properties:
+        id:
+          type: string
+          example: osuuspankki
+          description: ID of the provider
         name:
           type: string
-          example: Osuuspankki
-          description: Name of the payment method
+          example: OP
+          description: Display name of the payment method
         svg:
           type: string
           format: url
@@ -1280,7 +1285,7 @@ components:
         paymentMethod:
           type: string
           description: Payment method
-          example: Osuuspankki
+          example: OP
         stamp:
           type: string
           description: Payment Stamp
