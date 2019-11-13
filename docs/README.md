@@ -36,6 +36,8 @@ Please note that not all payment methods support testing, so only the payment me
 * Aggregate secret key: `MONISAIPPUAKAUPPIAS`
 * Shop-in-Shop merchant ID: `695874`
 
+When opening a shop-in-shop payment, the request is signed with the aggregate merchant ID and secret key. Each item in a shop-in-shop payment request must list a valid shop-in-shop merchant ID. Aggregate merchant cannot be used in items.
+
 ## HTTP response summary
 
 General API HTTP status codes and what to expect of them.
