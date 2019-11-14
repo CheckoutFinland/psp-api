@@ -36,6 +36,8 @@ Please note that not all payment methods support testing, so only the payment me
 * Aggregate secret key: `MONISAIPPUAKAUPPIAS`
 * Shop-in-Shop merchant ID: `695874`
 
+When opening a shop-in-shop payment, the request is signed with the aggregate merchant ID and secret key. Each item in a shop-in-shop payment request must list a valid shop-in-shop merchant ID. Aggregate merchant cannot be used in items.
+
 ## HTTP response summary
 
 General API HTTP status codes and what to expect of them.
@@ -58,7 +60,7 @@ All API responses are signed the same way, allowing merchant to verify response 
 The signature is transmitted in the `signature` HTTP header. Signature payload consists of the following fields separated with a line feed (\n). Carrige returns (\r) are not supported.
 
 * All `checkout-` headers in alphabetical order. The header keys must be in lowercase. Each header key and value are separated with `:`
-* HTTP body, or empty string if no body
+* HTTP body in exactly the same format as it will be sent, or empty string if no body
 
 The headers are:
 
@@ -70,6 +72,7 @@ field | info | description
 `checkout-nonce` | string | Unique identifier for this request
 `checkout-timestamp` | string | ISO 8601 date time
 `checkout-transaction-id` | string | Checkout transaction ID when accessing single transaction - not required for a new payment request
+`cof-plugin-version` | string | For SaaS services, use the marketing name of the platform. For eCommerce platform plugins, use the platform name, your identifier, and plugin version (for example, `woocommerce-yourcompany-1.1.0`). Platform information helps customer service to provide better assistance for the merchants using the plugin.
 
 The HTTP verb, nonce and timestamp are used to mitigate various replay and timing attacks. Below is an example payload passed to a HMAC function:
 
@@ -83,10 +86,6 @@ REQUEST BODY
 ```
 
 See also code examples of [HMAC calculation in node.js](/examples#hmac-calculation-node-js) and [HMAC calculation in PHP](/examples#hmac-calculation-php).
-
-#### For plugin developers
-
-In addition to headers included in HMAC calculation `cof-plugin-version` header can be provided. This is optional, but highly recommended for customer service and debugging reasons.
 
 ### Redirect and callback URL signing
 
@@ -217,11 +216,12 @@ Each provider describes a HTML form which the customer browser submits when perf
 
 field | type | description
 ------|------|------------
-url | string | Form target URL. Use `POST` as method.
-icon | string | URL to PNG version of the provider icon
-svg | string | URL to SVG version of the provider icon. Using the SVG icon is preferred.
+url   | string | Form target URL. Use `POST` as method.
+icon  | string | URL to PNG version of the provider icon
+svg   | string | URL to SVG version of the provider icon. Using the SVG icon is preferred.
 group | string | Provider group. Provider groups allow presenting same type of providers in separate groups which usually makes it easier for the customer to select a payment method. Groups are: `mobile`, `bank`, `creditcard`, `credit`, and `other`.
-name | string | Name of the provider.
+name  | string | Display name of the provider.
+id    | string | ID of the provider
 parameters | [FormField](#formfield) | Array of form fields
 
 ##### FormField
@@ -268,11 +268,11 @@ The currently possible payment statuses are:
 
 status | description
 -------|------------
+`new` | Payment has been created but nothing more. Never returned as a result, but can be received from the `GET /payments/{transactionId}` endpoint
 `ok` | Payment was accepted by the provider and confirmed successfully
 `fail` | Payment was cancelled by the user or rejected by the provider
 `pending` | Payment was initially approved by the provider but further processing is needed. `pending` payments are reported as either `ok` or `fail` via callbacks, if provided, and using the redirect URLs. Currently this is Collector only, and rarely takes more than seconds or minutes to get an `ok` or  `fail`.
 `delayed` | A rare status related to a single payment method that is not generally enabled. May take days to complete. If completed, will be reported as `ok` via the callback *or* the redirect URL. This can be handled the same way as `pending`.
-
 
 ### Get
 
@@ -293,7 +293,7 @@ reference | string | Order reference
 createdAt | string | Transaction creation timestamp
 href | string | If transaction is in status `new`, link to the hosted payment gateway
 provider | string | If processed, the name of the payment method provider
-filingCode | string | If paid, the filing code issued by the payment method provider
+filingCode | string | If paid, the filing code issued by the payment method provider if any. Some providers do not return the filing code.
 paidAt | string | Timestamp when the transaction was paid
 
 See [example response](/examples#get) from examples tab.
@@ -388,7 +388,7 @@ Status code | Explanation
     familyname: 'Mallikas',
     description: 'Webshop test payment',
     reference: '12345-545454',
-    paymentMethod: 'Osuuspankki',
+    paymentMethod: 'OP',
     stamp: '11-1560973275',
     address: 'Mallikkaankatu 1',
     postcode: '33100',
