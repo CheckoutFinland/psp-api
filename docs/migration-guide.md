@@ -29,6 +29,8 @@ The new API is completely different from the legacy API. We've listed some of th
   * Merchant [authentication info in headers](/#headers-and-request-signing)
   * Signature calculation payload includes headers in alphabetical order and the full body payload
   * HMAC signed [JSON response](/#response)
+    * SVG icons provided
+    * Payment methods have a `group` attribute which allows easy grouping for improved user experience
   * No support for redirect, JSON document contains URL to hostead payment gateway, ie. payments must be initialized with a server-to-server call.
   * Checkout Finland transaction IDs are UUIDs and are used eg. for refunds or payment status queries
   * Swedish payments use correct language code (`SV`)
