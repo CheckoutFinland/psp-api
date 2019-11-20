@@ -22,7 +22,7 @@ The new API is completely different from the legacy API. We've listed some of th
   * Merchant authentication info in the [payment payload](https://checkoutfinland.github.io/legacy-api/#payment)
   * Signature calculation with form values in specific order joined with `+`, not all data included
   * Response either an XML document or HTTP redirect to hostead payment gateway
-  * Checkout Finland issued payment ID was an integer
+  * Payment API issued payment ID was an integer
   * Payload for shop-in-shop payments completely different from normal payment
   * Error replies were HTML pages with limited information on how to fix the problem
 * New API payments are initialized with a JSON POST to `https://api.checkout.fi/payments`
@@ -32,7 +32,7 @@ The new API is completely different from the legacy API. We've listed some of th
     * SVG icons provided
     * Payment methods have a `group` attribute which allows easy grouping for improved user experience
   * No support for redirect, JSON document contains URL to hostead payment gateway, ie. payments must be initialized with a server-to-server call.
-  * Checkout Finland transaction IDs are UUIDs and are used eg. for refunds or payment status queries
+  * Payment API transaction IDs are UUIDs and are used eg. for refunds or payment status queries
   * Swedish payments use correct language code (`SV`)
   * Payload for shop-in-shop payments pretty much the same as for normal payments
   * Correct HTTP status codes and understandable error replies in JSON format
@@ -62,7 +62,7 @@ The new API is completely different from the legacy API. We've listed some of th
   * Merchant defined [stamp and reference](https://checkoutfinland.github.io/legacy-api/#polling) used for locating the payment
   * XML response with status only
 * New status API is called with GET to `https://api.checkout.fi/payments/{transactionId}`
-  * Checkout issued [transaction ID used](/#get)
+  * Payment API issued [transaction ID used](/#get)
   * HMAC signed [JSON response](/#response1) with more information than just the status
 
 ## New endpoints in the new API
