@@ -69,6 +69,7 @@ You can find example payloads and responses for all the requests, as well as [co
 {
   "transactionId": "5770642a-9a02-4ca2-8eaa-cc6260a78eb6",
   "href": "https://api.checkout.fi/pay/5770642a-9a02-4ca2-8eaa-cc6260a78eb6",
+  "reference": "809759248",
   "providers": [
     {
       "url": "https://maksu.pivo.fi/api/payments",

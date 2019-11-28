@@ -208,6 +208,7 @@ field | type | description
 ------|------|------------
 transactionId | string | Assigned transaction ID for the payment
 href | string | URL to hosted payment gateway. Redirect (`HTTP GET`) user here if the payment forms cannot be rendered directly inside the web shop.
+reference | string | The bank reference used for the payments
 providers | [Provider](#provider) | Array of providers. Render these elements as HTML forms
 
 ##### Provider
