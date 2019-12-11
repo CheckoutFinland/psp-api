@@ -13,8 +13,6 @@ You can also ask for support by opening an issue on GitHub.
 Thank you!
 </p>
 
-If you are looking for the [legacy API documentation, see this](https://checkoutfinland.github.io/legacy-api/).
-
 ## API endpoint
 
 * API endpoint is `api.checkout.fi`
