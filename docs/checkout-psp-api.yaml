@@ -338,6 +338,21 @@ paths:
           schema:
             type: integer
             format: int32
+        - name: groups
+          in: query
+          description: Comma separated list of payment method groups to include in the reply.
+          schema:
+            type: array
+            items:
+              type: string
+              enum:
+              - mobile
+              - bank
+              - creditcard
+              - credit
+              - other
+          explode: false
+          style: form
       responses:
         '200':
           description: Payment methods available
@@ -739,6 +754,17 @@ components:
           maximum: 900
           example: 60
           description: Callback delay in seconds. If callback URLs and delay are provided, callbacks will be called after the delay.
+        groups:
+          description: Optionally return only payment methods for selected groups
+          type: array
+          items:
+            type: string
+            enum:
+            - mobile
+            - bank
+            - creditcard
+            - credit
+            - other
 
     Item:
       type: object
