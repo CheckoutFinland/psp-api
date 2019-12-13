@@ -150,6 +150,7 @@ invoicingAddress | [Address](#address) | <center>-</center> | Invoicing address
 redirectUrls | [CallbackUrl](#callbackurl) | <center>x</center> | Where to redirect browser after a payment is paid or cancelled.
 callbackUrls | [CallbackUrl](#callbackurl) | <center>-</center> | Which url to ping after this payment is paid or cancelled
 callbackDelay | number | <center>-</center> | Callback URL polling delay in seconds. If callback URLs are given, the call can be delayed up to 900 seconds. Default: 0
+groups | [PaymentMethodGroup](#paymentmethodgroup)[] | <center>-</center> | Instead of all enabled payment methods, return only those of given groups. It is highly recommend to use [list providers](#list-providers) before initiating the payment if filtering by group. If the payment methods are rendered in the webshop the grouping functionality can be implemented based on the `group` attribute of each returned payment instead of filtering when creating a payment.
 
 ##### Item
 
@@ -226,7 +227,7 @@ Field | Type | Description
 url   | string | Form target URL. Use `POST` as method.
 icon  | string | URL to PNG version of the provider icon
 svg   | string | URL to SVG version of the provider icon. Using the SVG icon is preferred.
-group | string | Provider group. Provider groups allow presenting same type of providers in separate groups which usually makes it easier for the customer to select a payment method. Groups are: `mobile`, `bank`, `creditcard`, `credit`, and `other`.
+group | [PaymentMethodGroup](#paymentmethodgroup) | Provider group. Provider groups allow presenting same type of providers in separate groups which usually makes it easier for the customer to select a payment method.
 name  | string | Display name of the provider.
 id    | string | ID of the provider
 parameters | [FormField](#formfield) | Array of form fields
@@ -239,6 +240,16 @@ Field | Type | Description
 ------|------|------------
 name | string | Name of the input
 value | string | Value of the input
+
+##### PaymentMethodGroup
+
+ID | Description
+-- | -----------
+`mobile` | Mobile payment methods: Pivo, Siirto, MobilePay, Masterpass
+`bank` | Bank payment methods
+`creditcard` | Visa, MasterCard, American Express
+`credit` | Instalment and invoice payment methods: OP Lasku, Collector, Mash, Jousto, AfterPay
+`other` | Miscellaneous methods: AinaPay
 
 #### Redirect and callback URL parameters
 
@@ -460,7 +471,7 @@ Status code | Explanation
 
 ## Merchants
 
-Actions related to the merchant object are mapped to the `/merchant` API endpoint.
+Actions related to merchants are mapped under `/merchants` API endpoint.
 
 ### List providers
 
@@ -468,11 +479,12 @@ Actions related to the merchant object are mapped to the `/merchant` API endpoin
 
 #### HTTP GET query parameters
 
-Field | Type | Example | Description
------ | ---- | ------- | -----------
-amount | integer, optional | 1000 | Purchase amount in currency's minor unit. Some payment methods have minimum or maximum purchase limits. When the amount is provided, only the methods suitable for the amount are returned. Otherwise, all merchant's payment methods are returned.
+Field | Type | Required | Example | Description
+----- | ---- | -------- | ------- | -----------
+amount | integer | <center>-</center> | 1000 | Purchase amount in currency's minor unit. Some payment methods have minimum or maximum purchase limits. When the amount is provided, only the methods suitable for the amount are returned. Otherwise, all merchant's payment methods are returned.
+groups | [PaymentMethodGroup](#paymentmethodgroup)[] | <center>-</center> | mobile,creditcard | Comma separated list of payment method groups to include. Otherwise all enabled methods are returned.
 
 Example
 ```
-/merchants/payment-providers?amount=1000
+/merchants/payment-providers?amount=1000&groups=mobile,creditcard
 ```
