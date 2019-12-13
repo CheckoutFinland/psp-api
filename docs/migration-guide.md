@@ -21,7 +21,7 @@ The new API is completely different from the legacy API. We've listed some of th
 * Legacy API payments were initiated with a form data POST to `https://payment.checkout.fi/`
   * Merchant authentication info in the [payment payload](https://checkoutfinland.github.io/legacy-api/#payment)
   * Signature calculation with form values in specific order joined with `+`, not all data included
-  * Response either an XML document or HTTP redirect to hostead payment gateway
+  * Response either an XML document or HTTP redirect to hosted payment gateway
   * Payment API issued payment ID was an integer
   * Payload for shop-in-shop payments completely different from normal payment
   * Error replies were HTML pages with limited information on how to fix the problem
@@ -31,8 +31,8 @@ The new API is completely different from the legacy API. We've listed some of th
   * HMAC signed [JSON response](/#response)
     * SVG icons provided
     * Payment methods have a `group` attribute which allows easy grouping for improved user experience
-  * No support for redirect, JSON document contains URL to hostead payment gateway, ie. payments must be initialized with a server-to-server call.
-  * Payment API transaction IDs are UUIDs and are used eg. for refunds or payment status queries
+  * No support for redirect, JSON document contains URL to hosted payment gateway, i.e. payments must be initialized with a server-to-server call.
+  * Payment API transaction IDs are UUIDs and are used e.g. for refunds or payment status queries
   * Swedish payments use correct language code (`SV`)
   * Payload for shop-in-shop payments pretty much the same as for normal payments
   * Correct HTTP status codes and understandable error replies in JSON format
@@ -43,7 +43,7 @@ The new API is completely different from the legacy API. We've listed some of th
   * Payment status is a number with [many possible values](https://checkoutfinland.github.io/legacy-api/#payment-statuses)
 * New API does client browser redirects too, but offers an option to define callback URLs
   * [Callback URLs](/#create-request-body) are server-to-server calls and can be delayed
-  * Callback URLs ensure that payment is registered also to the shop even if client browser does not return. Callback URLs are used also with providers supporting them which means that eg. credit card payments are always registered to shop regardless of what client browser does
+  * Callback URLs ensure that payment is registered also to the shop even if client browser does not return. Callback URLs are used also with providers supporting them which means that e.g. credit card payments are always registered to shop regardless of what client browser does
   * Human readable [payment statuses](/#statuses)
   * Used payment method [is reported to shop too](/#redirect-and-callback-url-parameters)
 
