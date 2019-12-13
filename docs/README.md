@@ -99,6 +99,14 @@ The following illustrates how the user moves in the payment process.
 sequenceDiagram
 
 Client ->> Merchant: Proceed to checkout
+
+opt Without opening a new payment before client proceeds
+Merchant ->> api.checkout.fi: List methods (GET /merchant/payment-providers)
+api.checkout.fi ->> Merchant: Suitable payment methods
+Merchant ->> Client: Render suitable payment methods
+Client ->> Merchant: Select a payment method
+end
+
 Merchant ->> api.checkout.fi: Initiate new payment (POST /payments)
 api.checkout.fi ->> Merchant: JSON with payment methods
 Merchant ->> Client: Render payment method buttons
