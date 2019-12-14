@@ -490,6 +490,66 @@ if ($responseHmac !== $response->getHeader('signature')[0]) {
 echo "\n\nRequest ID: {$response->getHeader('cof-request-id')[0]}\n\n";
 ```
 
+### HMAC calculation (Ruby)
+
+```ruby
+require 'json'
+require 'openssl'
+
+ACCOUNT = '375917'
+SECRET = 'SAIPPUAKAUPPIAS'
+
+# Calculate HMAC
+#
+# @param {string} secret Merchant shared secret
+# @param {hash} params The checkout-* headers
+# @param {hash|nil} body Request body or nil for GET requests
+# @return string SHA-256 HMAC
+def calculate_hmac(secret, params, body=nil)
+  payload = ''
+  # Must be in alphabetical order
+  params = params.sort
+  params.each { |key, val| payload += "#{key}:#{val}\n" }
+  payload += JSON.generate body if body
+  OpenSSL::HMAC.hexdigest("SHA256", secret, payload)
+end
+
+headers = {
+    'checkout-account': ACCOUNT,
+    'checkout-algorithm': 'sha256',
+    'checkout-method': 'POST',
+    'checkout-nonce': '564635208570151',
+    'checkout-timestamp': '2018-07-06T10:01:31.904Z'
+}
+
+body = {
+    stamp: 'unique-identifier-for-merchant',
+    reference: '3759170',
+    amount: 1525,
+    currency: 'EUR',
+    language:'FI',
+    items: [
+        {
+            unitPrice: 1525,
+            units: 1,
+            vatPercentage: 24,
+            productCode: '#1234',
+            deliveryDate: '2018-09-01'
+        }
+    ],
+    customer: {
+        email: 'test.customer@example.com'
+    },
+    redirectUrls: {
+        success: 'https://ecom.example.com/cart/success',
+        cancel: 'https://ecom.example.com/cart/cancel'
+    }
+}
+
+# Expected HMAC: 3708f6497ae7cc55a2e6009fc90aa10c3ad0ef125260ee91b19168750f6d74f6
+calculate_hmac(SECRET, headers, body)
+```
+
 ### Payment provider form rendering
 
 Dummy form rendering from the example [response](#response):
