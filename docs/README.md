@@ -350,6 +350,37 @@ Note, that at the moment HTTP 400 may occur also for 3rd party reasons - eg. bac
 
 Checkout provides an API for tokenizing payment cards and issuing payments on those tokenized payment cards.
 
+### Adding (tokenizing) cards
+
+Checkout utilizes its [PaymentHighway](https://www.paymenthighway.io/)-service for tokenizing cards.
+
+Adding a new card stores the payment card information to Checkout and returns a tokenization id that can be used to fetch a card token for payments.
+
+The following illustrates how the user moves in the card tokenization process:
+
+<div class='mermaid'>
+sequenceDiagram
+
+Client ->> Merchant backend: Initialize adding card
+Merchant backend -->> Client: Checkout add card form request details
+Client ->> api.checkout.fi: Request add card form (POST /tokenization/addcard-form)
+api.checkout.fi -->> Client: HTTP 302 Redirect to add card form
+Client ->> PaymentHighway: Redirect to add card form
+PaymentHighway -->> api.checkout.fi: HTTP 302 Redirect to Checkout service
+
+alt success
+  api.checkout.fi -->> Merchant backend: HTTP 302 Redirect to Merchant success URL with 'checkout-tokenization-id'
+  Merchant backend -->> Client: display success view
+  Merchant backend ->> api.checkout.fi: Tokenize with tokenization id (POST /tokenization/{checkout-tokenization-id})
+  api.checkout.fi -->> Merchant backend: Card token
+  Merchant backend ->> Merchant backend: Save token to DB
+else failure
+  api.checkout.fi -->> Merchant backend: HTTP 302 Redirect to Merchant failure URL
+  Merchant backend -->> Client: display failure view
+end
+
+</div>
+
 ### Charging a tokenized card
 
 After the introduction of the European PSD2 directive, the electronic payment transactions are categorised in so called [customer initiated transactions (CIT)](#customer-initiated-transactions-cit) and [merchant initiated transactions (MIT)](#merchant-initiated-transactions-mit).
@@ -368,7 +399,7 @@ Regardless, there is always a possibility the card issuer requires strong custom
 
 After the user has authenticated with 3DS, the user is redirected to Checkout services and an authorization hold on the user bank account is created. If the merchants initial request is a direct charge request, the payment is also committed from the bank account. Finally, Checkout redirects the user back to the merchant URL.
 
-The following illustrates how the user moves in the tokenization payment process:
+The following illustrates how the user moves in the token payment process:
 
 <div class='mermaid'>
 sequenceDiagram
@@ -394,8 +425,6 @@ alt 3DS required
       api.checkout.fi ->> api.checkout.fi: Commit authorization hold
     end
   end
-
-
 end
 
 api.checkout.fi -->> Client: Redirect to Merchant success/cancel URL
