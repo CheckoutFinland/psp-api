@@ -38,7 +38,7 @@ Some payment method providers have minimum and/or maximum amounts for the purcha
 
 ### Refunds
 
-API refunds have been impmeneted for all providers supporting them. Currently payments created by the following methods can be refunded only with email refunds due to their lack of a refund API:
+API refunds have been implemented for all providers supporting them. Currently payments created by the following methods can be refunded only with email refunds due to their lack of a refund API:
 
 * S-pankki
 * Ålandsbanken
