@@ -393,9 +393,9 @@ checkout-account | numeric | <center>x</center>| Checkout account ID
 checkout-algorithm | string | <center>x</center>| Used signature algorithm. The same as used by merchant when creating the payment.
 checkout-redirect-success-url | string | <center>x</center> | Merchant's url for user redirect on successful card addition
 checkout-redirect-cancel-url | string | <center>x</center> | Merchant's url for user redirect on failed card addition
-checkout-callback-success-url | string | <center>-</center> | Called on successful card addition
-checkout-callback-cancel-url | string | <center>-</center> | Called on failed card addition
-language | alpha2 | <center>-</center> | Payment's language, currently supported are `FI`, `SV`, and `EN`
+checkout-callback-success-url | string | <center>-</center> | Merchant's url called on successful card addition
+checkout-callback-cancel-url | string | <center>-</center> | Merchant's url called on failed card addition
+language | alpha2 | <center>-</center> | Card addition form language, currently supported are `FI`, `SV`, and `EN`
 
 ##### Response
 
@@ -530,6 +530,10 @@ transactionId | string | Assigned transaction ID for the payment
 `HTTP POST /payments/{transactionId}/token/revert` reverts an existing authorization hold.
 
 A successful revert will remove the authorization hold from the payer's bank account.
+
+##### Request
+
+No request body required.
 
 ##### Response
 
