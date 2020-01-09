@@ -401,7 +401,7 @@ language | alpha2 | <center>-</center> | Card addition form language, currently 
 
 On a successful request, user is `HTTP 302` redirected to PaymentHighway card addition form page.
 
-#### Tokenize tokenization id
+#### Get token
 
 `HTTP POST /tokenization/{checkout-tokenization-id}` is requested after the merchant has received a `checkout-tokenization-id` from the success redirect URL parameters.
 
