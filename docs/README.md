@@ -421,7 +421,7 @@ field | type | description
 ------|------|------------
 token | string | Payment card token
 
-### Charging a tokenized card
+### Charging a token
 
 After the introduction of the European PSD2 directive, the electronic payment transactions are categorised in so called [customer initiated transactions (CIT)](#customer-initiated-transactions-cit) and [merchant initiated transactions (MIT)](#merchant-initiated-transactions-mit).
 
