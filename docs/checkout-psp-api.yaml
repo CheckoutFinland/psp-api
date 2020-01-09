@@ -469,7 +469,7 @@ paths:
       - token payments
       summary: Request a redirect to card addition form
       description: |
-        Request a redirect to card addition form. This will redirect user to PaymentHighway card addition form, then back to Checkout servers, and finally to merchant's redirect url.
+        Request a redirect to card addition form. This will redirect user to the card addition form, then back to Checkout servers, and finally to merchant's redirect url.
       operationId: addCardForm
       requestBody:
         description: Add card payload
@@ -480,7 +480,7 @@ paths:
               $ref: '#/components/schemas/AddCardFormRequest'
       responses:
         '302':
-          description: Redirect to PaymentHighway card addition form (or checkout-redirect-cancel-url)
+          description: Redirect to card addition form (or checkout-redirect-cancel-url)
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':

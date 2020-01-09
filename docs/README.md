@@ -352,8 +352,6 @@ Checkout provides an API for tokenizing payment cards and issuing payments on th
 
 ### Adding (tokenizing) cards
 
-Checkout utilizes its [PaymentHighway](https://www.paymenthighway.io/)-service for tokenizing cards.
-
 Adding a new card stores the payment card information to Checkout and returns a tokenization id that can be used to fetch a card token for payments.
 
 The following illustrates how the user moves in the card tokenization process:
@@ -365,8 +363,8 @@ Client ->> Merchant backend: Initialize adding card
 Merchant backend -->> Client: Checkout add card form request details
 Client ->> api.checkout.fi: Request add card form (POST /tokenization/addcard-form)
 api.checkout.fi -->> Client: HTTP 302 Redirect to add card form
-Client ->> PaymentHighway: Redirect to add card form
-PaymentHighway -->> api.checkout.fi: HTTP 302 Redirect to Checkout service
+Client ->> Card addition form: Redirect to add card form
+Card addition form -->> api.checkout.fi: HTTP 302 Redirect to Checkout service
 
 alt success
   api.checkout.fi -->> Merchant backend: HTTP 302 Redirect to Merchant success URL with 'checkout-tokenization-id'
@@ -383,7 +381,7 @@ end
 
 #### Add card form
 
-`HTTP POST /tokenization/addcard-form` is requested from the user's browser. On a successful request the user will be redirected to Checkout's [PaymentHighway](https://www.paymenthighway.io/)-service where user will input credit card information.
+`HTTP POST /tokenization/addcard-form` is requested from the user's browser. On a successful request the user will be redirected to Checkout's card addition service where user will input credit card information.
 
 ##### Request
 
@@ -399,7 +397,7 @@ language | alpha2 | <center>-</center> | Card addition form language, currently 
 
 ##### Response
 
-On a successful request, user is `HTTP 302` redirected to PaymentHighway card addition form page.
+On a successful request, user is `HTTP 302` redirected to Checkout's card addition form page.
 
 #### Get token
 
