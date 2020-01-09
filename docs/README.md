@@ -370,16 +370,56 @@ PaymentHighway -->> api.checkout.fi: HTTP 302 Redirect to Checkout service
 
 alt success
   api.checkout.fi -->> Merchant backend: HTTP 302 Redirect to Merchant success URL with 'checkout-tokenization-id'
-  Merchant backend -->> Client: display success view
   Merchant backend ->> api.checkout.fi: Tokenize with tokenization id (POST /tokenization/{checkout-tokenization-id})
   api.checkout.fi -->> Merchant backend: Card token
   Merchant backend ->> Merchant backend: Save token to DB
+  Merchant backend -->> Client: display success view
 else failure
   api.checkout.fi -->> Merchant backend: HTTP 302 Redirect to Merchant failure URL
   Merchant backend -->> Client: display failure view
 end
 
 </div>
+
+#### Add card form
+
+`HTTP POST /tokenization/addcard-form` is requested from the user's browser. On a successful request the user will be redirected to Checkout's [PaymentHighway](https://www.paymenthighway.io/)-service where user will input credit card information.
+
+##### Request
+
+field | info | required | description
+----- | ---- | -------- | -----------
+checkout-account | numeric | <center>x</center>| Checkout account ID
+checkout-algorithm | string | <center>x</center>| Used signature algorithm. The same as used by merchant when creating the payment.
+checkout-redirect-success-url | string | <center>x</center> | Merchant's url for user redirect on successful card addition
+checkout-redirect-cancel-url | string | <center>x</center> | Merchant's url for user redirect on failed card addition
+checkout-callback-success-url | string | <center>-</center> | Called on successful card addition
+checkout-callback-cancel-url | string | <center>-</center> | Called on failed card addition
+language | alpha2 | <center>-</center> | Payment's language, currently supported are `FI`, `SV`, and `EN`
+
+##### Response
+
+On a successful request, user is `HTTP 302` redirected to PaymentHighway card addition form page.
+
+#### Tokenize tokenization id
+
+`HTTP POST /tokenization/{checkout-tokenization-id}` is requested after the merchant has received a `checkout-tokenization-id` from the success redirect URL parameters.
+
+This request returns the actual card token, which can then be used to make payments on the card.
+
+##### Request
+
+No request body required.
+
+##### Response
+
+If tokenization is successful, `HTTP 200` and the `token` of the card is returned.
+
+This token is used to make authorization holds & charges on the payment card.
+
+field | type | description
+------|------|------------
+token | string | Payment card token
 
 ### Charging a tokenized card
 
