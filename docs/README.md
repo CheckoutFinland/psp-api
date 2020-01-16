@@ -17,39 +17,7 @@ Thank you!
 
 * API endpoint is `api.checkout.fi`
 
-## Test credentials
-
-Please note that not all payment methods support testing, so only the payment methods that support testing payments are enabled for these credentials. Provider specific credentials for approving payments can be found from [providers tab](/payment-method-providers#test-credentials). Payments created with test accounts will be removed daily which means older payments cannot be refunded.
-
-### Normal merchant account
-
-* Merchant ID: `375917`
-* Secret key: `SAIPPUAKAUPPIAS`
-
-### Shop-in-Shop merchant account
-
-*Note:* Use these only if you are setting up a [Shop-in-Shop](https://www.checkout.fi/vinkkipankki/mita-shop-in-shop-kauppapaikat-ovat) web shop.
-
-* Aggregate merchant ID: `695861`
-* Aggregate secret key: `MONISAIPPUAKAUPPIAS`
-* Shop-in-Shop merchant ID: `695874`
-
-When opening a shop-in-shop payment, the request is signed with the aggregate merchant ID and secret key. Each item in a shop-in-shop payment request must list a valid shop-in-shop merchant ID. Aggregate merchant cannot be used in items.
-
-## HTTP response summary
-
-General API HTTP status codes and what to expect of them.
-
-Code | Text | Description
----- | ---- | -----------
-200  | OK   | Everything worked as expected.
-201  | Created | A payment/refund was created successfully.
-400  | Bad Request |The request was unacceptable, probably due to missing a required parameter.
-401  | Unauthorized | HMAC calculation failed or Merchant has no access to this feature.
-404  | Not Found | The requested resource doesn't exist.
-422  | Unprocessable Entity | The requested method is not supported.
-
-## Headers and request signing
+## Authentication
 
 All API calls need to be signed using HMAC and SHA-256 or SHA-512. When a request contains a body, the body must be valid JSON and a `content-type` header with the value `application/json; charset=utf-8` must be included.
 
@@ -84,6 +52,25 @@ REQUEST BODY
 ```
 
 See also code examples of [HMAC calculation in node.js](/examples#hmac-calculation-node-js) and [HMAC calculation in PHP](/examples#hmac-calculation-php).
+
+### Test credentials
+
+Please note that not all payment methods support testing, so only the payment methods that support testing payments are enabled for these credentials. Provider specific credentials for approving payments can be found from [providers tab](/payment-method-providers#test-credentials). Payments created with test accounts will be removed daily which means older payments cannot be refunded.
+
+#### Normal merchant account
+
+* Merchant ID: `375917`
+* Secret key: `SAIPPUAKAUPPIAS`
+
+#### Shop-in-Shop merchant account
+
+*Note:* Use these only if you are setting up a [Shop-in-Shop](https://www.checkout.fi/vinkkipankki/mita-shop-in-shop-kauppapaikat-ovat) web shop.
+
+* Aggregate merchant ID: `695861`
+* Aggregate secret key: `MONISAIPPUAKAUPPIAS`
+* Shop-in-Shop merchant ID: `695874`
+
+When opening a shop-in-shop payment, the request is signed with the aggregate merchant ID and secret key. Each item in a shop-in-shop payment request must list a valid shop-in-shop merchant ID. Aggregate merchant cannot be used in items.
 
 ### Redirect and callback URL signing
 
@@ -488,3 +475,16 @@ Example
 ```
 /merchants/payment-providers?amount=1000&groups=mobile,creditcard
 ```
+
+## HTTP response summary
+
+General API HTTP status codes and what to expect of them.
+
+Code | Text | Description
+---- | ---- | -----------
+200  | OK   | Everything worked as expected.
+201  | Created | A payment/refund was created successfully.
+400  | Bad Request |The request was unacceptable, probably due to missing a required parameter.
+401  | Unauthorized | HMAC calculation failed or Merchant has no access to this feature.
+404  | Not Found | The requested resource doesn't exist.
+422  | Unprocessable Entity | The requested method is not supported.
