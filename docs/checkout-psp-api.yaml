@@ -1244,31 +1244,7 @@ components:
           items:
             $ref: '#/components/schemas/Item'
         customer:
-          type: object
-          required:
-          - email
-          properties:
-            email:
-              type: string
-              format: email
-              example: john.doe@example.org
-              description: Customer email address
-            firstName:
-              type: string
-              example: John
-              description: Customer first name
-            lastName:
-              type: string
-              example: Doe
-              description: Customer last name
-            phone:
-              type: string
-              example: +358501234567
-              description: Customer phone number
-            vatId:
-              type: string
-              example: FI02454583
-              description: Company VAT ID in international format
+          $ref: '#/components/schemas/Customer'
         deliveryAddress:
           $ref: '#/components/schemas/Address'
         invoicingAddress:
@@ -1296,6 +1272,7 @@ components:
       - customer
       - items
       - redirectUrls
+      - token
       properties:
         stamp:
           type: string
@@ -1336,31 +1313,7 @@ components:
           items:
             $ref: '#/components/schemas/Item'
         customer:
-          type: object
-          required:
-          - email
-          properties:
-            email:
-              type: string
-              format: email
-              example: john.doe@example.org
-              description: Customer email address
-            firstName:
-              type: string
-              example: John
-              description: Customer first name
-            lastName:
-              type: string
-              example: Doe
-              description: Customer last name
-            phone:
-              type: string
-              example: +358501234567
-              description: Customer phone number
-            vatId:
-              type: string
-              example: FI02454583
-              description: Company VAT ID in international format
+          $ref: '#/components/schemas/Customer'
         deliveryAddress:
           $ref: '#/components/schemas/Address'
         invoicingAddress:
@@ -1517,6 +1470,33 @@ components:
           example: SE
           maxLength: 2
           description: Alpha-2 country code
+
+    Customer:
+      type: object
+      required:
+      - email
+      properties:
+        email:
+          type: string
+          format: email
+          example: john.doe@example.org
+          description: Customer email address
+        firstName:
+          type: string
+          example: John
+          description: Customer first name
+        lastName:
+          type: string
+          example: Doe
+          description: Customer last name
+        phone:
+          type: string
+          example: +358501234567
+          description: Customer phone number
+        vatId:
+          type: string
+          example: FI02454583
+          description: Company VAT ID in international format
 
     # Refund request payload
     # - Normal merchant:

@@ -381,7 +381,7 @@ end
 
 #### Add card form
 
-`HTTP POST /tokenization/addcard-form` is requested from the user's browser. On a successful request the user will be redirected to Checkout's card addition service where user will input credit card information.
+`HTTP POST /tokenization/addcard-form` is a form post requested from the user's browser. On a successful request the user will be redirected to Checkout's card addition service where user will input credit card information.
 
 ##### Request
 
@@ -401,7 +401,7 @@ On a successful request, user is `HTTP 302` redirected to Checkout's card additi
 
 #### Get token
 
-`HTTP POST /tokenization/{checkout-tokenization-id}` is requested after the merchant has received a `checkout-tokenization-id` from the success redirect URL parameters.
+`HTTP POST /tokenization/{checkout-tokenization-id}` is requested after the merchant has received a `checkout-tokenization-id` from the success redirect URL parameters, or the callback URL request if given.
 
 This request returns the actual card token, which can then be used to make payments on the card.
 
@@ -413,7 +413,7 @@ No request body required.
 
 If tokenization is successful, `HTTP 200` and the `token` of the card is returned.
 
-This token is used to make authorization holds & charges on the payment card.
+This token is used to make authorization holds and charges on the payment card.
 
 field | type | description
 ------|------|------------
@@ -435,7 +435,7 @@ When charging a token using customer initiated transaction, applicable exemption
 
 Regardless, there is always a possibility the card issuer requires strong customer authentication by requesting a step-up. In this case, the response will contain "soft decline" result code 403 and an URL, where the customer needs to be redirected to, in order to perform the authentication.
 
-After the user has authenticated with 3DS, the user is redirected to Checkout services and an authorization hold on the user bank account is created. If the merchants initial request is a direct charge request, the payment is also committed from the bank account. Finally, Checkout redirects the user back to the merchant URL.
+After the user has authenticated with 3DS, the user is redirected to Checkout services and an authorization hold on the user card is created. If the merchants initial request is a direct charge request, the payment is also committed from the card. Finally, Checkout redirects the user back to the merchant URL.
 
 The following illustrates how the user moves in the token payment process:
 
@@ -457,7 +457,7 @@ alt 3DS required
   3DS Server -->> api.checkout.fi: 3DS result
 
   alt success
-    Note over Client,api.checkout.fi: Authorization hold created on bank account
+    Note over Client,api.checkout.fi: Authorization hold created on card
 
     alt direct charge
       api.checkout.fi ->> api.checkout.fi: Commit authorization hold
@@ -505,7 +505,7 @@ threeDSecureUrl | string | 3DS redirect URL
 
 `HTTP POST /payments/{transactionId}/token/commit` commits an existing authorization hold.
 
-A successful commit will charge the payer's bank account.
+A successful commit will charge the payer's card.
 
 ##### Request
 
@@ -527,7 +527,7 @@ transactionId | string | Assigned transaction ID for the payment
 
 `HTTP POST /payments/{transactionId}/token/revert` reverts an existing authorization hold.
 
-A successful revert will remove the authorization hold from the payer's bank account.
+A successful revert will remove the authorization hold from the payer's card.
 
 ##### Request
 
