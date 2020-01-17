@@ -17,39 +17,7 @@ Thank you!
 
 * API endpoint is `api.checkout.fi`
 
-## Test credentials
-
-Please note that not all payment methods support testing, so only the payment methods that support testing payments are enabled for these credentials. Provider specific credentials for approving payments can be found from [providers tab](/payment-method-providers#test-credentials). Payments created with test accounts will be removed daily which means older payments cannot be refunded.
-
-### Normal merchant account
-
-* Merchant ID: `375917`
-* Secret key: `SAIPPUAKAUPPIAS`
-
-### Shop-in-Shop merchant account
-
-*Note:* Use these only if you are setting up a [Shop-in-Shop](https://www.checkout.fi/vinkkipankki/mita-shop-in-shop-kauppapaikat-ovat) web shop.
-
-* Aggregate merchant ID: `695861`
-* Aggregate secret key: `MONISAIPPUAKAUPPIAS`
-* Shop-in-Shop merchant ID: `695874`
-
-When opening a shop-in-shop payment, the request is signed with the aggregate merchant ID and secret key. Each item in a shop-in-shop payment request must list a valid shop-in-shop merchant ID. Aggregate merchant cannot be used in items.
-
-## HTTP response summary
-
-General API HTTP status codes and what to expect of them.
-
-Code | Text | Description
----- | ---- | -----------
-200  | OK   | Everything worked as expected.
-201  | Created | A payment/refund was created successfully.
-400  | Bad Request |The request was unacceptable, probably due to missing a required parameter.
-401  | Unauthorized | HMAC calculation failed or Merchant has no access to this feature.
-404  | Not Found | The requested resource doesn't exist.
-422  | Unprocessable Entity | The requested method is not supported.
-
-## Headers and request signing
+## Authentication
 
 All API calls need to be signed using HMAC and SHA-256 or SHA-512. When a request contains a body, the body must be valid JSON and a `content-type` header with the value `application/json; charset=utf-8` must be included.
 
@@ -84,6 +52,25 @@ REQUEST BODY
 ```
 
 See also code examples of [HMAC calculation in node.js](/examples#hmac-calculation-node-js) and [HMAC calculation in PHP](/examples#hmac-calculation-php).
+
+### Test credentials
+
+Please note that not all payment methods support testing, so only the payment methods that support testing payments are enabled for these credentials. Provider specific credentials for approving payments can be found from [providers tab](/payment-method-providers#test-credentials). Payments created with test accounts will be removed daily which means older payments cannot be refunded.
+
+#### Normal merchant account
+
+* Merchant ID: `375917`
+* Secret key: `SAIPPUAKAUPPIAS`
+
+#### Shop-in-Shop merchant account
+
+*Note:* Use these only if you are setting up a [Shop-in-Shop](https://www.checkout.fi/vinkkipankki/mita-shop-in-shop-kauppapaikat-ovat) web shop.
+
+* Aggregate merchant ID: `695861`
+* Aggregate secret key: `MONISAIPPUAKAUPPIAS`
+* Shop-in-Shop merchant ID: `695874`
+
+When opening a shop-in-shop payment, the request is signed with the aggregate merchant ID and secret key. Each item in a shop-in-shop payment request must list a valid shop-in-shop merchant ID. Aggregate merchant cannot be used in items.
 
 ### Redirect and callback URL signing
 
@@ -129,127 +116,69 @@ Merchant ->> Client: Render thank you -page
 
 Once the payment has been completed the client browser will return to the merchant provided redirect URL.
 
-The request payload is described below, as well as the redirect and callback URL parameters. [JSON example payload and response](/examples#create) are available on the examples tab.
-
 [List providers](#list-providers) endpoint can be used to receive available payment methods without opening a new payment.
 
-#### Create request body
+#### Request
 
-Field | Type | Required | Description
------ | ---- | -------- | -----------
-stamp | string | <center>x</center> | Merchant unique identifier for the order
-reference | string | <center>x</center> | Order reference
-amount | integer | <center>x</center> | Total amount of the payment in currency's minor units, e.g. for Euros use cents. Must match the total sum of items.
-currency | alpha3 | <center>x</center> | Currency, only `EUR` supported at the moment
-language | alpha2 | <center>x</center> | Payment's language, currently supported are `FI`, `SV`, and `EN`
-orderId | string | <center>-</center> | Order ID. Used for e.g. Collector payments order ID. If not given, merchant reference is used instead.
-items | [Item](#item)[] | <center>x</center> | Array of items
-customer | [Customer](#customer) | <center>x</center> | Customer information
-deliveryAddress | [Address](#address) | <center>-</center> | Delivery address
-invoicingAddress | [Address](#address) | <center>-</center> | Invoicing address
-redirectUrls | [CallbackUrl](#callbackurl) | <center>x</center> | Where to redirect browser after a payment is paid or cancelled.
-callbackUrls | [CallbackUrl](#callbackurl) | <center>-</center> | Which url to ping after this payment is paid or cancelled
-callbackDelay | number | <center>-</center> | Callback URL polling delay in seconds. If callback URLs are given, the call can be delayed up to 900 seconds. Default: 0
-groups | [PaymentMethodGroup](#paymentmethodgroup)[] | <center>-</center> | Instead of all enabled payment methods, return only those of given groups. It is highly recommended to use [list providers](#list-providers) before initiating the payment if filtering by group. If the payment methods are rendered in the webshop the grouping functionality can be implemented based on the `group` attribute of each returned payment instead of filtering when creating a payment.
+See all available fields from [create payment request body section](#create-payment).
 
-##### Item
-
-Field | Type | Required | Example | Description
------ | ---- | -------- | ------- | -----------
-unitPrice | integer | <center>x</center> | 1000 | Price per unit, VAT included, in each country's minor unit, e.g. for Euros use cents
-units | integer | <center>x</center> | 5 | Quantity, how many items ordered
-vatPercentage | integer | <center>x</center> | 24 | VAT percentage
-productCode | string | <center>x</center> | 9a | Merchant product code. May appear on invoices of certain payment methods.
-deliveryDate | string | <center>x</center> | 2019-12-31 | When is this item going to be delivered
-description | string | <center>-</center> | Bear suits for adults | Item description. May appear on invoices of certain payment methods.
-category | string | <center>-</center> | fur suits | Merchant specific item category
-orderId | string |  <center>-</center> |  | Item level order ID (suborder ID). Mainly useful for Shop-in-Shop purchases.
-stamp | string | <center>-</center> | d4aca017-f1e7-4fa5-bfb5-2906e141ebac | Unique identifier for this item. Required for Shop-in-Shop payments.
-reference | string | <center>-</center> | fur-suits-5 | Reference for this item. Required for Shop-in-Shop payments.
-merchant | string | <center>-</center> | 695874 | Merchant ID for the item. Required for Shop-in-Shop payments, do not use for normal payments.
-commission | [Commission](#commission) | <center>-</center> | - | Shop-in-Shop commission. Do not use for normal payments.
-
-##### Customer
-
-Field | Type | Required | Example | Description
------ | ---- | -------- | ------- | -----------
-email | string | <center>x</center> | john.doe@example.org | Email
-firstName | string | <center>-</center> | John | First name
-lastName | string | <center>-</center> | Doe | Last name
-phone | string | <center>-</center> | 358451031234 | Phone number
-vatId | string | <center>-</center> | FI02454583 | VAT ID, if any
-
-##### Address
-
-Field | Type | Required | Example | Description
------ | ---- | -------- | ------- | -----------
-streetAddress | string | <center>x</center> | Fake Street 123 | Street address
-postalCode | string | <center>x</center> | 00100 | Postal code
-city | string | <center>x</center> | Luleå | City
-county | string | <center>-</center> | Norbotten | County/State
-country | string | <center>x</center> | SE | Alpha-2 country code
-
-##### CallbackUrl
-
-These URLs must use HTTPS.
-
-Field | Type | Required | Example | Description
------ | ---- | -------- | ------- | -----------
-success | string | <center>x</center> | https://example.org/51/success | Called on successful payment
-cancel | string | <center>x</center> | https://example.org/51/cancel | Called on cancelled payment
-
-##### Commission
-
-Field | Type | Required | Example | Description
------ | ---- | -------- | ------- | -----------
-merchant | string | <center>x</center> | 695874 | Merchant who gets the commission
-amount | integer | <center>x</center> | 250 | Amount of commission in currency's minor units, e.g. for Euros use cents. VAT not applicable.
-
-See [an example payload and response](/examples#create)
+```json
+{
+  "stamp": "d2568f2a-e4c6-40ba-a7cd-d573382ce548",
+  "reference": "9187445",
+  "amount": 1590,
+  "currency": "EUR",
+  "language": "FI",
+  "items": [
+    {
+      "unitPrice": 1590,
+      "units": 1,
+      "vatPercentage": 24,
+      "productCode": "#927502759",
+      "deliveryDate": "2018-03-07"
+    }
+  ],
+  "customer": {
+    "email": "erja.esimerkki@example.org"
+  },
+  "redirectUrls": {
+    "success": "https://ecom.example.org/success",
+    "cancel": "https://ecom.example.org/cancel"
+  },
+  "callbackUrls": {
+    "success": "https://ecom.example.org/success",
+    "cancel": "https://ecom.example.org/cancel"
+  }
+}
+```
 
 #### Response
 
-The response JSON object contains the transaction ID of the payment and list of provider forms. It is highly recommended to render the icons and forms in the shop, but if this is not possible the response also contains a link to the hosted payment gateway. The response contains also HMAC verification headers and `cof-request-id` header. Storing or logging the request ID header is advised for possible debug needs.
+See detailed [response documentation](#create-payment) for explanation.
 
-Field | Type | Ddescription
-------|------|------------
-transactionId | string | Assigned transaction ID for the payment
-href | string | URL to hosted payment gateway. Redirect (`HTTP GET`) user here if the payment forms cannot be rendered directly inside the web shop.
-reference | string | The bank reference used for the payments
-providers | [Provider](#provider) | Array of providers. Render these elements as HTML forms
-
-##### Provider
-
-Each provider describes a HTML form which the customer browser submits when performing the payment. Rendering the forms embedded in the web shop is the preferred way for the payment flow.
-
-Field | Type | Description
-------|------|------------
-url   | string | Form target URL. Use `POST` as method.
-icon  | string | URL to PNG version of the provider icon
-svg   | string | URL to SVG version of the provider icon. Using the SVG icon is preferred.
-group | [PaymentMethodGroup](#paymentmethodgroup) | Provider group. Provider groups allow presenting same type of providers in separate groups which usually makes it easier for the customer to select a payment method.
-name  | string | Display name of the provider.
-id    | string | ID of the provider
-parameters | [FormField](#formfield) | Array of form fields
-
-##### FormField
-
-The form field values are rendered as hidden `<input>` elements in the form. See form rendering [example](/examples#payment-provider-form-rendering)
-
-Field | Type | Description
-------|------|------------
-name | string | Name of the input
-value | string | Value of the input
-
-##### PaymentMethodGroup
-
-ID | Description
--- | -----------
-`mobile` | Mobile payment methods: Pivo, Siirto, MobilePay, Masterpass
-`bank` | Bank payment methods
-`creditcard` | Visa, MasterCard, American Express
-`credit` | Instalment and invoice payment methods: OP Lasku, Collector, Mash, Jousto, AfterPay
-`other` | Miscellaneous methods: AinaPay
+```json
+{
+  "transactionId": "5770642a-9a02-4ca2-8eaa-cc6260a78eb6",
+  "href": "https://api.checkout.fi/pay/5770642a-9a02-4ca2-8eaa-cc6260a78eb6",
+  "reference": "809759248",
+  "providers": [
+    {
+      "url": "https://maksu.pivo.fi/api/payments",
+      "icon": "https://payment.checkout.fi/static/img/pivo_140x75.png",
+      "svg": "https://payment.checkout.fi/static/img/payment-methods/pivo-siirto.svg",
+      "name": "Pivo",
+      "group": "mobile",
+      "id": "pivo",
+      "parameters": [
+        {
+          "name": "amount",
+          "value": "base64 MTUyNQ=="
+        }
+      ]
+    }
+  ]
+}
+```
 
 #### Redirect and callback URL parameters
 
@@ -325,35 +254,21 @@ See [example response](/examples#get) from examples tab.
   Technically this means that when a refund request is accepted, an OK response is sent to the caller. Later, when the refund is processed, the callback will be called with the actual outcome.
 </p>
 
-#### HTTP request body
+#### Request
 
-Field | Type | Required | Description
------ | ---- | -------- | -----------
-amount | integer | <center>-/x</center> | Total amount to refund, in currency's minor units (ie. EUR cents). Required for normal payment refunds. Shop-in-Shop payments can be refunded to full amount by giving the full payment amount here without items.
-email | string | <center>-</center> | Refund recipient email address. Some payment methods [do not support API refunds](/payment-method-providers#refunds), and some have refund related limitations. If email address is given, email refund will be executed as a fallback method if API refund is unsuccessful, or as the default method if the provider does not support API refunds.
-refundStamp | string | <center>-</center> |  Merchant unique identifier for the refund
-refundReference | string | <center>-</center> | Refund reference
-items | [RefundItem](#refunditem)[] | <center>-</center> | Array of items to refund. Use only for Shop-in-Shop payments.
-callbackUrls | [CallbackUrl](#callbackurl) | <center>x</center> | Which urls to ping after the refund has been processed. The callback is called with `HTTP GET` and with the same query string parameters as in the [payment request callback](#redirect-and-callback-url-parameters). The server should respond with `HTTP 20x`.
+See detailed description from [refund payment request body section](#refund-payment).
 
-##### RefundItem
-
-Field | Type | Required | Description
------ | ---- | ---------| -----------
-amount | integer | <center>x</center> | Total amount to refund this item, in currency's minor units (ie. EUR cents)
-stamp | string | <center>x</center> | The item unique identifier
-refundStamp | string | <center>-</center> |  Merchant unique identifier for the refund
-refundReference | string | <center>-</center> | Refund reference
-commission | [RefundCommission](#RefundCommission) | <center>-</center> | Shop-in-Shop commission return. In refunds, the given amount is returned from the given commission account to the item merchant account.
-
-##### RefundCommission
-
-Field | Type | Required | Example | Description
------ | ---- | -------- | ------- | -----------
-merchant | string | <center>x</center> | 695874 | Merchant from whom the commission is returned to the submerchant.
-amount | integer | <center>x</center> | 250 | Amount of commission in currency's minor units, e.g. for Euros use cents. VAT not applicable.
-
-See [an example payload and response](/examples#refund)
+```json
+{
+  "amount": 1590,
+  "refundStamp": "88907910-7b85-4940-8563-202b93d5ca79",
+  "refundReference": "your reference",
+  "callbackUrls": {
+    "success": "https://ecom.example.org/refund/success",
+    "cancel": "https://ecom.example.org/refund/cancel"
+  }
+}
+```
 
 #### Response
 
@@ -488,3 +403,170 @@ Example
 ```
 /merchants/payment-providers?amount=1000&groups=mobile,creditcard
 ```
+
+## HTTP response summary
+
+General API HTTP status codes and what to expect of them.
+
+Code | Text | Description
+---- | ---- | -----------
+200  | OK   | Everything worked as expected.
+201  | Created | A payment/refund was created successfully.
+400  | Bad Request |The request was unacceptable, probably due to missing a required parameter.
+401  | Unauthorized | HMAC calculation failed or Merchant has no access to this feature.
+404  | Not Found | The requested resource doesn't exist.
+422  | Unprocessable Entity | The requested method is not supported.
+
+## Payloads
+
+### Create payment
+
+#### Request body
+
+Field | Type | Required | Description
+----- | ---- | -------- | -----------
+stamp | string | <center>x</center> | Merchant unique identifier for the order
+reference | string | <center>x</center> | Order reference
+amount | integer | <center>x</center> | Total amount of the payment in currency's minor units, e.g. for Euros use cents. Must match the total sum of items.
+currency | alpha3 | <center>x</center> | Currency, only `EUR` supported at the moment
+language | alpha2 | <center>x</center> | Payment's language, currently supported are `FI`, `SV`, and `EN`
+orderId | string | <center>-</center> | Order ID. Used for e.g. Collector payments order ID. If not given, merchant reference is used instead.
+items | [Item](#item)[] | <center>x</center> | Array of items
+customer | [Customer](#customer) | <center>x</center> | Customer information
+deliveryAddress | [Address](#address) | <center>-</center> | Delivery address
+invoicingAddress | [Address](#address) | <center>-</center> | Invoicing address
+redirectUrls | [CallbackUrl](#callbackurl) | <center>x</center> | Where to redirect browser after a payment is paid or cancelled.
+callbackUrls | [CallbackUrl](#callbackurl) | <center>-</center> | Which url to ping after this payment is paid or cancelled
+callbackDelay | number | <center>-</center> | Callback URL polling delay in seconds. If callback URLs are given, the call can be delayed up to 900 seconds. Default: 0
+groups | [PaymentMethodGroup](#paymentmethodgroup)[] | <center>-</center> | Instead of all enabled payment methods, return only those of given groups. It is highly recommended to use [list providers](#list-providers) before initiating the payment if filtering by group. If the payment methods are rendered in the webshop the grouping functionality can be implemented based on the `group` attribute of each returned payment instead of filtering when creating a payment.
+
+##### Item
+
+Field | Type | Required | Example | Description
+----- | ---- | -------- | ------- | -----------
+unitPrice | integer | <center>x</center> | 1000 | Price per unit, VAT included, in each country's minor unit, e.g. for Euros use cents
+units | integer | <center>x</center> | 5 | Quantity, how many items ordered
+vatPercentage | integer | <center>x</center> | 24 | VAT percentage
+productCode | string | <center>x</center> | 9a | Merchant product code. May appear on invoices of certain payment methods.
+deliveryDate | string | <center>x</center> | 2019-12-31 | When is this item going to be delivered
+description | string | <center>-</center> | Bear suits for adults | Item description. May appear on invoices of certain payment methods.
+category | string | <center>-</center> | fur suits | Merchant specific item category
+orderId | string |  <center>-</center> |  | Item level order ID (suborder ID). Mainly useful for Shop-in-Shop purchases.
+stamp | string | <center>-</center> | d4aca017-f1e7-4fa5-bfb5-2906e141ebac | Unique identifier for this item. Required for Shop-in-Shop payments.
+reference | string | <center>-</center> | fur-suits-5 | Reference for this item. Required for Shop-in-Shop payments.
+merchant | string | <center>-</center> | 695874 | Merchant ID for the item. Required for Shop-in-Shop payments, do not use for normal payments.
+commission | [Commission](#commission) | <center>-</center> | - | Shop-in-Shop commission. Do not use for normal payments.
+
+##### Customer
+
+Field | Type | Required | Example | Description
+----- | ---- | -------- | ------- | -----------
+email | string | <center>x</center> | john.doe@example.org | Email
+firstName | string | <center>-</center> | John | First name
+lastName | string | <center>-</center> | Doe | Last name
+phone | string | <center>-</center> | 358451031234 | Phone number
+vatId | string | <center>-</center> | FI02454583 | VAT ID, if any
+
+##### Address
+
+Field | Type | Required | Example | Description
+----- | ---- | -------- | ------- | -----------
+streetAddress | string | <center>x</center> | Fake Street 123 | Street address
+postalCode | string | <center>x</center> | 00100 | Postal code
+city | string | <center>x</center> | Luleå | City
+county | string | <center>-</center> | Norbotten | County/State
+country | string | <center>x</center> | SE | Alpha-2 country code
+
+##### CallbackUrl
+
+These URLs must use HTTPS.
+
+Field | Type | Required | Example | Description
+----- | ---- | -------- | ------- | -----------
+success | string | <center>x</center> | https://example.org/51/success | Called on successful payment
+cancel | string | <center>x</center> | https://example.org/51/cancel | Called on cancelled payment
+
+##### Commission
+
+Field | Type | Required | Example | Description
+----- | ---- | -------- | ------- | -----------
+merchant | string | <center>x</center> | 695874 | Merchant who gets the commission
+amount | integer | <center>x</center> | 250 | Amount of commission in currency's minor units, e.g. for Euros use cents. VAT not applicable.
+
+See [an example payload and response](/examples#create)
+
+#### Response body
+
+The response JSON object contains the transaction ID of the payment and list of provider forms. It is highly recommended to render the icons and forms in the shop, but if this is not possible the response also contains a link to the hosted payment gateway. The response contains also HMAC verification headers and `cof-request-id` header. Storing or logging the request ID header is advised for possible debug needs.
+
+Field | Type | Description
+------|------|------------
+transactionId | string | Assigned transaction ID for the payment
+href | string | URL to hosted payment gateway. Redirect (`HTTP GET`) user here if the payment forms cannot be rendered directly inside the web shop.
+reference | string | The bank reference used for the payments
+providers | [Provider](#provider) | Array of providers. Render these elements as HTML forms
+
+##### Provider
+
+Each provider describes a HTML form which the customer browser submits when performing the payment. Rendering the forms embedded in the web shop is the preferred way for the payment flow.
+
+Field | Type | Description
+------|------|------------
+url   | string | Form target URL. Use `POST` as method.
+icon  | string | URL to PNG version of the provider icon
+svg   | string | URL to SVG version of the provider icon. Using the SVG icon is preferred.
+group | [PaymentMethodGroup](#paymentmethodgroup) | Provider group. Provider groups allow presenting same type of providers in separate groups which usually makes it easier for the customer to select a payment method.
+name  | string | Display name of the provider.
+id    | string | ID of the provider
+parameters | [FormField](#formfield) | Array of form fields
+
+##### FormField
+
+The form field values are rendered as hidden `<input>` elements in the form. See form rendering [example](/examples#payment-provider-form-rendering)
+
+Field | Type | Description
+------|------|------------
+name | string | Name of the input
+value | string | Value of the input
+
+##### PaymentMethodGroup
+
+ID | Description
+-- | -----------
+`mobile` | Mobile payment methods: Pivo, Siirto, MobilePay, Masterpass
+`bank` | Bank payment methods
+`creditcard` | Visa, MasterCard, American Express
+`credit` | Instalment and invoice payment methods: OP Lasku, Collector, Mash, Jousto, AfterPay
+`other` | Miscellaneous methods: AinaPay
+
+### Refund payment
+
+#### Request body
+
+Field | Type | Required | Description
+----- | ---- | -------- | -----------
+amount | integer | <center>-/x</center> | Total amount to refund, in currency's minor units (ie. EUR cents). Required for normal payment refunds. Shop-in-Shop payments can be refunded to full amount by giving the full payment amount here without items.
+email | string | <center>-</center> | Refund recipient email address. Some payment methods [do not support API refunds](/payment-method-providers#refunds), and some have refund related limitations. If email address is given, email refund will be executed as a fallback method if API refund is unsuccessful, or as the default method if the provider does not support API refunds.
+refundStamp | string | <center>-</center> |  Merchant unique identifier for the refund
+refundReference | string | <center>-</center> | Refund reference
+items | [RefundItem](#refunditem)[] | <center>-</center> | Array of items to refund. Use only for Shop-in-Shop payments.
+callbackUrls | [CallbackUrl](#callbackurl) | <center>x</center> | Which urls to ping after the refund has been processed. The callback is called with `HTTP GET` and with the same query string parameters as in the [payment request callback](#redirect-and-callback-url-parameters). The server should respond with `HTTP 20x`.
+
+##### RefundItem
+
+Field | Type | Required | Description
+----- | ---- | ---------| -----------
+amount | integer | <center>x</center> | Total amount to refund this item, in currency's minor units (ie. EUR cents)
+stamp | string | <center>x</center> | The item unique identifier
+refundStamp | string | <center>-</center> |  Merchant unique identifier for the refund
+refundReference | string | <center>-</center> | Refund reference
+commission | [RefundCommission](#RefundCommission) | <center>-</center> | Shop-in-Shop commission return. In refunds, the given amount is returned from the given commission account to the item merchant account.
+
+##### RefundCommission
+
+Field | Type | Required | Example | Description
+----- | ---- | -------- | ------- | -----------
+merchant | string | <center>x</center> | 695874 | Merchant from whom the commission is returned to the submerchant.
+amount | integer | <center>x</center> | 250 | Amount of commission in currency's minor units, e.g. for Euros use cents. VAT not applicable.
+
+See [an example payload and response](/examples#refund)
