@@ -280,6 +280,201 @@ Status code | Explanation
 
 Note, that at the moment HTTP 400 may occur also for 3rd party reasons - e.g. because Nordea test API does not support refunds. See all provider limitations from [providers tab](/payment-method-providers#refunds).
 
+## Tokenized credit card payments
+
+Checkout provides an API for tokenizing payment cards and issuing payments on those tokenized payment cards.
+
+### Adding (tokenizing) cards
+
+Adding a new card stores the payment card information to Checkout and returns a tokenization id that can be used to fetch a card token for payments.
+
+The following illustrates how the user moves in the card tokenization process:
+
+<div class='mermaid'>
+sequenceDiagram
+
+Client ->> Merchant backend: Initialize adding card
+Merchant backend -->> Client: Checkout add card form request details
+Client ->> api.checkout.fi: Request add card form (POST /tokenization/addcard-form)
+api.checkout.fi -->> Client: HTTP 302 Redirect to add card form
+Client ->> Card addition form: Redirect to add card form
+Card addition form -->> api.checkout.fi: HTTP 302 Redirect to Checkout service
+
+alt success
+  api.checkout.fi -->> Merchant backend: HTTP 302 Redirect to Merchant success URL with 'checkout-tokenization-id'
+  Merchant backend ->> api.checkout.fi: Tokenize with tokenization id (POST /tokenization/{checkout-tokenization-id})
+  api.checkout.fi -->> Merchant backend: Card token
+  Merchant backend ->> Merchant backend: Save token to DB
+  Merchant backend -->> Client: display success view
+else failure
+  api.checkout.fi -->> Merchant backend: HTTP 302 Redirect to Merchant failure URL
+  Merchant backend -->> Client: display failure view
+end
+
+</div>
+
+#### Add card form
+
+`HTTP POST /tokenization/addcard-form` is a form post requested from the user's browser. On a successful request the user will be redirected to Checkout's card addition service where user will input credit card information.
+
+##### Request
+
+field | info | required | description
+----- | ---- | -------- | -----------
+checkout-account | numeric | <center>x</center>| Checkout account ID
+checkout-algorithm | string | <center>x</center>| Used signature algorithm. The same as used by merchant when creating the payment.
+checkout-redirect-success-url | string | <center>x</center> | Merchant's url for user redirect on successful card addition
+checkout-redirect-cancel-url | string | <center>x</center> | Merchant's url for user redirect on failed card addition
+checkout-callback-success-url | string | <center>-</center> | Merchant's url called on successful card addition
+checkout-callback-cancel-url | string | <center>-</center> | Merchant's url called on failed card addition
+language | alpha2 | <center>-</center> | Card addition form language, currently supported are `FI`, `SV`, and `EN`
+
+##### Response
+
+On a successful request, user is `HTTP 302` redirected to Checkout's card addition form page.
+
+#### Get token
+
+`HTTP POST /tokenization/{checkout-tokenization-id}` is requested after the merchant has received a `checkout-tokenization-id` from the success redirect URL parameters, or the callback URL request if given.
+
+This request returns the actual card token, which can then be used to make payments on the card.
+
+##### Request
+
+No request body required.
+
+##### Response
+
+If tokenization is successful, `HTTP 200` and the `token` of the card is returned.
+
+This token is used to make authorization holds and charges on the payment card.
+
+field | type | description
+------|------|------------
+token | string | Payment card token
+
+### Charging a token
+
+After the introduction of the European PSD2 directive, the electronic payment transactions are categorised in so called [customer initiated transactions (CIT)](#customer-initiated-transactions-cit) and [merchant initiated transactions (MIT)](#merchant-initiated-transactions-mit).
+
+Customer initiated transactions are scenarios, where the customer actively takes part in the payment process.
+
+Merchant initiated transactions are payments triggered without the customer's participation. This kind of transactions can be used for example in scenarios where the final price is not known at the time of the purchase or the customer is not present when the charge is made. A prior agreement, or "mandate" between the customer and the merchant is required.
+
+Merchants can either [initialize direct charges or authorization holds](#create-authorization-hold-or-charge) (which need to be [committed](#commit-authorization-hold) later with a separate request).
+
+#### Customer Initiated Transactions (CIT)
+
+When charging a token using customer initiated transaction, applicable exemptions are attempted in order to avoid the need for strong customer authentication, 3D Secure. These exemptions may include but are not limited to: low-value (under 30 EUR) or transaction risk analysis.
+
+Regardless, there is always a possibility the card issuer requires strong customer authentication by requesting a step-up. In this case, the response will contain "soft decline" result code 403 and an URL, where the customer needs to be redirected to, in order to perform the authentication.
+
+After the user has authenticated with 3DS, the user is redirected to Checkout services and an authorization hold on the user card is created. If the merchants initial request is a direct charge request, the payment is also committed from the card. Finally, Checkout redirects the user back to the merchant URL.
+
+The following illustrates how the user moves in the token payment process:
+
+<div class='mermaid'>
+sequenceDiagram
+
+Client ->> Merchant backend: Pay with tokenized card
+Merchant backend ->> api.checkout.fi: Create payment (POST /payments/token/cit/[charge|authorization-hold])
+
+
+alt success
+  api.checkout.fi -->> Merchant backend: HTTP 201, transaction ID
+end
+
+alt 3DS required
+  api.checkout.fi -->> Merchant backend: HTTP 403, transaction ID & 3DS redirect url
+  Merchant backend -->> Client: Redirect user to 3DS
+  Client ->> 3DS Server: Redirect user to 3DS
+  3DS Server -->> api.checkout.fi: 3DS result
+
+  alt success
+    Note over Client,api.checkout.fi: Authorization hold created on card
+
+    alt direct charge
+      api.checkout.fi ->> api.checkout.fi: Commit authorization hold
+    end
+  end
+end
+
+api.checkout.fi -->> Client: Redirect to Merchant success/cancel URL
+Client ->> Merchant backend: Return to success/cancel
+Merchant backend ->> Client: Render view based on result (e.g. Thank You -page)
+</div>
+
+#### Merchant Initiated Transactions (MIT)
+
+This method should be used when charging the customer's card in a context, where the customer is not actively participating in the transaction.
+
+The MIT transactions are exempt from the strong customer authentication requirements of PSD2, thus the payment cannot receive the "soft decline" response (code 400), unlike in the case of customer initiated transactions.
+
+#### Create authorization hold or charge
+
+`HTTP POST /payments/token/{mit|cit}/{authorization-hold|charge}` creates either an authorization hold or direct charge for MIT and CIT payments.
+
+If creating an authorization hold, the payment needs to be committed later with a request to the [Commit API](#commit-authorization-hold).
+
+##### Request
+
+The commit request body schema is the same as the one used for [creating payments](#create-request-body) expect with the addition of a the new token field (which must also be included as part of HMAC calculation):
+
+field | info | required | description
+----- | ---- | -------- | -----------
+token | string | <center>x</center> | Payment card token
+
+##### Response
+
+If authorization hold or charge is successful, `HTTP 201` and the `transactionId` of the payment is returned.
+
+When creating CIT authorization holds or direct charges the payment might need a 3DS step-up. In these cases `HTTP 403` along with the `transactionId` and `threeDSecureUrl` is returned. When this happens, the merchant must redirect user to the given `threeDSecureUrl` for secure authorization and further redirect. See documentation [here](#customer-initiated-transactions-cit).
+
+field | type | description
+------|------|------------
+transactionId | string | Assigned transaction ID for the payment
+threeDSecureUrl | string | 3DS redirect URL
+
+#### Commit authorization hold
+
+`HTTP POST /payments/{transactionId}/token/commit` commits an existing authorization hold.
+
+A successful commit will charge the payer's card.
+
+##### Request
+
+The commit request body schema is the same as the one used for [creating the initial authorization hold](#create-authorization-hold-or-charge).
+
+The final amount committed can either equal or be less than the authorization hold. The committed amount may not exceed the authorization hold.
+
+The final items may differ from the ones used when creating the authorization hold.
+
+##### Response
+
+Commit will return `HTTP 201` when successful, and the `transactionId` of the payment.
+
+field | type | description
+------|------|------------
+transactionId | string | Assigned transaction ID for the payment
+
+#### Revert authorization hold
+
+`HTTP POST /payments/{transactionId}/token/revert` reverts an existing authorization hold.
+
+A successful revert will remove the authorization hold from the payer's card.
+
+##### Request
+
+No request body required.
+
+##### Response
+
+Revert will return `HTTP 200` when successful, and the `transactionId` of the payment.
+
+field | type | description
+------|------|------------
+transactionId | string | Assigned transaction ID for the payment
+
 ## Payment Reports
 
 Checkout provides an API for asynchronous payment report generation. A merchant can view their payments in this report. A call to the endpoint must contain a callback URL where the payment report will be delivered to once it has been generated.

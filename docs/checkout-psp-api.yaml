@@ -15,6 +15,8 @@ servers:
 tags:
 - name: payments
   description: Create, fetch or refund payments
+- name: token payments
+  description: Tokenize payment cards and issue payments on tokens
 - name: payment reports
   description: Request a payment report
 - name: settlements
@@ -476,6 +478,548 @@ paths:
         default:
           $ref: '#/components/responses/Error'
 
+  /tokenization/addcard-form:
+    post:
+      tags:
+      - token payments
+      summary: Request a redirect to card addition form
+      description: |
+        Request a redirect to card addition form. This will redirect user to the card addition form, then back to Checkout servers, and finally to merchant's redirect url.
+      operationId: addCardForm
+      requestBody:
+        description: Add card payload
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddCardFormRequest'
+      responses:
+        '302':
+          description: Redirect to card addition form (or checkout-redirect-cancel-url)
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          description: Tokenization not allowed for merchant
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /tokenization/{checkout-tokenization-id}:
+    post:
+      tags:
+      - token payments
+      summary: Request a card token for given tokenization id
+      description: |
+        Use checkout-tokenization-id received from /tokenization/addcard-form redirect to request a token which can be used for payments.
+      operationId: requestTokenForTokenizationId
+      parameters:
+        - name: checkout-account
+          in: header
+          description: Merchant ID
+          example: 375917
+          schema:
+            type: integer
+            format: int32
+        - name: checkout-algorithm
+          in: header
+          description: HMAC algorithm
+          example: sha512
+          schema:
+            type: string
+            enum:
+            - sha256
+            - sha512
+        - name: checkout-method
+          in: header
+          description: HTTP method of the request
+          example: POST
+          schema:
+            type: string
+            enum:
+            - GET
+            - POST
+        - name: checkout-timestamp
+          in: header
+          description: Current timestamp in ISO 8601 format
+          example: '2018-08-08T10:10:59Z'
+          schema:
+            type: string
+            format: date-time
+        - name: checkout-nonce
+          in: header
+          description: Unique random identifier
+          example: 39da40b8-5fb0-499c-869d-35e575b9a6cd
+          schema:
+            type: string
+        - name: signature
+          in: header
+          description: HMAC signature calculated over the request headers and payload
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Tokenization request response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenizationRequestResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          description: Credit cards and/or AMEX not enabled for merchant
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /payments/token/mit/charge:
+    post:
+      tags:
+        - token payments
+      summary: Request merchant initiated transaction charge on token
+      description: |
+       Request merchant initiated transaction charge on token. This method should be used when charging the customer's card in a context, where the customer is not actively participating in the transaction.
+      operationId: tokenMitCharge
+      parameters:
+        - name: checkout-account
+          in: header
+          description: Merchant ID
+          example: 375917
+          schema:
+            type: integer
+            format: int32
+        - name: checkout-algorithm
+          in: header
+          description: HMAC algorithm
+          example: sha512
+          schema:
+            type: string
+            enum:
+            - sha256
+            - sha512
+        - name: checkout-method
+          in: header
+          description: HTTP method of the request
+          example: POST
+          schema:
+            type: string
+            enum:
+            - GET
+            - POST
+        - name: checkout-timestamp
+          in: header
+          description: Current timestamp in ISO 8601 format
+          example: '2018-08-08T10:10:59Z'
+          schema:
+            type: string
+            format: date-time
+        - name: checkout-nonce
+          in: header
+          description: Unique random identifier
+          example: 39da40b8-5fb0-499c-869d-35e575b9a6cd
+          schema:
+            type: string
+        - name: signature
+          in: header
+          description: HMAC signature calculated over the request headers and payload
+          schema:
+            type: string
+      requestBody:
+        description: MIT Charge payload
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenPaymentRequest'
+      responses:
+        '201':
+          description: MIT charge request created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenMITPaymentResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /payments/token/mit/authorization-hold:
+    post:
+      tags:
+        - token payments
+      summary: Request merchant initiated transaction authorization hold on token
+      description: |
+       Request merchant initiated transaction authorization hold on token. This method should be used when creating an authorization hold on the customer's card in a context, where the customer is not actively participating in the transaction.
+      operationId: tokenMitAuthorizationHold
+      parameters:
+        - name: checkout-account
+          in: header
+          description: Merchant ID
+          example: 375917
+          schema:
+            type: integer
+            format: int32
+        - name: checkout-algorithm
+          in: header
+          description: HMAC algorithm
+          example: sha512
+          schema:
+            type: string
+            enum:
+            - sha256
+            - sha512
+        - name: checkout-method
+          in: header
+          description: HTTP method of the request
+          example: POST
+          schema:
+            type: string
+            enum:
+            - GET
+            - POST
+        - name: checkout-timestamp
+          in: header
+          description: Current timestamp in ISO 8601 format
+          example: '2018-08-08T10:10:59Z'
+          schema:
+            type: string
+            format: date-time
+        - name: checkout-nonce
+          in: header
+          description: Unique random identifier
+          example: 39da40b8-5fb0-499c-869d-35e575b9a6cd
+          schema:
+            type: string
+        - name: signature
+          in: header
+          description: HMAC signature calculated over the request headers and payload
+          schema:
+            type: string
+      requestBody:
+        description: MIT Charge payload
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenPaymentRequest'
+      responses:
+        '201':
+          description: MIT authorization hold request created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenMITPaymentResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /payments/token/cit/charge:
+    post:
+      tags:
+        - token payments
+      summary: Request customer initiated transaction charge on token
+      description: |
+       Request customer initiated transaction charge on token. CIT charges can sometimes require further 3DS authentication step-up. See detailed documentation at https://checkoutfinland.github.io/psp-api/#/?id=customer-initiated-transactions-cit
+      operationId: tokenCitCharge
+      parameters:
+        - name: checkout-account
+          in: header
+          description: Merchant ID
+          example: 375917
+          schema:
+            type: integer
+            format: int32
+        - name: checkout-algorithm
+          in: header
+          description: HMAC algorithm
+          example: sha512
+          schema:
+            type: string
+            enum:
+            - sha256
+            - sha512
+        - name: checkout-method
+          in: header
+          description: HTTP method of the request
+          example: POST
+          schema:
+            type: string
+            enum:
+            - GET
+            - POST
+        - name: checkout-timestamp
+          in: header
+          description: Current timestamp in ISO 8601 format
+          example: '2018-08-08T10:10:59Z'
+          schema:
+            type: string
+            format: date-time
+        - name: checkout-nonce
+          in: header
+          description: Unique random identifier
+          example: 39da40b8-5fb0-499c-869d-35e575b9a6cd
+          schema:
+            type: string
+        - name: signature
+          in: header
+          description: HMAC signature calculated over the request headers and payload
+          schema:
+            type: string
+      requestBody:
+        description: CIT Charge payload
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenPaymentRequest'
+      responses:
+        '201':
+          description: CIT charge request created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenMITPaymentResponse'
+        '403':
+          description: CIT charge requires 3DS authentication step up. Please redirect user to given URL.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenCITPaymentResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /payments/token/cit/authorization-hold:
+    post:
+      tags:
+        - token payments
+      summary: Request customer initiated transaction authorization hold on token
+      description: |
+       Request customer initiated transaction authorization hold on token. CIT authorization holds can sometimes require further 3DS authentication step-up. See detailed documentation at https://checkoutfinland.github.io/psp-api/#/?id=customer-initiated-transactions-cit
+      operationId: tokenCitAuthorizationHold
+      parameters:
+        - name: checkout-account
+          in: header
+          description: Merchant ID
+          example: 375917
+          schema:
+            type: integer
+            format: int32
+        - name: checkout-algorithm
+          in: header
+          description: HMAC algorithm
+          example: sha512
+          schema:
+            type: string
+            enum:
+            - sha256
+            - sha512
+        - name: checkout-method
+          in: header
+          description: HTTP method of the request
+          example: POST
+          schema:
+            type: string
+            enum:
+            - GET
+            - POST
+        - name: checkout-timestamp
+          in: header
+          description: Current timestamp in ISO 8601 format
+          example: '2018-08-08T10:10:59Z'
+          schema:
+            type: string
+            format: date-time
+        - name: checkout-nonce
+          in: header
+          description: Unique random identifier
+          example: 39da40b8-5fb0-499c-869d-35e575b9a6cd
+          schema:
+            type: string
+        - name: signature
+          in: header
+          description: HMAC signature calculated over the request headers and payload
+          schema:
+            type: string
+      requestBody:
+        description: CIT authorization hold payload
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenPaymentRequest'
+      responses:
+        '201':
+          description: CIT authorization hold request created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenMITPaymentResponse'
+        '403':
+          description: CIT authorization hold requires 3DS authentication step up. Please redirect user to given URL.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenCITPaymentResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        default:
+          $ref: '#/components/responses/Error'
+  
+  /payments/{transactionId}/token/commit:
+    post:
+      tags:
+        - token payments
+      summary: Request committing (charging) of previously created authorization hold on token
+      description: |
+       Request committing of previously created authorization hold. The final amount committed can either equal or be less than the authorization hold. The committed amount may not exceed the authorization hold. The final items may differ from the ones used when creating the authorization hold.
+      operationId: tokenCommit
+      parameters:
+        - name: checkout-account
+          in: header
+          description: Merchant ID
+          example: 375917
+          schema:
+            type: integer
+            format: int32
+        - name: checkout-algorithm
+          in: header
+          description: HMAC algorithm
+          example: sha512
+          schema:
+            type: string
+            enum:
+            - sha256
+            - sha512
+        - name: checkout-method
+          in: header
+          description: HTTP method of the request
+          example: POST
+          schema:
+            type: string
+            enum:
+            - GET
+            - POST
+        - name: checkout-timestamp
+          in: header
+          description: Current timestamp in ISO 8601 format
+          example: '2018-08-08T10:10:59Z'
+          schema:
+            type: string
+            format: date-time
+        - name: checkout-nonce
+          in: header
+          description: Unique random identifier
+          example: 39da40b8-5fb0-499c-869d-35e575b9a6cd
+          schema:
+            type: string
+        - name: signature
+          in: header
+          description: HMAC signature calculated over the request headers and payload
+          schema:
+            type: string
+      requestBody:
+        description: CIT commit payload
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenPaymentRequest'
+      responses:
+        '201':
+          description: CIT authorization hold committed successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenMITPaymentResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        default:
+          $ref: '#/components/responses/Error'
+
+  /payments/{transactionId}/token/revert:
+    post:
+      tags:
+        - token payments
+      summary: Revert (removal) of previously created authorization hold on token
+      description: |
+       Request committing of previously created authorization hold. A successful revert will remove the authorization hold from the payer's bank account.
+      operationId: tokenRevert
+      parameters:
+        - name: checkout-account
+          in: header
+          description: Merchant ID
+          example: 375917
+          schema:
+            type: integer
+            format: int32
+        - name: checkout-algorithm
+          in: header
+          description: HMAC algorithm
+          example: sha512
+          schema:
+            type: string
+            enum:
+            - sha256
+            - sha512
+        - name: checkout-method
+          in: header
+          description: HTTP method of the request
+          example: POST
+          schema:
+            type: string
+            enum:
+            - GET
+            - POST
+        - name: checkout-timestamp
+          in: header
+          description: Current timestamp in ISO 8601 format
+          example: '2018-08-08T10:10:59Z'
+          schema:
+            type: string
+            format: date-time
+        - name: checkout-nonce
+          in: header
+          description: Unique random identifier
+          example: 39da40b8-5fb0-499c-869d-35e575b9a6cd
+          schema:
+            type: string
+        - name: signature
+          in: header
+          description: HMAC signature calculated over the request headers and payload
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Authorization hold reverted successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenMITPaymentResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        default:
+          $ref: '#/components/responses/Error'
+
   /payments/report:
     post:
       tags:
@@ -715,31 +1259,7 @@ components:
           items:
             $ref: '#/components/schemas/Item'
         customer:
-          type: object
-          required:
-          - email
-          properties:
-            email:
-              type: string
-              format: email
-              example: john.doe@example.org
-              description: Customer email address
-            firstName:
-              type: string
-              example: John
-              description: Customer first name
-            lastName:
-              type: string
-              example: Doe
-              description: Customer last name
-            phone:
-              type: string
-              example: +358501234567
-              description: Customer phone number
-            vatId:
-              type: string
-              example: FI02454583
-              description: Company VAT ID in international format
+          $ref: '#/components/schemas/Customer'
         deliveryAddress:
           $ref: '#/components/schemas/Address'
         invoicingAddress:
@@ -765,6 +1285,79 @@ components:
             - creditcard
             - credit
             - other
+
+    TokenPaymentRequest:
+      type: object
+      description: Payment request payload
+      required:
+      - stamp
+      - reference
+      - amount
+      - currency
+      - language
+      - customer
+      - items
+      - redirectUrls
+      - token
+      properties:
+        stamp:
+          type: string
+          example: 29858472952
+          maxLength: 200
+          description: Merchant specific unique stamp
+        reference:
+          type: string
+          example: 9187445
+          maxLength: 200
+          description: Merchant reference for the payment
+        amount:
+          type: integer
+          format: int64
+          example: 1590
+          minimum: 0
+          maximum: 99999999
+          description: Total amount of the payment (sum of items), VAT included
+        currency:
+          type: string
+          example: EUR
+          enum:
+          - EUR
+        language:
+          type: string
+          example: FI
+          enum:
+          - FI
+          - SV
+          - EN
+          description: Alpha-2 language code for the payment process
+        orderId:
+          type: string
+          maxLength: 60
+          description: Order ID. Used for eg. Collector payments order ID. If not given, merchant reference is used instead.
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Item'
+        customer:
+          $ref: '#/components/schemas/Customer'
+        deliveryAddress:
+          $ref: '#/components/schemas/Address'
+        invoicingAddress:
+          $ref: '#/components/schemas/Address'
+        redirectUrls:
+          $ref: '#/components/schemas/Callbacks'
+        callbackUrls:
+          $ref: '#/components/schemas/Callbacks'
+        callbackDelay:
+          type: integer
+          minimum: 0
+          maximum: 900
+          example: 60
+          description: Callback delay in seconds. If callback URLs and delay are provided, callbacks will be called after the delay.
+        token:
+          type: string
+          example: 123e4567-e89b-12d3-a456-426655440000
+          description: Payment card token received from request to /tokenization/{checkout-tokenization-id}
 
     Item:
       type: object
@@ -904,6 +1497,33 @@ components:
           maxLength: 2
           description: Alpha-2 country code
 
+    Customer:
+      type: object
+      required:
+      - email
+      properties:
+        email:
+          type: string
+          format: email
+          example: john.doe@example.org
+          description: Customer email address
+        firstName:
+          type: string
+          example: John
+          description: Customer first name
+        lastName:
+          type: string
+          example: Doe
+          description: Customer last name
+        phone:
+          type: string
+          example: +358501234567
+          description: Customer phone number
+        vatId:
+          type: string
+          example: FI02454583
+          description: Company VAT ID in international format
+
     # Refund request payload
     # - Normal merchant:
     #   - Only amount required, no need for item level reference
@@ -971,6 +1591,64 @@ components:
           example: 94753246
           maxLength: 200
           description: Merchant reference for the refund
+  
+    AddCardFormRequest:
+      type: object
+      description: Add card form request
+      required:
+        - checkout-account
+        - checkout-algorithm
+        - checkout-redirect-success-url
+        - checkout-redirect-cancel-url
+      properties:
+        checkout-account:
+          type: integer
+          example: 375917
+          description: Merchant ID
+        checkout-algorithm:
+          type: string
+          description: HMAC algorithm
+          example: sha512
+          enum:
+            - sha256
+            - sha512
+        checkout-redirect-success-url:
+          type: string
+          format: url
+          example: https://example.com/redirect-success-handler
+          description: Merchant's url for user redirect on successful card addition
+        checkout-redirect-cancel-url:
+          type: string
+          format: url
+          example: https://example.com/redirect-failure-handler
+          description: Merchant's url for user redirect on failed card addition
+        checkout-callback-success-url:
+          type: string
+          format: url
+          example: https://example.com/success-callback
+          description: Merchant's url called on successful card addition
+        checkout-callback-cancel-url:
+          type: string
+          format: url
+          example: https://example.com/failure-callback
+          description: Merchant's url called on failed card addition
+        language:
+          type: string
+          example: FI
+          enum:
+          - FI
+          - SV
+          - EN
+          description: Alpha-2 language code for the card addition form
+
+    TokenizationRequestResponse:
+      required:
+        - token
+      properties:
+        token:
+          type: string
+          description: Token used to make authorization holds & charges on card
+          example: 123e4567-e89b-12d3-a456-426655440000
 
     PaymentReportRequest:
       type: object
@@ -1058,6 +1736,37 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/PaymentMethodProvider'
+
+    TokenMITPaymentResponse:
+      type: object
+      description: |
+        Response for a successful merchant initiated transaction payment request.
+      required:
+      - transactionId
+      properties:
+        transactionId:
+          type: string
+          format: uuid
+          example: 93ee8d18-10db-410b-92ac-7d6e49369ce3
+          description: Checkout assigned transaction ID for the payment.
+
+    TokenCITPaymentResponse:
+      type: object
+      description: |
+        Response for a successful customer initiated transaction payment request.
+      required:
+      - transactionId
+      properties:
+        transactionId:
+          type: string
+          format: uuid
+          example: 93ee8d18-10db-410b-92ac-7d6e49369ce3
+          description: Checkout assigned transaction ID for the payment.
+        threeDSecureUrl:
+          type: string
+          format: url
+          example: https://some-3ds-provider.com/efa4d1d9-db80-4ea7-a72f-c180ddbcae36
+          description: URL for 3DS authentication step-up. If this is returned, merchants needs to redirect customer to this given URL for 3DS authentication.
 
     BasePaymentMethodProvider:
       type: object
