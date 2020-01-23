@@ -408,7 +408,7 @@ Merchant backend ->> Client: Render view based on result (e.g. Thank You -page)
 
 This method should be used when charging the customer's card in a context, where the customer is not actively participating in the transaction.
 
-The MIT transactions are exempt from the strong customer authentication requirements of PSD2, thus the payment cannot receive the "soft decline" response (code 400), unlike in the case of customer initiated transactions.
+The MIT transactions are exempt from the strong customer authentication requirements of PSD2, thus the payment cannot receive the "soft decline" response (code 403), unlike in the case of customer initiated transactions.
 
 #### Create authorization hold or charge
 
