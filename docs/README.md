@@ -15,7 +15,7 @@ Thank you!
 
 ## API endpoint
 
-* API endpoint is `api.checkout.fi`
+- API endpoint is `api.checkout.fi`
 
 ## Authentication
 
@@ -25,20 +25,20 @@ All API responses are signed the same way, allowing merchant to verify response 
 
 The signature is transmitted in the `signature` HTTP header. Signature payload consists of the following fields separated with a line feed (\n). Carriage returns (\r) are not supported.
 
-* All `checkout-` headers in alphabetical order. The header keys must be in lowercase. Each header key and value are separated with `:`
-* HTTP body in exactly the same format as it will be sent, or empty string if no body
+- All `checkout-` headers in alphabetical order. The header keys must be in lowercase. Each header key and value are separated with `:`
+- HTTP body in exactly the same format as it will be sent, or empty string if no body
 
 The headers are:
 
-Field | Type | Description
---- | --- | ---
-`checkout-account` | numeric | Checkout account ID, e.g. `375917`
-`checkout-algorithm` | string | Used signature algorithm, either `sha256` or `sha512`
-`checkout-method` | string | HTTP verb of the request, either `GET` or `POST`
-`checkout-nonce` | string | Unique identifier for this request
-`checkout-timestamp` | string | ISO 8601 date time
-`checkout-transaction-id` | string | Checkout transaction ID when accessing single transaction - not required for a new payment request
-`cof-plugin-version` | string | For SaaS services, use the marketing name of the platform. For eCommerce platform plugins, use the platform name, your identifier, and plugin version (for example, `woocommerce-yourcompany-1.1.0`). Platform information helps customer service to provide better assistance for the merchants using the plugin.
+| Field                     | Type    | Description                                                                                                                                                                                                                                                                                                        |
+| ------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `checkout-account`        | numeric | Checkout account ID, e.g. `375917`                                                                                                                                                                                                                                                                                 |
+| `checkout-algorithm`      | string  | Used signature algorithm, either `sha256` or `sha512`                                                                                                                                                                                                                                                              |
+| `checkout-method`         | string  | HTTP verb of the request, either `GET` or `POST`                                                                                                                                                                                                                                                                   |
+| `checkout-nonce`          | string  | Unique identifier for this request                                                                                                                                                                                                                                                                                 |
+| `checkout-timestamp`      | string  | ISO 8601 date time                                                                                                                                                                                                                                                                                                 |
+| `checkout-transaction-id` | string  | Checkout transaction ID when accessing single transaction - not required for a new payment request                                                                                                                                                                                                                 |
+| `cof-plugin-version`      | string  | For SaaS services, use the marketing name of the platform. For eCommerce platform plugins, use the platform name, your identifier, and plugin version (for example, `woocommerce-yourcompany-1.1.0`). Platform information helps customer service to provide better assistance for the merchants using the plugin. |
 
 The HTTP verb, nonce and timestamp are used to mitigate various replay and timing attacks. Below is an example payload passed to a HMAC function:
 
@@ -59,22 +59,22 @@ Please note that not all payment methods support testing, so only the payment me
 
 #### Normal merchant account
 
-* Merchant ID: `375917`
-* Secret key: `SAIPPUAKAUPPIAS`
+- Merchant ID: `375917`
+- Secret key: `SAIPPUAKAUPPIAS`
 
 #### Shop-in-Shop merchant account
 
-*Note:* Use these only if you are setting up a [Shop-in-Shop](https://www.checkout.fi/vinkkipankki/mita-shop-in-shop-kauppapaikat-ovat) web shop.
+_Note:_ Use these only if you are setting up a [Shop-in-Shop](https://www.checkout.fi/vinkkipankki/mita-shop-in-shop-kauppapaikat-ovat) web shop.
 
-* Aggregate merchant ID: `695861`
-* Aggregate secret key: `MONISAIPPUAKAUPPIAS`
-* Shop-in-Shop merchant ID: `695874`
+- Aggregate merchant ID: `695861`
+- Aggregate secret key: `MONISAIPPUAKAUPPIAS`
+- Shop-in-Shop merchant ID: `695874`
 
 When opening a shop-in-shop payment, the request is signed with the aggregate merchant ID and secret key. Each item in a shop-in-shop payment request must list a valid shop-in-shop merchant ID. Aggregate merchant cannot be used in items.
 
 ### Redirect and callback URL signing
 
-Return and callback URL parameters are also signed, and the merchant *must* check the signature validity. The signature is calculated the same way as for requests, but the values come in as query string parameters instead of headers. Empty string is used for the body.
+Return and callback URL parameters are also signed, and the merchant _must_ check the signature validity. The signature is calculated the same way as for requests, but the values come in as query string parameters instead of headers. Empty string is used for the body.
 
 ## Payments
 
@@ -102,12 +102,13 @@ Payment method provider -->> Client: Redirect to Checkout success/cancel URL
 Client -->> api.checkout.fi: success/cancel
 
 opt Callback URL
-  api.checkout.fi ->> Merchant: Call success/cancel callback URL
+api.checkout.fi ->> Merchant: Call success/cancel callback URL
 end
 
 api.checkout.fi -->> Client: Redirect to Merchant success/cancel URL
 Client ->> Merchant: Return to success/cancel
 Merchant ->> Client: Render thank you -page
+
 </div>
 
 ### Create
@@ -192,20 +193,19 @@ The payment information is available in the query string parameters of the clien
 
 > https://example.org/51/success/return?checkout-account=375917&checkout-algorithm=sha256&checkout-amount=2964&checkout-stamp=15336332710015&checkout-reference=192387192837195&checkout-transaction-id=4b300af6-9a22-11e8-9184-abb6de7fd2d0&checkout-status=ok&checkout-provider=nordea&signature=b2d3ecdda2c04563a4638fcade3d4e77dfdc58829b429ad2c2cb422d0fc64080
 
-
 The query string parameters are listed below. If callback URLs were provided, same parameters are used.
 
-Field | Type |  Description
------ | ---- |  -----------
-`checkout-account` | numeric | Checkout account ID
-`checkout-algorithm` | string | Used signature algorithm. The same as used by merchant when creating the payment.
-`checkout-amount` | numeric | Payment amount in currency minor unit, e.g. cents
-`checkout-stamp` | string | Merchant provided stamp
-`checkout-reference` | string | Merchant provided reference
-`checkout-transaction-id` | string | Checkout provided transaction ID.<br><br>**Important:** Store the value. It is needed for other actions such as refund or payment information query
-`checkout-status` | string | Payment status, either `ok`, `pending`, `delayed`, or `fail`. See [statuses](#statuses) section for more information.
-`checkout-provider` | string | The payment method provider the client used. Current values are documented on [providers tab](/payment-method-providers#test-credentials). The values are subject to change without notice.
-`signature` | string | HMAC signature calculated from other parameter
+| Field                     | Type    | Description                                                                                                                                                                                 |
+| ------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `checkout-account`        | numeric | Checkout account ID                                                                                                                                                                         |
+| `checkout-algorithm`      | string  | Used signature algorithm. The same as used by merchant when creating the payment.                                                                                                           |
+| `checkout-amount`         | numeric | Payment amount in currency minor unit, e.g. cents                                                                                                                                           |
+| `checkout-stamp`          | string  | Merchant provided stamp                                                                                                                                                                     |
+| `checkout-reference`      | string  | Merchant provided reference                                                                                                                                                                 |
+| `checkout-transaction-id` | string  | Checkout provided transaction ID.<br><br>**Important:** Store the value. It is needed for other actions such as refund or payment information query                                         |
+| `checkout-status`         | string  | Payment status, either `ok`, `pending`, `delayed`, or `fail`. See [statuses](#statuses) section for more information.                                                                       |
+| `checkout-provider`       | string  | The payment method provider the client used. Current values are documented on [providers tab](/payment-method-providers#test-credentials). The values are subject to change without notice. |
+| `signature`               | string  | HMAC signature calculated from other parameter                                                                                                                                              |
 
 Merchant must check that signature is valid. Signature is calculated as described [above](#redirect-and-callback-url-signing). **Do not** implement the HMAC validation with hardcoded query string parameters since new ones may be added later. Instead, filter parameters by name (include all that begin with `checkout-`), then sort, and calculate the HMAC.
 
@@ -213,13 +213,13 @@ Merchant must check that signature is valid. Signature is calculated as describe
 
 The currently possible payment statuses are:
 
-Status | Description
--------|------------
-`new` | Payment has been created but nothing more. Never returned as a result, but can be received from the `GET /payments/{transactionId}` endpoint
-`ok` | Payment was accepted by the provider and confirmed successfully
-`fail` | Payment was cancelled by the user or rejected by the provider
-`pending` | Payment was initially approved by the provider but further processing is needed. `pending` payments are reported as either `ok` or `fail` via callbacks, if provided, and using the redirect URLs. Currently this is Collector only, and rarely takes more than seconds or minutes to get an `ok` or  `fail`.
-`delayed` | A rare status related to a single payment method that is not generally enabled. May take days to complete. If completed, will be reported as `ok` via the callback *or* the redirect URL. This can be handled the same way as `pending`.
+| Status    | Description                                                                                                                                                                                                                                                                                                  |
+| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `new`     | Payment has been created but nothing more. Never returned as a result, but can be received from the `GET /payments/{transactionId}` endpoint                                                                                                                                                                 |
+| `ok`      | Payment was accepted by the provider and confirmed successfully                                                                                                                                                                                                                                              |
+| `fail`    | Payment was cancelled by the user or rejected by the provider                                                                                                                                                                                                                                                |
+| `pending` | Payment was initially approved by the provider but further processing is needed. `pending` payments are reported as either `ok` or `fail` via callbacks, if provided, and using the redirect URLs. Currently this is Collector only, and rarely takes more than seconds or minutes to get an `ok` or `fail`. |
+| `delayed` | A rare status related to a single payment method that is not generally enabled. May take days to complete. If completed, will be reported as `ok` via the callback _or_ the redirect URL. This can be handled the same way as `pending`.                                                                     |
 
 ### Get
 
@@ -229,19 +229,19 @@ Get transaction info. Payments are reported primarily via callbacks, and impleme
 
 #### Response
 
-Field | Type | Description
-------|------|------------
-transactionId | string | Assigned transaction ID for the payment
-status | string | `new`, `ok`, `fail`, `pending`, or `delayed`. `new` is for transactions that have been created but nothing further has happened. Other statuses are desribed [above](#statuses).
-amount | integer | Total amount of the payment in currency's minor units, e.g. for Euros use cents
-currency | alpha3 | Currency
-stamp | string | Merchant unique identifier for the order
-reference | string | Order reference
-createdAt | string | Transaction creation timestamp
-href | string | If transaction is in status `new`, link to the hosted payment gateway
-provider | string | If processed, the name of the payment method provider
-filingCode | string | If paid, the filing code issued by the payment method provider if any. Some providers do not return the filing code.
-paidAt | string | Timestamp when the transaction was paid
+| Field         | Type    | Description                                                                                                                                                                      |
+| ------------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| transactionId | string  | Assigned transaction ID for the payment                                                                                                                                          |
+| status        | string  | `new`, `ok`, `fail`, `pending`, or `delayed`. `new` is for transactions that have been created but nothing further has happened. Other statuses are desribed [above](#statuses). |
+| amount        | integer | Total amount of the payment in currency's minor units, e.g. for Euros use cents                                                                                                  |
+| currency      | alpha3  | Currency                                                                                                                                                                         |
+| stamp         | string  | Merchant unique identifier for the order                                                                                                                                         |
+| reference     | string  | Order reference                                                                                                                                                                  |
+| createdAt     | string  | Transaction creation timestamp                                                                                                                                                   |
+| href          | string  | If transaction is in status `new`, link to the hosted payment gateway                                                                                                            |
+| provider      | string  | If processed, the name of the payment method provider                                                                                                                            |
+| filingCode    | string  | If paid, the filing code issued by the payment method provider if any. Some providers do not return the filing code.                                                             |
+| paidAt        | string  | Timestamp when the transaction was paid                                                                                                                                          |
 
 See [example response](/examples#get) from examples tab.
 
@@ -272,11 +272,11 @@ See detailed description from [refund payment request body section](#refund-paym
 
 #### Response
 
-Status code | Explanation
-------------|------------
-201 | Refund created successfully
-400 | Something went wrong
-422 | Used payment method provider does not support refunds
+| Status code | Explanation                                           |
+| ----------- | ----------------------------------------------------- |
+| 201         | Refund created successfully                           |
+| 400         | Something went wrong                                  |
+| 422         | Used payment method provider does not support refunds |
 
 Note, that at the moment HTTP 400 may occur also for 3rd party reasons - e.g. because Nordea test API does not support refunds. See all provider limitations from [providers tab](/payment-method-providers#refunds).
 
@@ -301,14 +301,14 @@ Client ->> Card addition form: Redirect to add card form
 Card addition form -->> api.checkout.fi: HTTP 302 Redirect to Checkout service
 
 alt success
-  api.checkout.fi -->> Merchant backend: HTTP 302 Redirect to Merchant success URL with 'checkout-tokenization-id'
-  Merchant backend ->> api.checkout.fi: Tokenize with tokenization id (POST /tokenization/{checkout-tokenization-id})
-  api.checkout.fi -->> Merchant backend: Card token
-  Merchant backend ->> Merchant backend: Save token to DB
-  Merchant backend -->> Client: display success view
+api.checkout.fi -->> Merchant backend: HTTP 302 Redirect to Merchant success URL with 'checkout-tokenization-id'
+Merchant backend ->> api.checkout.fi: Tokenize with tokenization id (POST /tokenization/{checkout-tokenization-id})
+api.checkout.fi -->> Merchant backend: Card token
+Merchant backend ->> Merchant backend: Save token to DB
+Merchant backend -->> Client: display success view
 else failure
-  api.checkout.fi -->> Merchant backend: HTTP 302 Redirect to Merchant failure URL
-  Merchant backend -->> Client: display failure view
+api.checkout.fi -->> Merchant backend: HTTP 302 Redirect to Merchant failure URL
+Merchant backend -->> Client: display failure view
 end
 
 </div>
@@ -319,15 +319,15 @@ end
 
 ##### Request
 
-field | info | required | description
------ | ---- | -------- | -----------
-checkout-account | numeric | <center>x</center>| Checkout account ID
-checkout-algorithm | string | <center>x</center>| Used signature algorithm. The same as used by merchant when creating the payment.
-checkout-redirect-success-url | string | <center>x</center> | Merchant's url for user redirect on successful card addition
-checkout-redirect-cancel-url | string | <center>x</center> | Merchant's url for user redirect on failed card addition
-checkout-callback-success-url | string | <center>-</center> | Merchant's url called on successful card addition
-checkout-callback-cancel-url | string | <center>-</center> | Merchant's url called on failed card addition
-language | alpha2 | <center>-</center> | Card addition form language, currently supported are `FI`, `SV`, and `EN`
+| field                         | info    | required           | description                                                                       |
+| ----------------------------- | ------- | ------------------ | --------------------------------------------------------------------------------- |
+| checkout-account              | numeric | <center>x</center> | Checkout account ID                                                               |
+| checkout-algorithm            | string  | <center>x</center> | Used signature algorithm. The same as used by merchant when creating the payment. |
+| checkout-redirect-success-url | string  | <center>x</center> | Merchant's url for user redirect on successful card addition                      |
+| checkout-redirect-cancel-url  | string  | <center>x</center> | Merchant's url for user redirect on failed card addition                          |
+| checkout-callback-success-url | string  | <center>-</center> | Merchant's url called on successful card addition                                 |
+| checkout-callback-cancel-url  | string  | <center>-</center> | Merchant's url called on failed card addition                                     |
+| language                      | alpha2  | <center>-</center> | Card addition form language, currently supported are `FI`, `SV`, and `EN`         |
 
 ##### Response
 
@@ -349,9 +349,38 @@ If tokenization is successful, `HTTP 200` and the `token` of the card is returne
 
 This token is used to make authorization holds and charges on the payment card.
 
-field | type | description
-------|------|------------
-token | string | Payment card token
+| field    | type                  | description                                                 |
+| -------- | --------------------- | ----------------------------------------------------------- |
+| token    | string                | Payment card token                                          |
+| card     | [Card](#card)         | Masked card details. Present if verification was successful |
+| customer | [Customer](#customer) | Customer details                                            |
+
+###### Card
+
+Card details
+
+| Field            | Type   | Description                                                                                                                                        |
+| ---------------- | ------ | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| type             | string | Card type, for example ‘Visa’                                                                                                                      |
+| bin              | string | First 2 or 6 digits of the card number. (6 MC/VISA, 2 Amex/Diners)                                                                                 |
+| partial_pan      | string | Last four digits of the card                                                                                                                       |
+| expire_year      | string | Card expiration year                                                                                                                               |
+| expire_month     | string | Card expiration month                                                                                                                              |
+| cvc_required     | string | Whether the CVC is required for paying with this card. Can be one of `yes`, `no` or `not_tested`.                                                  |
+| funding          | string | `credit`, `debit` or `unknown`                                                                                                                     |
+| category         | string | `business`, `prepaid` or `unknown`                                                                                                                 |
+| country_code     | string | e.g. FI                                                                                                                                            |
+| pan_fingerprint  | string | Identifies a specific card number. Cards with the same PAN but different expiry dates will have the same PAN fingerprint. Hex string of length 64. |
+| card_fingerprint | string | Identifies a specific card, including the expiry date. Hex string of length 64.                                                                    |
+
+###### Customer
+
+Customer details
+
+| Field           | Type   | Description                                                 |
+| --------------- | ------ | ----------------------------------------------------------- |
+| network_address | string | The IP address of the customer for fraud detection purposes |
+| country_code    | string | e.g. FI                                                     |
 
 ### Charging a token
 
@@ -379,29 +408,30 @@ sequenceDiagram
 Client ->> Merchant backend: Pay with tokenized card
 Merchant backend ->> api.checkout.fi: Create payment (POST /payments/token/cit/[charge|authorization-hold])
 
-
 alt success
-  api.checkout.fi -->> Merchant backend: HTTP 201, transaction ID
+api.checkout.fi -->> Merchant backend: HTTP 201, transaction ID
 end
 
 alt 3DS required
-  api.checkout.fi -->> Merchant backend: HTTP 403, transaction ID & 3DS redirect url
-  Merchant backend -->> Client: Redirect user to 3DS
-  Client ->> 3DS Server: Redirect user to 3DS
-  3DS Server -->> api.checkout.fi: 3DS result
+api.checkout.fi -->> Merchant backend: HTTP 403, transaction ID & 3DS redirect url
+Merchant backend -->> Client: Redirect user to 3DS
+Client ->> 3DS Server: Redirect user to 3DS
+3DS Server -->> api.checkout.fi: 3DS result
 
-  alt success
-    Note over Client,api.checkout.fi: Authorization hold created on card
+alt success
+Note over Client,api.checkout.fi: Authorization hold created on card
 
     alt direct charge
       api.checkout.fi ->> api.checkout.fi: Commit authorization hold
     end
-  end
+
+end
 end
 
 api.checkout.fi -->> Client: Redirect to Merchant success/cancel URL
 Client ->> Merchant backend: Return to success/cancel
 Merchant backend ->> Client: Render view based on result (e.g. Thank You -page)
+
 </div>
 
 #### Merchant Initiated Transactions (MIT)
@@ -420,9 +450,9 @@ If creating an authorization hold, the payment needs to be committed later with 
 
 The commit request body schema is the same as the one used for [creating payments](#create-request-body) expect with the addition of a the new token field (which must also be included as part of HMAC calculation):
 
-field | info | required | description
------ | ---- | -------- | -----------
-token | string | <center>x</center> | Payment card token
+| field | info   | required           | description        |
+| ----- | ------ | ------------------ | ------------------ |
+| token | string | <center>x</center> | Payment card token |
 
 ##### Response
 
@@ -430,10 +460,10 @@ If authorization hold or charge is successful, `HTTP 201` and the `transactionId
 
 When creating CIT authorization holds or direct charges the payment might need a 3DS step-up. In these cases `HTTP 403` along with the `transactionId` and `threeDSecureUrl` is returned. When this happens, the merchant must redirect user to the given `threeDSecureUrl` for secure authorization and further redirect. See documentation [here](#customer-initiated-transactions-cit).
 
-field | type | description
-------|------|------------
-transactionId | string | Assigned transaction ID for the payment
-threeDSecureUrl | string | 3DS redirect URL
+| field           | type   | description                             |
+| --------------- | ------ | --------------------------------------- |
+| transactionId   | string | Assigned transaction ID for the payment |
+| threeDSecureUrl | string | 3DS redirect URL                        |
 
 #### Commit authorization hold
 
@@ -453,9 +483,9 @@ The final items may differ from the ones used when creating the authorization ho
 
 Commit will return `HTTP 201` when successful, and the `transactionId` of the payment.
 
-field | type | description
-------|------|------------
-transactionId | string | Assigned transaction ID for the payment
+| field         | type   | description                             |
+| ------------- | ------ | --------------------------------------- |
+| transactionId | string | Assigned transaction ID for the payment |
 
 #### Revert authorization hold
 
@@ -471,9 +501,9 @@ No request body required.
 
 Revert will return `HTTP 200` when successful, and the `transactionId` of the payment.
 
-field | type | description
-------|------|------------
-transactionId | string | Assigned transaction ID for the payment
+| field         | type   | description                             |
+| ------------- | ------ | --------------------------------------- |
+| transactionId | string | Assigned transaction ID for the payment |
 
 ## Payment Reports
 
@@ -487,23 +517,23 @@ A Shop-in-Shop aggregate merchant can also fetch its submerchant's payment repor
 
 `HTTP POST /payments/report` results in a callback containing the payment report.
 
-Field | Type | Required | Default | Description
------ | ---- | -------- | ------- | -----------
-requestType | string | <center>x</center> | | In which format will the response be delivered in, currently supported are `json` and `csv`.
-callbackUrl | string | <center>x</center> | | The url the system will send the report to as a `POST` request.
-paymentStatus | string | <center></center> | `default` | How are the payments statuses filtered. `default` includes both paid and settled payments, `paid` includes paid payments that have not been settled yet, `all` includes everything, for example unpaid or failed payments and `settled` only includes settled payments.
-startDate | string | <center></center> | | Only trades created after this datetime will be included in the report. Expects date as `ISO` format.
-endDate | string | <center></center> | | Only trades created before this datetime will be included in the report. Expects date as `ISO` format.
-limit | integer | <center></center> | `50000` | Limit the amount of payments included in the report. Maximum 50000.
-reportFields | string[] | <center></center> | all | Limit the fields that will be included in the report. Leaving this empty will include all fields. Possible values: `entryDate`, `created`, `amount`, `status`, `firstname`, `familyname`, `description`, `reference`, `paymentMethod`, `stamp`, `address`, `postcode`, `postoffice`, `country`, `checkoutReference`, `archiveNumber`, `payerName`, `settlementId`, `settlementDate`, `originalTradeReference`, `vatPercentage`, `vatAmount`, `paymentMethodFee`, `paymentMethodCommission`, `shopInShopCommission`, `shopInShopCommissionVatPercentage` and `shopInShopCommissionVatAmount`
-submerchant | integer | <center></center> | | Get submerchant's payment report (aggregate only)
+| Field         | Type     | Required           | Default   | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| ------------- | -------- | ------------------ | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| requestType   | string   | <center>x</center> |           | In which format will the response be delivered in, currently supported are `json` and `csv`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| callbackUrl   | string   | <center>x</center> |           | The url the system will send the report to as a `POST` request.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| paymentStatus | string   | <center></center>  | `default` | How are the payments statuses filtered. `default` includes both paid and settled payments, `paid` includes paid payments that have not been settled yet, `all` includes everything, for example unpaid or failed payments and `settled` only includes settled payments.                                                                                                                                                                                                                                                                                                                     |
+| startDate     | string   | <center></center>  |           | Only trades created after this datetime will be included in the report. Expects date as `ISO` format.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| endDate       | string   | <center></center>  |           | Only trades created before this datetime will be included in the report. Expects date as `ISO` format.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| limit         | integer  | <center></center>  | `50000`   | Limit the amount of payments included in the report. Maximum 50000.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| reportFields  | string[] | <center></center>  | all       | Limit the fields that will be included in the report. Leaving this empty will include all fields. Possible values: `entryDate`, `created`, `amount`, `status`, `firstname`, `familyname`, `description`, `reference`, `paymentMethod`, `stamp`, `address`, `postcode`, `postoffice`, `country`, `checkoutReference`, `archiveNumber`, `payerName`, `settlementId`, `settlementDate`, `originalTradeReference`, `vatPercentage`, `vatAmount`, `paymentMethodFee`, `paymentMethodCommission`, `shopInShopCommission`, `shopInShopCommissionVatPercentage` and `shopInShopCommissionVatAmount` |
+| submerchant   | integer  | <center></center>  |           | Get submerchant's payment report (aggregate only)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 
 #### Response
 
-Status code | Explanation
-------------|------------
-200 | Payment report generation initiated successfully
-400 | Something went wrong
+| Status code | Explanation                                      |
+| ----------- | ------------------------------------------------ |
+| 200         | Payment report generation initiated successfully |
+| 400         | Something went wrong                             |
 
 #### Callback example
 
@@ -541,43 +571,44 @@ Status code | Explanation
 
 `HTTP POST /settlements/:id/payments/report` results in a callback containing the payment report.
 
-Field | Type | Required | Default | Description
------ | ---- | -------- | ------- | -----------
-requestType | string | <center>x</center> | | In which format will the response be delivered in, currently supported are `json` and `csv`.
-callbackUrl | string | <center>x</center> | | The url the system will send the report to as a `POST` request. Callback URLs must use HTTPS.
-reportFields | string[] | <center></center> | all | Limit the fields that will be included in the report. Leaving this empty will include all fields. Possible values: `created`, `amount`, `status`, `firstname`, `familyname`, `description`, `reference`, `paymentMethod`, `stamp`, `address`, `postcode`, `postoffice`, `country`, `checkoutReference`, `archiveNumber`, `settlementId`, `settlementDate`, `refundAmount`, `fee` and `provision`.
-submerchant | integer | <center></center> | | Get submerchant's payment report (aggregate only)
+| Field        | Type     | Required           | Default | Description                                                                                                                                                                                                                                                                                                                                                                                       |
+| ------------ | -------- | ------------------ | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| requestType  | string   | <center>x</center> |         | In which format will the response be delivered in, currently supported are `json` and `csv`.                                                                                                                                                                                                                                                                                                      |
+| callbackUrl  | string   | <center>x</center> |         | The url the system will send the report to as a `POST` request. Callback URLs must use HTTPS.                                                                                                                                                                                                                                                                                                     |
+| reportFields | string[] | <center></center>  | all     | Limit the fields that will be included in the report. Leaving this empty will include all fields. Possible values: `created`, `amount`, `status`, `firstname`, `familyname`, `description`, `reference`, `paymentMethod`, `stamp`, `address`, `postcode`, `postoffice`, `country`, `checkoutReference`, `archiveNumber`, `settlementId`, `settlementDate`, `refundAmount`, `fee` and `provision`. |
+| submerchant  | integer  | <center></center>  |         | Get submerchant's payment report (aggregate only)                                                                                                                                                                                                                                                                                                                                                 |
 
 #### Response
 
-Status code | Explanation
-------------|------------
-200 | Payment report generation initiated successfully
-400 | Something went wrong
+| Status code | Explanation                                      |
+| ----------- | ------------------------------------------------ |
+| 200         | Payment report generation initiated successfully |
+| 400         | Something went wrong                             |
 
 ## Settlements
 
 `HTTP GET /settlements` returns merchant's settlement IDs. Maximum of 100 settlement IDs are returned, starting from the most recent settelements. The endpoint supports the following `query`-parameters:
 
-Field | Required | Description
------ | -------- | -----------
-startDate | <center></center> | Only settlements created after this date will be included in the response. Must follow the following format: `YYYY-MM-DD`.
-endDate | <center></center> | Only settlements created before or on this date will be included in the response. Must follow the following format: `YYYY-MM-DD`.
-bankReference | <center></center> | Only include settlements that were settled with this bank reference.
-limit | <center></center> | Limit the number of settlement IDs returned. `Limit 1` will only include the most recent settlement.
-submerchant | <center></center> | Get submerchant's payment report (aggregate only)
+| Field         | Required          | Description                                                                                                                       |
+| ------------- | ----------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| startDate     | <center></center> | Only settlements created after this date will be included in the response. Must follow the following format: `YYYY-MM-DD`.        |
+| endDate       | <center></center> | Only settlements created before or on this date will be included in the response. Must follow the following format: `YYYY-MM-DD`. |
+| bankReference | <center></center> | Only include settlements that were settled with this bank reference.                                                              |
+| limit         | <center></center> | Limit the number of settlement IDs returned. `Limit 1` will only include the most recent settlement.                              |
+| submerchant   | <center></center> | Get submerchant's payment report (aggregate only)                                                                                 |
 
 Example
+
 ```
 /settlements?bankReference=kissa&startDate=2019-01-01&endDate=2019-02-01
 ```
 
 #### Response
 
-Status code | Explanation
-------------|------------
-200 | Settlement IDs fetched successfully
-400 | Something went wrong
+| Status code | Explanation                         |
+| ----------- | ----------------------------------- |
+| 200         | Settlement IDs fetched successfully |
+| 400         | Something went wrong                |
 
 ## Merchants
 
@@ -589,12 +620,13 @@ Actions related to merchants are mapped under `/merchants` API endpoint.
 
 #### HTTP GET query parameters
 
-Field | Type | Required | Example | Description
------ | ---- | -------- | ------- | -----------
-amount | integer | <center>-</center> | 1000 | Purchase amount in currency's minor unit. Some payment methods have minimum or maximum purchase limits. When the amount is provided, only the methods suitable for the amount are returned. Otherwise, all merchant's payment methods are returned.
-groups | [PaymentMethodGroup](#paymentmethodgroup)[] | <center>-</center> | mobile,creditcard | Comma separated list of payment method groups to include. Otherwise all enabled methods are returned.
+| Field  | Type                                        | Required           | Example           | Description                                                                                                                                                                                                                                         |
+| ------ | ------------------------------------------- | ------------------ | ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| amount | integer                                     | <center>-</center> | 1000              | Purchase amount in currency's minor unit. Some payment methods have minimum or maximum purchase limits. When the amount is provided, only the methods suitable for the amount are returned. Otherwise, all merchant's payment methods are returned. |
+| groups | [PaymentMethodGroup](#paymentmethodgroup)[] | <center>-</center> | mobile,creditcard | Comma separated list of payment method groups to include. Otherwise all enabled methods are returned.                                                                                                                                               |
 
 Example
+
 ```
 /merchants/payment-providers?amount=1000&groups=mobile,creditcard
 ```
@@ -603,14 +635,14 @@ Example
 
 General API HTTP status codes and what to expect of them.
 
-Code | Text | Description
----- | ---- | -----------
-200  | OK   | Everything worked as expected.
-201  | Created | A payment/refund was created successfully.
-400  | Bad Request |The request was unacceptable, probably due to missing a required parameter.
-401  | Unauthorized | HMAC calculation failed or Merchant has no access to this feature.
-404  | Not Found | The requested resource doesn't exist.
-422  | Unprocessable Entity | The requested method is not supported.
+| Code | Text                 | Description                                                                 |
+| ---- | -------------------- | --------------------------------------------------------------------------- |
+| 200  | OK                   | Everything worked as expected.                                              |
+| 201  | Created              | A payment/refund was created successfully.                                  |
+| 400  | Bad Request          | The request was unacceptable, probably due to missing a required parameter. |
+| 401  | Unauthorized         | HMAC calculation failed or Merchant has no access to this feature.          |
+| 404  | Not Found            | The requested resource doesn't exist.                                       |
+| 422  | Unprocessable Entity | The requested method is not supported.                                      |
 
 ## Payloads
 
@@ -618,75 +650,75 @@ Code | Text | Description
 
 #### Request body
 
-Field | Type | Required | Description
------ | ---- | -------- | -----------
-stamp | string | <center>x</center> | Merchant unique identifier for the order
-reference | string | <center>x</center> | Order reference
-amount | integer | <center>x</center> | Total amount of the payment in currency's minor units, e.g. for Euros use cents. Must match the total sum of items.
-currency | alpha3 | <center>x</center> | Currency, only `EUR` supported at the moment
-language | alpha2 | <center>x</center> | Payment's language, currently supported are `FI`, `SV`, and `EN`
-orderId | string | <center>-</center> | Order ID. Used for e.g. Collector payments order ID. If not given, merchant reference is used instead.
-items | [Item](#item)[] | <center>x</center> | Array of items
-customer | [Customer](#customer) | <center>x</center> | Customer information
-deliveryAddress | [Address](#address) | <center>-</center> | Delivery address
-invoicingAddress | [Address](#address) | <center>-</center> | Invoicing address
-redirectUrls | [CallbackUrl](#callbackurl) | <center>x</center> | Where to redirect browser after a payment is paid or cancelled.
-callbackUrls | [CallbackUrl](#callbackurl) | <center>-</center> | Which url to ping after this payment is paid or cancelled
-callbackDelay | number | <center>-</center> | Callback URL polling delay in seconds. If callback URLs are given, the call can be delayed up to 900 seconds. Default: 0
-groups | [PaymentMethodGroup](#paymentmethodgroup)[] | <center>-</center> | Instead of all enabled payment methods, return only those of given groups. It is highly recommended to use [list providers](#list-providers) before initiating the payment if filtering by group. If the payment methods are rendered in the webshop the grouping functionality can be implemented based on the `group` attribute of each returned payment instead of filtering when creating a payment.
+| Field            | Type                                        | Required           | Description                                                                                                                                                                                                                                                                                                                                                                                              |
+| ---------------- | ------------------------------------------- | ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| stamp            | string                                      | <center>x</center> | Merchant unique identifier for the order                                                                                                                                                                                                                                                                                                                                                                 |
+| reference        | string                                      | <center>x</center> | Order reference                                                                                                                                                                                                                                                                                                                                                                                          |
+| amount           | integer                                     | <center>x</center> | Total amount of the payment in currency's minor units, e.g. for Euros use cents. Must match the total sum of items.                                                                                                                                                                                                                                                                                      |
+| currency         | alpha3                                      | <center>x</center> | Currency, only `EUR` supported at the moment                                                                                                                                                                                                                                                                                                                                                             |
+| language         | alpha2                                      | <center>x</center> | Payment's language, currently supported are `FI`, `SV`, and `EN`                                                                                                                                                                                                                                                                                                                                         |
+| orderId          | string                                      | <center>-</center> | Order ID. Used for e.g. Collector payments order ID. If not given, merchant reference is used instead.                                                                                                                                                                                                                                                                                                   |
+| items            | [Item](#item)[]                             | <center>x</center> | Array of items                                                                                                                                                                                                                                                                                                                                                                                           |
+| customer         | [Customer](#customer)                       | <center>x</center> | Customer information                                                                                                                                                                                                                                                                                                                                                                                     |
+| deliveryAddress  | [Address](#address)                         | <center>-</center> | Delivery address                                                                                                                                                                                                                                                                                                                                                                                         |
+| invoicingAddress | [Address](#address)                         | <center>-</center> | Invoicing address                                                                                                                                                                                                                                                                                                                                                                                        |
+| redirectUrls     | [CallbackUrl](#callbackurl)                 | <center>x</center> | Where to redirect browser after a payment is paid or cancelled.                                                                                                                                                                                                                                                                                                                                          |
+| callbackUrls     | [CallbackUrl](#callbackurl)                 | <center>-</center> | Which url to ping after this payment is paid or cancelled                                                                                                                                                                                                                                                                                                                                                |
+| callbackDelay    | number                                      | <center>-</center> | Callback URL polling delay in seconds. If callback URLs are given, the call can be delayed up to 900 seconds. Default: 0                                                                                                                                                                                                                                                                                 |
+| groups           | [PaymentMethodGroup](#paymentmethodgroup)[] | <center>-</center> | Instead of all enabled payment methods, return only those of given groups. It is highly recommended to use [list providers](#list-providers) before initiating the payment if filtering by group. If the payment methods are rendered in the webshop the grouping functionality can be implemented based on the `group` attribute of each returned payment instead of filtering when creating a payment. |
 
 ##### Item
 
-Field | Type | Required | Example | Description
------ | ---- | -------- | ------- | -----------
-unitPrice | integer | <center>x</center> | 1000 | Price per unit, VAT included, in each country's minor unit, e.g. for Euros use cents
-units | integer | <center>x</center> | 5 | Quantity, how many items ordered
-vatPercentage | integer | <center>x</center> | 24 | VAT percentage
-productCode | string | <center>x</center> | 9a | Merchant product code. May appear on invoices of certain payment methods.
-deliveryDate | string | <center>x</center> | 2019-12-31 | When is this item going to be delivered
-description | string | <center>-</center> | Bear suits for adults | Item description. May appear on invoices of certain payment methods.
-category | string | <center>-</center> | fur suits | Merchant specific item category
-orderId | string |  <center>-</center> |  | Item level order ID (suborder ID). Mainly useful for Shop-in-Shop purchases.
-stamp | string | <center>-</center> | d4aca017-f1e7-4fa5-bfb5-2906e141ebac | Unique identifier for this item. Required for Shop-in-Shop payments.
-reference | string | <center>-</center> | fur-suits-5 | Reference for this item. Required for Shop-in-Shop payments.
-merchant | string | <center>-</center> | 695874 | Merchant ID for the item. Required for Shop-in-Shop payments, do not use for normal payments.
-commission | [Commission](#commission) | <center>-</center> | - | Shop-in-Shop commission. Do not use for normal payments.
+| Field         | Type                      | Required           | Example                              | Description                                                                                   |
+| ------------- | ------------------------- | ------------------ | ------------------------------------ | --------------------------------------------------------------------------------------------- |
+| unitPrice     | integer                   | <center>x</center> | 1000                                 | Price per unit, VAT included, in each country's minor unit, e.g. for Euros use cents          |
+| units         | integer                   | <center>x</center> | 5                                    | Quantity, how many items ordered                                                              |
+| vatPercentage | integer                   | <center>x</center> | 24                                   | VAT percentage                                                                                |
+| productCode   | string                    | <center>x</center> | 9a                                   | Merchant product code. May appear on invoices of certain payment methods.                     |
+| deliveryDate  | string                    | <center>x</center> | 2019-12-31                           | When is this item going to be delivered                                                       |
+| description   | string                    | <center>-</center> | Bear suits for adults                | Item description. May appear on invoices of certain payment methods.                          |
+| category      | string                    | <center>-</center> | fur suits                            | Merchant specific item category                                                               |
+| orderId       | string                    | <center>-</center> |                                      | Item level order ID (suborder ID). Mainly useful for Shop-in-Shop purchases.                  |
+| stamp         | string                    | <center>-</center> | d4aca017-f1e7-4fa5-bfb5-2906e141ebac | Unique identifier for this item. Required for Shop-in-Shop payments.                          |
+| reference     | string                    | <center>-</center> | fur-suits-5                          | Reference for this item. Required for Shop-in-Shop payments.                                  |
+| merchant      | string                    | <center>-</center> | 695874                               | Merchant ID for the item. Required for Shop-in-Shop payments, do not use for normal payments. |
+| commission    | [Commission](#commission) | <center>-</center> | -                                    | Shop-in-Shop commission. Do not use for normal payments.                                      |
 
 ##### Customer
 
-Field | Type | Required | Example | Description
------ | ---- | -------- | ------- | -----------
-email | string | <center>x</center> | john.doe@example.org | Email
-firstName | string | <center>-</center> | John | First name
-lastName | string | <center>-</center> | Doe | Last name
-phone | string | <center>-</center> | 358451031234 | Phone number
-vatId | string | <center>-</center> | FI02454583 | VAT ID, if any
+| Field     | Type   | Required           | Example              | Description    |
+| --------- | ------ | ------------------ | -------------------- | -------------- |
+| email     | string | <center>x</center> | john.doe@example.org | Email          |
+| firstName | string | <center>-</center> | John                 | First name     |
+| lastName  | string | <center>-</center> | Doe                  | Last name      |
+| phone     | string | <center>-</center> | 358451031234         | Phone number   |
+| vatId     | string | <center>-</center> | FI02454583           | VAT ID, if any |
 
 ##### Address
 
-Field | Type | Required | Example | Description
------ | ---- | -------- | ------- | -----------
-streetAddress | string | <center>x</center> | Fake Street 123 | Street address
-postalCode | string | <center>x</center> | 00100 | Postal code
-city | string | <center>x</center> | Luleå | City
-county | string | <center>-</center> | Norbotten | County/State
-country | string | <center>x</center> | SE | Alpha-2 country code
+| Field         | Type   | Required           | Example         | Description          |
+| ------------- | ------ | ------------------ | --------------- | -------------------- |
+| streetAddress | string | <center>x</center> | Fake Street 123 | Street address       |
+| postalCode    | string | <center>x</center> | 00100           | Postal code          |
+| city          | string | <center>x</center> | Luleå           | City                 |
+| county        | string | <center>-</center> | Norbotten       | County/State         |
+| country       | string | <center>x</center> | SE              | Alpha-2 country code |
 
 ##### CallbackUrl
 
 These URLs must use HTTPS.
 
-Field | Type | Required | Example | Description
------ | ---- | -------- | ------- | -----------
-success | string | <center>x</center> | https://example.org/51/success | Called on successful payment
-cancel | string | <center>x</center> | https://example.org/51/cancel | Called on cancelled payment
+| Field   | Type   | Required           | Example                        | Description                  |
+| ------- | ------ | ------------------ | ------------------------------ | ---------------------------- |
+| success | string | <center>x</center> | https://example.org/51/success | Called on successful payment |
+| cancel  | string | <center>x</center> | https://example.org/51/cancel  | Called on cancelled payment  |
 
 ##### Commission
 
-Field | Type | Required | Example | Description
------ | ---- | -------- | ------- | -----------
-merchant | string | <center>x</center> | 695874 | Merchant who gets the commission
-amount | integer | <center>x</center> | 250 | Amount of commission in currency's minor units, e.g. for Euros use cents. VAT not applicable.
+| Field    | Type    | Required           | Example | Description                                                                                   |
+| -------- | ------- | ------------------ | ------- | --------------------------------------------------------------------------------------------- |
+| merchant | string  | <center>x</center> | 695874  | Merchant who gets the commission                                                              |
+| amount   | integer | <center>x</center> | 250     | Amount of commission in currency's minor units, e.g. for Euros use cents. VAT not applicable. |
 
 See [an example payload and response](/examples#create)
 
@@ -694,74 +726,74 @@ See [an example payload and response](/examples#create)
 
 The response JSON object contains the transaction ID of the payment and list of provider forms. It is highly recommended to render the icons and forms in the shop, but if this is not possible the response also contains a link to the hosted payment gateway. The response contains also HMAC verification headers and `cof-request-id` header. Storing or logging the request ID header is advised for possible debug needs.
 
-Field | Type | Description
-------|------|------------
-transactionId | string | Assigned transaction ID for the payment
-href | string | URL to hosted payment gateway. Redirect (`HTTP GET`) user here if the payment forms cannot be rendered directly inside the web shop.
-reference | string | The bank reference used for the payments
-providers | [Provider](#provider) | Array of providers. Render these elements as HTML forms
+| Field         | Type                  | Description                                                                                                                          |
+| ------------- | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| transactionId | string                | Assigned transaction ID for the payment                                                                                              |
+| href          | string                | URL to hosted payment gateway. Redirect (`HTTP GET`) user here if the payment forms cannot be rendered directly inside the web shop. |
+| reference     | string                | The bank reference used for the payments                                                                                             |
+| providers     | [Provider](#provider) | Array of providers. Render these elements as HTML forms                                                                              |
 
 ##### Provider
 
 Each provider describes a HTML form which the customer browser submits when performing the payment. Rendering the forms embedded in the web shop is the preferred way for the payment flow.
 
-Field | Type | Description
-------|------|------------
-url   | string | Form target URL. Use `POST` as method.
-icon  | string | URL to PNG version of the provider icon
-svg   | string | URL to SVG version of the provider icon. Using the SVG icon is preferred.
-group | [PaymentMethodGroup](#paymentmethodgroup) | Provider group. Provider groups allow presenting same type of providers in separate groups which usually makes it easier for the customer to select a payment method.
-name  | string | Display name of the provider.
-id    | string | ID of the provider
-parameters | [FormField](#formfield) | Array of form fields
+| Field      | Type                                      | Description                                                                                                                                                           |
+| ---------- | ----------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| url        | string                                    | Form target URL. Use `POST` as method.                                                                                                                                |
+| icon       | string                                    | URL to PNG version of the provider icon                                                                                                                               |
+| svg        | string                                    | URL to SVG version of the provider icon. Using the SVG icon is preferred.                                                                                             |
+| group      | [PaymentMethodGroup](#paymentmethodgroup) | Provider group. Provider groups allow presenting same type of providers in separate groups which usually makes it easier for the customer to select a payment method. |
+| name       | string                                    | Display name of the provider.                                                                                                                                         |
+| id         | string                                    | ID of the provider                                                                                                                                                    |
+| parameters | [FormField](#formfield)                   | Array of form fields                                                                                                                                                  |
 
 ##### FormField
 
 The form field values are rendered as hidden `<input>` elements in the form. See form rendering [example](/examples#payment-provider-form-rendering)
 
-Field | Type | Description
-------|------|------------
-name | string | Name of the input
-value | string | Value of the input
+| Field | Type   | Description        |
+| ----- | ------ | ------------------ |
+| name  | string | Name of the input  |
+| value | string | Value of the input |
 
 ##### PaymentMethodGroup
 
-ID | Description
--- | -----------
-`mobile` | Mobile payment methods: Pivo, Siirto, MobilePay, Masterpass
-`bank` | Bank payment methods
-`creditcard` | Visa, MasterCard, American Express
-`credit` | Instalment and invoice payment methods: OP Lasku, Collector, Mash, Jousto, AfterPay
-`other` | Miscellaneous methods: AinaPay
+| ID           | Description                                                                         |
+| ------------ | ----------------------------------------------------------------------------------- |
+| `mobile`     | Mobile payment methods: Pivo, Siirto, MobilePay, Masterpass                         |
+| `bank`       | Bank payment methods                                                                |
+| `creditcard` | Visa, MasterCard, American Express                                                  |
+| `credit`     | Instalment and invoice payment methods: OP Lasku, Collector, Mash, Jousto, AfterPay |
+| `other`      | Miscellaneous methods: AinaPay                                                      |
 
 ### Refund payment
 
 #### Request body
 
-Field | Type | Required | Description
------ | ---- | -------- | -----------
-amount | integer | <center>-/x</center> | Total amount to refund, in currency's minor units (ie. EUR cents). Required for normal payment refunds. Shop-in-Shop payments can be refunded to full amount by giving the full payment amount here without items.
-email | string | <center>-</center> | Refund recipient email address. Some payment methods [do not support API refunds](/payment-method-providers#refunds), and some have refund related limitations. If email address is given, email refund will be executed as a fallback method if API refund is unsuccessful, or as the default method if the provider does not support API refunds.
-refundStamp | string | <center>-</center> |  Merchant unique identifier for the refund
-refundReference | string | <center>-</center> | Refund reference
-items | [RefundItem](#refunditem)[] | <center>-</center> | Array of items to refund. Use only for Shop-in-Shop payments.
-callbackUrls | [CallbackUrl](#callbackurl) | <center>x</center> | Which urls to ping after the refund has been processed. The callback is called with `HTTP GET` and with the same query string parameters as in the [payment request callback](#redirect-and-callback-url-parameters). The server should respond with `HTTP 20x`.
+| Field           | Type                        | Required             | Description                                                                                                                                                                                                                                                                                                                                         |
+| --------------- | --------------------------- | -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| amount          | integer                     | <center>-/x</center> | Total amount to refund, in currency's minor units (ie. EUR cents). Required for normal payment refunds. Shop-in-Shop payments can be refunded to full amount by giving the full payment amount here without items.                                                                                                                                  |
+| email           | string                      | <center>-</center>   | Refund recipient email address. Some payment methods [do not support API refunds](/payment-method-providers#refunds), and some have refund related limitations. If email address is given, email refund will be executed as a fallback method if API refund is unsuccessful, or as the default method if the provider does not support API refunds. |
+| refundStamp     | string                      | <center>-</center>   | Merchant unique identifier for the refund                                                                                                                                                                                                                                                                                                           |
+| refundReference | string                      | <center>-</center>   | Refund reference                                                                                                                                                                                                                                                                                                                                    |
+| items           | [RefundItem](#refunditem)[] | <center>-</center>   | Array of items to refund. Use only for Shop-in-Shop payments.                                                                                                                                                                                                                                                                                       |
+| callbackUrls    | [CallbackUrl](#callbackurl) | <center>x</center>   | Which urls to ping after the refund has been processed. The callback is called with `HTTP GET` and with the same query string parameters as in the [payment request callback](#redirect-and-callback-url-parameters). The server should respond with `HTTP 20x`.                                                                                    |
 
 ##### RefundItem
 
-Field | Type | Required | Description
------ | ---- | ---------| -----------
-amount | integer | <center>x</center> | Total amount to refund this item, in currency's minor units (ie. EUR cents)
-stamp | string | <center>x</center> | The item unique identifier
-refundStamp | string | <center>-</center> |  Merchant unique identifier for the refund
-refundReference | string | <center>-</center> | Refund reference
-commission | [RefundCommission](#RefundCommission) | <center>-</center> | Shop-in-Shop commission return. In refunds, the given amount is returned from the given commission account to the item merchant account.
+| Field           | Type                                  | Required           | Description                                                                                                                              |
+| --------------- | ------------------------------------- | ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| amount          | integer                               | <center>x</center> | Total amount to refund this item, in currency's minor units (ie. EUR cents)                                                              |
+| stamp           | string                                | <center>x</center> | The item unique identifier                                                                                                               |
+| refundStamp     | string                                | <center>-</center> | Merchant unique identifier for the refund                                                                                                |
+| refundReference | string                                | <center>-</center> | Refund reference                                                                                                                         |
+| commission      | [RefundCommission](#RefundCommission) | <center>-</center> | Shop-in-Shop commission return. In refunds, the given amount is returned from the given commission account to the item merchant account. |
 
 ##### RefundCommission
 
-Field | Type | Required | Example | Description
------ | ---- | -------- | ------- | -----------
-merchant | string | <center>x</center> | 695874 | Merchant from whom the commission is returned to the submerchant.
-amount | integer | <center>x</center> | 250 | Amount of commission in currency's minor units, e.g. for Euros use cents. VAT not applicable.
+| Field    | Type    | Required           | Example | Description                                                                                   |
+| -------- | ------- | ------------------ | ------- | --------------------------------------------------------------------------------------------- |
+| merchant | string  | <center>x</center> | 695874  | Merchant from whom the commission is returned to the submerchant.                             |
+| amount   | integer | <center>x</center> | 250     | Amount of commission in currency's minor units, e.g. for Euros use cents. VAT not applicable. |
 
 See [an example payload and response](/examples#refund)
