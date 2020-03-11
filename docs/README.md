@@ -764,7 +764,6 @@ The form field values are rendered as hidden `<input>` elements in the form. See
 | `bank`       | Bank payment methods                                                                |
 | `creditcard` | Visa, MasterCard, American Express                                                  |
 | `credit`     | Instalment and invoice payment methods: OP Lasku, Collector, Mash, Jousto, AfterPay |
-| `other`      | Miscellaneous methods: AinaPay                                                      |
 
 ### Refund payment
 

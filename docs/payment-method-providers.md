@@ -26,7 +26,6 @@ Collector<br>Collector B2B | `collectorb2c`<br>`collectorb2b` |  Social security
 Mash | `mash` |  Generate a social security number with [Mash provided service](https://sc-rel.mash.com/My/Test/GenerateSsnForTesting?age=34&tps=651)
 Pivo | `pivo` | Testing is not possible
 Siirto | `siirto` | Testing is not possible
-AinaPay | `ainapay` | Testing is not possible
 OP Lasku | `oplasku` | Testing is not possible
 Jousto | `jousto` | Testing is not possible
 
