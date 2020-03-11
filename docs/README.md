@@ -162,11 +162,11 @@ See detailed [response documentation](#create-payment) for explanation.
   "transactionId": "5770642a-9a02-4ca2-8eaa-cc6260a78eb6",
   "href": "https://api.checkout.fi/pay/5770642a-9a02-4ca2-8eaa-cc6260a78eb6",
   "reference": "809759248",
-  "terms": "By continuing with your payment, you agree to our <a href=\"https://www.checkout.fi/ehdot-ja-sopimukset/maksuehdot\" target=\"_blank\">payment terms & conditions</a>"
+  "terms": "By continuing with your payment, you agree to our <a href=\"https://www.checkout.fi/ehdot-ja-sopimukset/maksuehdot\" target=\"_blank\">payment terms & conditions</a>",
   "groups": [
     {
       "id": "mobile",
-      "name": "Mobile payment methods"
+      "name": "Mobile payment methods",
       "icon": "https://payment.checkout.fi/static/img/payment-groups/mobile.png",
       "svg": "https://payment.checkout.fi/static/img/payment-groups/mobile.svg"
     }
