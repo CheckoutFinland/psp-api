@@ -1827,6 +1827,15 @@ components:
           format: url
           example: https://pay.checkout.fi/pay/93ee8d18-10db-410b-92ac-7d6e49369ce3
           description: Unique URL to hosted payment gateway
+        terms:
+          type: string
+          example: "By continuing with your payment, you agree to our <a href=\"https://www.checkout.fi/ehdot-ja-sopimukset/maksuehdot\" target=\"_blank\">payment terms & conditions</a>"
+          description: Text containing a link to the terms of payment
+        groups:
+          type: array
+          items:
+            $ref: "#/components/schemas/PaymentMethodGroupData"
+          description: Contains data about the payment method groups. Contains only the groups found in the response's providers.
         providers:
           type: array
           items:
@@ -1863,6 +1872,39 @@ components:
           example: https://some-3ds-provider.com/efa4d1d9-db80-4ea7-a72f-c180ddbcae36
           description: URL for 3DS authentication step-up. If this is returned, merchants needs to redirect customer to this given URL for 3DS authentication.
 
+    PaymentMethodGroupData:
+      type: object
+      description: ID, name and icon URLs for a payment method group
+      required:
+        - id
+        - name
+        - icon
+        - svg
+      properties:
+        id:
+          type: string
+          example: mobile
+          description: ID of the group
+          enum:
+            - mobile
+            - bank
+            - creditcard
+            - credit
+        name:
+          type: string
+          example: Mobile payment methods
+          description: Localized name of the group
+        icon:
+          type: string
+          format: url
+          example: https://payment.checkout.fi/static/img/payment-groups/mobile.png
+          description: URL to the group PNG icon
+        svg:
+          type: string
+          format: url
+          example: https://payment.checkout.fi/static/img/payment-groups/mobile.svg
+          description: URL to the group SVG icon (recommended to be used instead if PNG)
+
     BasePaymentMethodProvider:
       type: object
       required:
@@ -1898,7 +1940,6 @@ components:
             - bank
             - creditcard
             - credit
-            - other
 
     PaymentMethodProvider:
       allOf:

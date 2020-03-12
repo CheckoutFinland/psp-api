@@ -162,6 +162,15 @@ See detailed [response documentation](#create-payment) for explanation.
   "transactionId": "5770642a-9a02-4ca2-8eaa-cc6260a78eb6",
   "href": "https://api.checkout.fi/pay/5770642a-9a02-4ca2-8eaa-cc6260a78eb6",
   "reference": "809759248",
+  "terms": "By continuing with your payment, you agree to our <a href=\"https://www.checkout.fi/ehdot-ja-sopimukset/maksuehdot\" target=\"_blank\">payment terms & conditions</a>",
+  "groups": [
+    {
+      "id": "mobile",
+      "name": "Mobile payment methods",
+      "icon": "https://payment.checkout.fi/static/img/payment-groups/mobile.png",
+      "svg": "https://payment.checkout.fi/static/img/payment-groups/mobile.svg"
+    }
+  ],
   "providers": [
     {
       "url": "https://maksu.pivo.fi/api/payments",
@@ -726,12 +735,14 @@ See [an example payload and response](/examples#create)
 
 The response JSON object contains the transaction ID of the payment and list of provider forms. It is highly recommended to render the icons and forms in the shop, but if this is not possible the response also contains a link to the hosted payment gateway. The response contains also HMAC verification headers and `cof-request-id` header. Storing or logging the request ID header is advised for possible debug needs.
 
-| Field         | Type                  | Description                                                                                                                          |
-| ------------- | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
-| transactionId | string                | Assigned transaction ID for the payment                                                                                              |
-| href          | string                | URL to hosted payment gateway. Redirect (`HTTP GET`) user here if the payment forms cannot be rendered directly inside the web shop. |
-| reference     | string                | The bank reference used for the payments                                                                                             |
-| providers     | [Provider](#provider) | Array of providers. Render these elements as HTML forms                                                                              |
+| Field         | Type                                                | Description                                                                                                                                |
+| ------------- | --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| transactionId | string                                              | Assigned transaction ID for the payment                                                                                                    |
+| href          | string                                              | URL to hosted payment gateway. Redirect (`HTTP GET`) user here if the payment forms cannot be rendered directly inside the web shop.       |
+| terms         | string                                              | Localized text with a link to the terms of payment                                                                                         |
+| groups        | [PaymentMethodGroupData](#paymentmethodgroupdata)[] | Array of payment method group data with localized names and URLs to icons. Contains only the groups found in the providers of the response |
+| reference     | string                                              | The bank reference used for the payments                                                                                                   |
+| providers     | [Provider](#provider)                               | Array of providers. Render these elements as HTML forms                                                                                    |
 
 ##### Provider
 
@@ -764,6 +775,14 @@ The form field values are rendered as hidden `<input>` elements in the form. See
 | `bank`       | Bank payment methods                                                                |
 | `creditcard` | Visa, MasterCard, American Express                                                  |
 | `credit`     | Instalment and invoice payment methods: OP Lasku, Collector, Mash, Jousto, AfterPay |
+
+##### PaymentMethodGroupData
+| Field           | Type                                       | Description                                                            |
+| --------------- | ------------------------------------------ | ---------------------------------------------------------------------- |
+| id              |  [PaymentMethodGroup](#paymentmethodgroup) | ID of the group                                                        |
+| name            | string                                     | Localized name of the group                                            |
+| icon            | string                                     | URL to PNG version of the group icon                                   |
+| svg             | string                                     | URL to SVG version of the group icon. Using the SVG icon is preferred. |
 
 ### Refund payment
 
