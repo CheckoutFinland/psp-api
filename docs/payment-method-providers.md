@@ -29,6 +29,22 @@ Siirto | `siirto` | Testing is not possible
 OP Lasku | `oplasku` | Testing is not possible
 Jousto | `jousto` | Testing is not possible
 
+
+## Test cards for tokenization
+
+Tokenization | Payment | Card number      | Expiry  | CVC | Description
+-------------|---------|------------------|---------|-----|------------
+OK           | OK      | 4153&nbsp;0139&nbsp;9970&nbsp;0313 | 11/2023 | 313 | Successful 3D Secure. 3DS form password "secret".
+OK           | OK      | 4153&nbsp;0139&nbsp;9970&nbsp;0321 | 11/2023 | 321 | Successful 3D Secure. 3DS form will be automatically completed.
+OK           | OK      | 4153&nbsp;0139&nbsp;9970&nbsp;0339 | 11/2023 | 339 | 3D Secure attempt. 3DS will be automatically attempted. 
+(OK)         | (OK)    | 4153&nbsp;0139&nbsp;9970&nbsp;0347 | 11/2023 | 347 | 3D Secure fails. The "cardholder_authentication" response parameter will be "no". It is at discretion of the merchant to accept or reject unauthentication transactions. If the merchant decides to decline the payment, the transaction should be reverted. 
+OK           | FAIL    | 4153&nbsp;0139&nbsp;9970&nbsp;0354 | 11/2023 | 354 | Successful 3D Secure. 3DS form password "secret". Insufficient funds in the test bank account. 
+OK           | OK      | 4153&nbsp;0139&nbsp;9970&nbsp;1162 | 11/2023 | 162 | with 3DS, Soft decline when charging saved card using Customer Initiated Transaction (requires 3DS). 3DS form password "secret".
+OK           | OK      | 4153&nbsp;0139&nbsp;9970&nbsp;1170 | 11/2023 | 170 | with 3DS, Soft decline when charging saved card using Customer Initiated Transaction (requires 3DS). 3DS form will be automatically completed.
+OK           | OK      | 4153&nbsp;0139&nbsp;9970&nbsp;0024 | 11/2023 | 024 | Non-EU - "one leg out" card, not enrolled to 3DS. The "cardholder_authentication" response parameter will be "attempted".
+OK           | FAIL    | 4153&nbsp;0139&nbsp;9970&nbsp;0156 | 11/2023 | 156 | Non-EU - "one leg out" card, not enrolled to 3DS. Insufficient funds in the test bank account. 
+
+
 ## Provider limitations
 
 ### General limitations
