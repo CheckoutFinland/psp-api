@@ -346,7 +346,13 @@ On a successful request, user is `HTTP 302` redirected to Checkout's card additi
 
 `HTTP POST /tokenization/{checkout-tokenization-id}` is requested after the merchant has received a `checkout-tokenization-id` from the success redirect URL parameters, or the callback URL request if given.
 
-This request returns the actual card token, which can then be used to make payments on the card.
+Tokenization id must be also set on request header.
+
+| field                         | info    | required           | description                                                                       |
+| ----------------------------- | ------- | ------------------ | --------------------------------------------------------------------------------- |
+| `checkout-tokenization-id`    | string  | <center>x</center> | Tokenization id                                                                   |
+
+This request returns the actual card token which can then be used to make payments on the card.
 
 ##### Request
 
@@ -354,7 +360,7 @@ No request body required.
 
 ##### Response
 
-If tokenization is successful, `HTTP 200` and the `token` of the card is returned.
+If tokenization is successful, `HTTP 200` and the `token` of the card is returned along with [card details](#card).
 
 This token is used to make authorization holds and charges on the payment card.
 
