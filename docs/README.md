@@ -625,7 +625,7 @@ Actions related to merchants are mapped under `/merchants` API endpoint.
 
 ### List providers
 
-`HTTP GET /merchants/payment-providers` returns a list of available providers for the merchant, grouped into `mobile`, `bank`, `creditcard`, `credit`, and `other` payment methods. This endpoint can be used for example to show available payment methods in checkout without initializing a new payment before the user actually proceeds to pay their order.
+`HTTP GET /merchants/payment-providers` returns a list of available providers for the merchant. This endpoint can be used for example to show available payment methods in checkout without initializing a new payment before the user actually proceeds to pay their order.
 
 #### HTTP GET query parameters
 
@@ -639,6 +639,42 @@ Example
 ```
 /merchants/payment-providers?amount=1000&groups=mobile,creditcard
 ```
+
+### List grouped providers
+
+`HTTP GET /merchants/grouped-payment-providers` is similar to the `List providers`-endpoint, but in addition of returning a flat list of providers, it returns payment group data containing localized group names, icons for the groups and grouped providers. Returns also a localized text with a link to the terms of payment.
+
+#### HTTP GET query parameters
+
+| Field    | Type                                        | Required           | Example           | Description                                                                                                                                                                                                                                         |
+| -------- | ------------------------------------------- | ------------------ | ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| amount   | integer                                     | <center>-</center> | 1000              | Purchase amount in currency's minor unit. Some payment methods have minimum or maximum purchase limits. When the amount is provided, only the methods suitable for the amount are returned. Otherwise, all merchant's payment methods are returned. |
+| groups   | [PaymentMethodGroup](#paymentmethodgroup)[] | <center>-</center> | mobile,creditcard | Comma separated list of payment method groups to include. Otherwise all enabled methods are returned.                                                                                                                                               |
+| language | string                                      | <center>-</center> | FI, EN, SV        | Code of the language the terms of payment and the payment group names will be displayed in. Supports only FI, EN and SV. FI is the default if left undefined.                                                                                       |
+
+Example
+
+```
+/merchants/payment-providers?amount=1000&groups=mobile,creditcard&language=SV
+```
+
+#### Response
+
+| Field     | Type                                                                          | Description                                                                                                                                                                                     |
+| --------- | ----------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| terms     | string                                                                        | Localized text with a link to the terms of payment                                                                                                                                              |
+| groups    | [PaymentMethodGroupDataWithProviders](#paymentmethodgroupdatawithproviders)[] | Array of payment method group data with localized names and URLs to icons and providers. Contains only the groups the merchant has providers in. Can be limited by the request query parameters |
+| providers | [Provider](#provider)[]                                                       | A flat list of all the providers the merchant has. Can be limited by query parameters.                                                                                                          |
+
+##### PaymentMethodGroupDataWithProviders
+
+| Field           | Type                                       | Description                                                            |
+| --------------- | ------------------------------------------ | ---------------------------------------------------------------------- |
+| id              |  [PaymentMethodGroup](#paymentmethodgroup) | ID of the group                                                        |
+| name            | string                                     | Localized name of the group                                            |
+| icon            | string                                     | URL to PNG version of the group icon                                   |
+| svg             | string                                     | URL to SVG version of the group icon. Using the SVG icon is preferred. |
+| providers       | [Provider](#provider)[]                    | Providers for the payment group                                        |
 
 ## HTTP response summary
 
@@ -742,7 +778,7 @@ The response JSON object contains the transaction ID of the payment and list of 
 | terms         | string                                              | Localized text with a link to the terms of payment                                                                                         |
 | groups        | [PaymentMethodGroupData](#paymentmethodgroupdata)[] | Array of payment method group data with localized names and URLs to icons. Contains only the groups found in the providers of the response |
 | reference     | string                                              | The bank reference used for the payments                                                                                                   |
-| providers     | [Provider](#provider)                               | Array of providers. Render these elements as HTML forms                                                                                    |
+| providers     | [Provider](#provider)[]                             | Array of providers. Render these elements as HTML forms                                                                                    |
 
 ##### Provider
 

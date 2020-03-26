@@ -368,6 +368,112 @@ paths:
           $ref: "#/components/responses/Unauthorized"
         default:
           $ref: "#/components/responses/Error"
+  /merchants/grouped-payment-providers:
+    get:
+      tags:
+        - payments
+        - providers
+      summary: List grouped merchant payment methods
+      description: |
+        Similar to the /merchants/payment-providers, but in addition of a flat
+        list of providers, it returns payment group data containing localized
+        names, icon URLs and grouped providers, and a localized text
+        with a link to the terms of payment.
+      operationId: getGroupedPaymentProviders
+      parameters:
+        - name: checkout-account
+          in: header
+          description: Merchant ID
+          example: 375917
+          schema:
+            type: integer
+            format: int32
+        - name: checkout-algorithm
+          in: header
+          description: HMAC algorithm
+          example: sha512
+          schema:
+            type: string
+            enum:
+              - sha256
+              - sha512
+        - name: checkout-method
+          in: header
+          description: HTTP method of the request
+          example: GET
+          schema:
+            type: string
+            enum:
+              - GET
+              - POST
+        - name: checkout-timestamp
+          in: header
+          description: Current timestamp in ISO 8601 format
+          example: "2018-08-08T10:10:59Z"
+          schema:
+            type: string
+            format: date-time
+        - name: checkout-nonce
+          in: header
+          description: Unique random identifier
+          example: 39da40b8-5fb0-499c-869d-35e575b9a6cd
+          schema:
+            type: string
+        - name: signature
+          in: header
+          description: HMAC signature calculated over the request headers and payload
+          schema:
+            type: string
+        - name: amount
+          in: query
+          description: |
+            Optional amount in minor unit (eg. EUR cents) for the payment providers. Some providers have minimum
+            or maximum amounts that can be purchased.
+          example: 500
+          required: false
+          style: form
+          schema:
+            type: integer
+            format: int32
+        - name: groups
+          in: query
+          description: Comma separated list of payment method groups to include in the reply.
+          schema:
+            type: array
+            items:
+              type: string
+              enum:
+                - mobile
+                - bank
+                - creditcard
+                - credit
+                - other
+          explode: false
+          style: form
+        - name: language
+          in: query
+          description: |
+            Language code of the language the terms of payment and the payment group names will be localized in.
+            Defaults to FI if left undefined
+          required: false
+          schema:
+            type: string
+            enum:
+              - FI
+              - SV
+              - EN
+          style: form
+      responses:
+        "200":
+          description: Payment methods available
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GroupedPaymentProvidersResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        default:
+          $ref: "#/components/responses/Error"
 
   /settlements:
     get:
@@ -1883,7 +1989,7 @@ components:
       properties:
         id:
           type: string
-          example: mobile
+          example: bank
           description: ID of the group
           enum:
             - mobile
@@ -1892,17 +1998,17 @@ components:
             - credit
         name:
           type: string
-          example: Mobile payment methods
+          example: Bank payment methods
           description: Localized name of the group
         icon:
           type: string
           format: url
-          example: https://payment.checkout.fi/static/img/payment-groups/mobile.png
+          example: https://payment.checkout.fi/static/img/payment-groups/bank.png
           description: URL to the group PNG icon
         svg:
           type: string
           format: url
-          example: https://payment.checkout.fi/static/img/payment-groups/mobile.svg
+          example: https://payment.checkout.fi/static/img/payment-groups/bank.svg
           description: URL to the group SVG icon (recommended to be used instead if PNG)
 
     BasePaymentMethodProvider:
@@ -2279,6 +2385,44 @@ components:
           format: float
           description: Payment method commission VAT amount in Euros
           example: 0.192
+
+    GroupedPaymentProvidersResponse:
+      description: List grouped providers response body
+      required:
+        - terms
+        - groups
+        - providers
+      properties:
+        terms:
+          type: string
+          description: Localized text with a link to payment terms
+          example: By continuing with your payment, you agree to our <a href="https://www.checkout.fi/ehdot-ja-sopimukset/maksuehdot" target="_blank">payment terms & conditions</a>
+        groups:
+          type: array
+          description: Payment method group data for all of groups that are included in the query
+          items:
+            $ref: '#/components/schemas/PaymentMethodGroupDataWithProviders'
+        providers:
+          type: array
+          description: A flat list of payment method providers
+          items:
+            $ref: '#/components/schemas/PaymentMethodProvider'
+
+    PaymentMethodGroupDataWithProviders:
+      allOf:
+        - $ref: '#/components/schemas/PaymentMethodGroupData'
+        - description: Localized name, icon and providers data for single payment method group
+        - required:
+            - id
+            - name
+            - icon
+            - svg
+            - providers
+          properties:
+            providers:
+              type: array
+              items:
+                $ref: '#/components/schemas/PaymentMethodProvider'
 
     Error:
       required:
