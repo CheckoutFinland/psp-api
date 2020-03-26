@@ -293,6 +293,8 @@ Note, that at the moment HTTP 400 may occur also for 3rd party reasons - e.g. be
 
 Checkout provides an API for tokenizing payment cards and issuing payments on those tokenized payment cards.
 
+For developing purposes there is [list of cards](/payment-method-providers#test-cards-for-tokenization) which can be safely used to test different scenarios on tokenization and payment flows (e.g. failing payments or using of 3DS).
+
 ### Adding (tokenizing) cards
 
 Adding a new card stores the payment card information to Checkout and returns a tokenization id that can be used to fetch a card token for payments.
@@ -328,15 +330,15 @@ end
 
 ##### Request
 
-| field                         | info    | required           | description                                                                       |
-| ----------------------------- | ------- | ------------------ | --------------------------------------------------------------------------------- |
-| checkout-account              | numeric | <center>x</center> | Checkout account ID                                                               |
-| checkout-algorithm            | string  | <center>x</center> | Used signature algorithm. The same as used by merchant when creating the payment. |
-| checkout-redirect-success-url | string  | <center>x</center> | Merchant's url for user redirect on successful card addition                      |
-| checkout-redirect-cancel-url  | string  | <center>x</center> | Merchant's url for user redirect on failed card addition                          |
-| checkout-callback-success-url | string  | <center>-</center> | Merchant's url called on successful card addition                                 |
-| checkout-callback-cancel-url  | string  | <center>-</center> | Merchant's url called on failed card addition                                     |
-| language                      | alpha2  | <center>-</center> | Card addition form language, currently supported are `FI`, `SV`, and `EN`         |
+| field                          | info    | required           | description                                                                       |
+| ------------------------------ | ------- | ------------------ | --------------------------------------------------------------------------------- |
+| `checkout-account`              | numeric | <center>x</center> | Checkout account ID                                                               |
+| `checkout-algorithm`            | string  | <center>x</center> | Used signature algorithm. The same as used by merchant when creating the payment. |
+| `checkout-redirect-success-url` | string  | <center>x</center> | Merchant's url for user redirect on successful card addition                      |
+| `checkout-redirect-cancel-url`  | string  | <center>x</center> | Merchant's url for user redirect on failed card addition                          |
+| `checkout-callback-success-url` | string  | <center>-</center> | Merchant's url called on successful card addition                                 |
+| `checkout-callback-cancel-url`  | string  | <center>-</center> | Merchant's url called on failed card addition                                     |
+| `language`                      | alpha2  | <center>-</center> | Card addition form language, currently supported are `FI`, `SV`, and `EN`         |
 
 ##### Response
 
@@ -346,7 +348,13 @@ On a successful request, user is `HTTP 302` redirected to Checkout's card additi
 
 `HTTP POST /tokenization/{checkout-tokenization-id}` is requested after the merchant has received a `checkout-tokenization-id` from the success redirect URL parameters, or the callback URL request if given.
 
-This request returns the actual card token, which can then be used to make payments on the card.
+Tokenization id must be also set on request header.
+
+| field                         | info    | required           | description                                                                       |
+| ----------------------------- | ------- | ------------------ | --------------------------------------------------------------------------------- |
+| `checkout-tokenization-id`    | string  | <center>x</center> | Tokenization id                                                                   |
+
+This request returns the actual card token which can then be used to make payments on the card.
 
 ##### Request
 
@@ -354,7 +362,7 @@ No request body required.
 
 ##### Response
 
-If tokenization is successful, `HTTP 200` and the `token` of the card is returned.
+If tokenization is successful, `HTTP 200` and the `token` of the card is returned along with [card details](#card).
 
 This token is used to make authorization holds and charges on the payment card.
 
