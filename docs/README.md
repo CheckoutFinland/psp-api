@@ -88,7 +88,7 @@ sequenceDiagram
 Client ->> Merchant: Proceed to checkout
 
 opt Without opening a new payment before client proceeds
-Merchant ->> api.checkout.fi: List methods (GET /merchant/payment-providers)
+Merchant ->> api.checkout.fi: List methods (GET /merchants/payment-providers)
 api.checkout.fi ->> Merchant: Suitable payment methods
 Merchant ->> Client: Render suitable payment methods
 Client ->> Merchant: Select a payment method
@@ -236,6 +236,8 @@ The currently possible payment statuses are:
 
 Get transaction info. Payments are reported primarily via callbacks, and implementations should mainly rely on receiving the info via them. All received payments will be eventually reported.
 
+<b>Note!</b> The transaction id needs to be sent on checkout-transaction-id header as well.
+
 #### Response
 
 | Field         | Type    | Description                                                                                                                                                                      |
@@ -289,7 +291,7 @@ See detailed description from [refund payment request body section](#refund-paym
 
 Note, that at the moment HTTP 400 may occur also for 3rd party reasons - e.g. because Nordea test API does not support refunds. See all provider limitations from [providers tab](/payment-method-providers#refunds).
 
-## Tokenized credit card payments
+## Token payments
 
 Checkout provides an API for tokenizing payment cards and issuing payments on those tokenized payment cards.
 
@@ -324,11 +326,15 @@ end
 
 </div>
 
-#### Add card form
+### Add card form
 
 `HTTP POST /tokenization/addcard-form` is a form post requested from the user's browser. On a successful request the user will be redirected to Checkout's card addition service where user will input credit card information.
 
-##### Request
+<b>Note!</b> Authentication is done with form parameters, no headers used for authentication.
+
+ POST parameters
+
+#### Request
 
 | field                          | info    | required           | description                                                                       |
 | ------------------------------ | ------- | ------------------ | --------------------------------------------------------------------------------- |
@@ -336,15 +342,16 @@ end
 | `checkout-algorithm`            | string  | <center>x</center> | Used signature algorithm. The same as used by merchant when creating the payment. |
 | `checkout-redirect-success-url` | string  | <center>x</center> | Merchant's url for user redirect on successful card addition                      |
 | `checkout-redirect-cancel-url`  | string  | <center>x</center> | Merchant's url for user redirect on failed card addition                          |
+| `signature`                     | alpha2  | <center>x</center> | Signature calculated from 'checkout-' prefixed POST parameters the same way as calculating signature from headers   |
 | `checkout-callback-success-url` | string  | <center>-</center> | Merchant's url called on successful card addition                                 |
 | `checkout-callback-cancel-url`  | string  | <center>-</center> | Merchant's url called on failed card addition                                     |
 | `language`                      | alpha2  | <center>-</center> | Card addition form language, currently supported are `FI`, `SV`, and `EN`         |
 
-##### Response
+#### Response
 
 On a successful request, user is `HTTP 302` redirected to Checkout's card addition form page.
 
-#### Get token
+### Get token
 
 `HTTP POST /tokenization/{checkout-tokenization-id}` is requested after the merchant has received a `checkout-tokenization-id` from the success redirect URL parameters, or the callback URL request if given.
 
@@ -356,11 +363,11 @@ Tokenization id must be also set on request header.
 
 This request returns the actual card token which can then be used to make payments on the card.
 
-##### Request
+#### Request
 
 No request body required.
 
-##### Response
+#### Response
 
 If tokenization is successful, `HTTP 200` and the `token` of the card is returned along with [card details](#card).
 
@@ -372,7 +379,7 @@ This token is used to make authorization holds and charges on the payment card.
 | card     | [Card](#card)         | Masked card details. Present if verification was successful |
 | customer | [Customer](#customer) | Customer details                                            |
 
-###### Card
+##### Card
 
 Card details
 
@@ -390,7 +397,7 @@ Card details
 | pan_fingerprint  | string | Identifies a specific card number. Cards with the same PAN but different expiry dates will have the same PAN fingerprint. Hex string of length 64. |
 | card_fingerprint | string | Identifies a specific card, including the expiry date. Hex string of length 64.                                                                    |
 
-###### Customer
+##### Customer
 
 Customer details
 
@@ -463,6 +470,8 @@ The MIT transactions are exempt from the strong customer authentication requirem
 
 If creating an authorization hold, the payment needs to be committed later with a request to the [Commit API](#commit-authorization-hold).
 
+<b>Note!</b> The transaction id needs to be sent on checkout-transaction-id header as well.
+
 ##### Request
 
 The commit request body schema is the same as the one used for [creating payments](#create-request-body) expect with the addition of a the new token field (which must also be included as part of HMAC calculation):
@@ -488,6 +497,8 @@ When creating CIT authorization holds or direct charges the payment might need a
 
 A successful commit will charge the payer's card.
 
+<b>Note!</b> The transaction id needs to be set on checkout-transaction-id header as well.
+
 ##### Request
 
 The commit request body schema is the same as the one used for [creating the initial authorization hold](#create-authorization-hold-or-charge).
@@ -509,6 +520,8 @@ Commit will return `HTTP 201` when successful, and the `transactionId` of the pa
 `HTTP POST /payments/{transactionId}/token/revert` reverts an existing authorization hold.
 
 A successful revert will remove the authorization hold from the payer's card.
+
+<b>Note!</b> The transaction id needs to be set on checkout-transaction-id header as well.
 
 ##### Request
 
