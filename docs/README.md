@@ -51,11 +51,11 @@ checkout-timestamp:2018-07-05T11:19:25.950Z\n
 REQUEST BODY
 ```
 
-See also code examples of [HMAC calculation in node.js](/examples#hmac-calculation-node-js) and [HMAC calculation in PHP](/examples#hmac-calculation-php).
+See also code examples of [HMAC calculation in node.js](examples.md#hmac-calculation-node-js) and [HMAC calculation in PHP](examples.md#hmac-calculation-php).
 
 ### Test credentials
 
-Please note that not all payment methods support testing, so only the payment methods that support testing payments are enabled for these credentials. Provider specific credentials for approving payments can be found from [providers tab](/payment-method-providers#test-credentials). Payments created with test accounts will be removed daily which means older payments cannot be refunded.
+Please note that not all payment methods support testing, so only the payment methods that support testing payments are enabled for these credentials. Provider specific credentials for approving payments can be found from [providers tab](payment-method-providers.md#test-credentials). Payments created with test accounts will be removed daily which means older payments cannot be refunded.
 
 #### Normal merchant account
 
@@ -113,7 +113,7 @@ Merchant ->> Client: Render thank you -page
 
 ### Create
 
-`HTTP POST /payments` creates a new open payment and returns a JSON object that includes the available payment methods. The merchant web shop renders HTML forms from the response objects (see [example](/examples#payment-provider-form-rendering)). The client browser will submit the form to the payment method provider.
+`HTTP POST /payments` creates a new open payment and returns a JSON object that includes the available payment methods. The merchant web shop renders HTML forms from the response objects (see [example](examples.md#payment-provider-form-rendering)). The client browser will submit the form to the payment method provider.
 
 Once the payment has been completed the client browser will return to the merchant provided redirect URL.
 
@@ -213,7 +213,7 @@ The query string parameters are listed below. If callback URLs were provided, sa
 | `checkout-reference`      | string  | Merchant provided reference                                                                                                                                                                 |
 | `checkout-transaction-id` | string  | Checkout provided transaction ID.<br><br>**Important:** Store the value. It is needed for other actions such as refund or payment information query                                         |
 | `checkout-status`         | string  | Payment status, either `ok`, `pending`, `delayed`, or `fail`. See [statuses](#statuses) section for more information.                                                                       |
-| `checkout-provider`       | string  | The payment method provider the client used. Current values are documented on [providers tab](/payment-method-providers#test-credentials). The values are subject to change without notice. |
+| `checkout-provider`       | string  | The payment method provider the client used. Current values are documented on [providers tab](payment-method-providers.md#test-credentials). The values are subject to change without notice. |
 | `signature`               | string  | HMAC signature calculated from other parameter                                                                                                                                              |
 
 Merchant must check that signature is valid. Signature is calculated as described [above](#redirect-and-callback-url-signing). **Do not** implement the HMAC validation with hardcoded query string parameters since new ones may be added later. Instead, filter parameters by name (include all that begin with `checkout-`), then sort, and calculate the HMAC.
@@ -252,7 +252,7 @@ Get transaction info. Payments are reported primarily via callbacks, and impleme
 | filingCode    | string  | If paid, the filing code issued by the payment method provider if any. Some providers do not return the filing code.                                                             |
 | paidAt        | string  | Timestamp when the transaction was paid                                                                                                                                          |
 
-See [example response](/examples#get) from examples tab.
+See [example response](examples.md#get) from examples tab.
 
 ### Refund
 
@@ -287,13 +287,13 @@ See detailed description from [refund payment request body section](#refund-paym
 | 400         | Something went wrong                                  |
 | 422         | Used payment method provider does not support refunds |
 
-Note, that at the moment HTTP 400 may occur also for 3rd party reasons - e.g. because Nordea test API does not support refunds. See all provider limitations from [providers tab](/payment-method-providers#refunds).
+Note, that at the moment HTTP 400 may occur also for 3rd party reasons - e.g. because Nordea test API does not support refunds. See all provider limitations from [providers tab](payment-method-providers.md#refunds).
 
 ## Tokenized credit card payments
 
 Checkout provides an API for tokenizing payment cards and issuing payments on those tokenized payment cards.
 
-For developing purposes there is [list of cards](/payment-method-providers#test-cards-for-tokenization) which can be safely used to test different scenarios on tokenization and payment flows (e.g. failing payments or using of 3DS).
+For developing purposes there is [list of cards](payment-method-providers.md#test-cards-for-tokenization) which can be safely used to test different scenarios on tokenization and payment flows (e.g. failing payments or using of 3DS).
 
 ### Adding (tokenizing) cards
 
@@ -773,7 +773,7 @@ These URLs must use HTTPS.
 | merchant | string  | <center>x</center> | 695874  | Merchant who gets the commission                                                              |
 | amount   | integer | <center>x</center> | 250     | Amount of commission in currency's minor units, e.g. for Euros use cents. VAT not applicable. |
 
-See [an example payload and response](/examples#create)
+See [an example payload and response](examples.md#create)
 
 #### Response body
 
@@ -804,7 +804,7 @@ Each provider describes a HTML form which the customer browser submits when perf
 
 ##### FormField
 
-The form field values are rendered as hidden `<input>` elements in the form. See form rendering [example](/examples#payment-provider-form-rendering)
+The form field values are rendered as hidden `<input>` elements in the form. See form rendering [example](examples.md#payment-provider-form-rendering)
 
 | Field | Type   | Description        |
 | ----- | ------ | ------------------ |
@@ -835,7 +835,7 @@ The form field values are rendered as hidden `<input>` elements in the form. See
 | Field           | Type                        | Required             | Description                                                                                                                                                                                                                                                                                                                                         |
 | --------------- | --------------------------- | -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | amount          | integer                     | <center>-/x</center> | Total amount to refund, in currency's minor units (ie. EUR cents). Required for normal payment refunds. Shop-in-Shop payments can be refunded to full amount by giving the full payment amount here without items.                                                                                                                                  |
-| email           | string                      | <center>-</center>   | Refund recipient email address. Some payment methods [do not support API refunds](/payment-method-providers#refunds), and some have refund related limitations. If email address is given, email refund will be executed as a fallback method if API refund is unsuccessful, or as the default method if the provider does not support API refunds. |
+| email           | string                      | <center>-</center>   | Refund recipient email address. Some payment methods [do not support API refunds](payment-method-providers.md#refunds), and some have refund related limitations. If email address is given, email refund will be executed as a fallback method if API refund is unsuccessful, or as the default method if the provider does not support API refunds. |
 | refundStamp     | string                      | <center>-</center>   | Merchant unique identifier for the refund                                                                                                                                                                                                                                                                                                           |
 | refundReference | string                      | <center>-</center>   | Refund reference                                                                                                                                                                                                                                                                                                                                    |
 | items           | [RefundItem](#refunditem)[] | <center>-</center>   | Array of items to refund. Use only for Shop-in-Shop payments.                                                                                                                                                                                                                                                                                       |
@@ -858,4 +858,4 @@ The form field values are rendered as hidden `<input>` elements in the form. See
 | merchant | string  | <center>x</center> | 695874  | Merchant from whom the commission is returned to the submerchant.                             |
 | amount   | integer | <center>x</center> | 250     | Amount of commission in currency's minor units, e.g. for Euros use cents. VAT not applicable. |
 
-See [an example payload and response](/examples#refund)
+See [an example payload and response](examples.md#refund)
