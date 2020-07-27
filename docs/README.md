@@ -332,20 +332,20 @@ end
 
 <b>Note!</b> Authentication is done with form parameters, no headers used for authentication.
 
- POST parameters
+POST parameters
 
 #### Request
 
-| field                          | info    | required           | description                                                                       |
-| ------------------------------ | ------- | ------------------ | --------------------------------------------------------------------------------- |
-| `checkout-account`              | numeric | <center>x</center> | Checkout account ID                                                               |
-| `checkout-algorithm`            | string  | <center>x</center> | Used signature algorithm. The same as used by merchant when creating the payment. |
-| `checkout-redirect-success-url` | string  | <center>x</center> | Merchant's url for user redirect on successful card addition                      |
-| `checkout-redirect-cancel-url`  | string  | <center>x</center> | Merchant's url for user redirect on failed card addition                          |
-| `signature`                     | alpha2  | <center>x</center> | Signature calculated from 'checkout-' prefixed POST parameters the same way as calculating signature from headers   |
-| `checkout-callback-success-url` | string  | <center>-</center> | Merchant's url called on successful card addition                                 |
-| `checkout-callback-cancel-url`  | string  | <center>-</center> | Merchant's url called on failed card addition                                     |
-| `language`                      | alpha2  | <center>-</center> | Card addition form language, currently supported are `FI`, `SV`, and `EN`         |
+| field                           | info    | required           | description                                                                                                       |
+| ------------------------------- | ------- | ------------------ | ----------------------------------------------------------------------------------------------------------------- |
+| `checkout-account`              | numeric | <center>x</center> | Checkout account ID                                                                                               |
+| `checkout-algorithm`            | string  | <center>x</center> | Used signature algorithm. The same as used by merchant when creating the payment.                                 |
+| `checkout-redirect-success-url` | string  | <center>x</center> | Merchant's url for user redirect on successful card addition                                                      |
+| `checkout-redirect-cancel-url`  | string  | <center>x</center> | Merchant's url for user redirect on failed card addition                                                          |
+| `signature`                     | alpha2  | <center>x</center> | Signature calculated from 'checkout-' prefixed POST parameters the same way as calculating signature from headers |
+| `checkout-callback-success-url` | string  | <center>-</center> | Merchant's url called on successful card addition                                                                 |
+| `checkout-callback-cancel-url`  | string  | <center>-</center> | Merchant's url called on failed card addition                                                                     |
+| `language`                      | alpha2  | <center>-</center> | Card addition form language, currently supported are `FI`, `SV`, and `EN`                                         |
 
 #### Response
 
@@ -357,9 +357,9 @@ On a successful request, user is `HTTP 302` redirected to Checkout's card additi
 
 Tokenization id must be also set on request header.
 
-| field                         | info    | required           | description                                                                       |
-| ----------------------------- | ------- | ------------------ | --------------------------------------------------------------------------------- |
-| `checkout-tokenization-id`    | string  | <center>x</center> | Tokenization id                                                                   |
+| field                      | info   | required           | description     |
+| -------------------------- | ------ | ------------------ | --------------- |
+| `checkout-tokenization-id` | string | <center>x</center> | Tokenization id |
 
 This request returns the actual card token which can then be used to make payments on the card.
 
@@ -682,20 +682,20 @@ Example
 #### Response
 
 | Field     | Type                                                                          | Description                                                                                                                                                                                     |
-| --------- | ----------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| --------- | ----------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | terms     | string                                                                        | Localized text with a link to the terms of payment                                                                                                                                              |
 | groups    | [PaymentMethodGroupDataWithProviders](#paymentmethodgroupdatawithproviders)[] | Array of payment method group data with localized names and URLs to icons and providers. Contains only the groups the merchant has providers in. Can be limited by the request query parameters |
 | providers | [Provider](#provider)[]                                                       | A flat list of all the providers the merchant has. Can be limited by query parameters.                                                                                                          |
 
 ##### PaymentMethodGroupDataWithProviders
 
-| Field           | Type                                       | Description                                                            |
-| --------------- | ------------------------------------------ | ---------------------------------------------------------------------- |
-| id              |  [PaymentMethodGroup](#paymentmethodgroup) | ID of the group                                                        |
-| name            | string                                     | Localized name of the group                                            |
-| icon            | string                                     | URL to PNG version of the group icon                                   |
-| svg             | string                                     | URL to SVG version of the group icon. Using the SVG icon is preferred. |
-| providers       | [Provider](#provider)[]                    | Providers for the payment group                                        |
+| Field     | Type                                      | Description                                                            |
+| --------- | ----------------------------------------- | ---------------------------------------------------------------------- |
+| id        | [PaymentMethodGroup](#paymentmethodgroup) | ID of the group                                                        |
+| name      | string                                    | Localized name of the group                                            |
+| icon      | string                                    | URL to PNG version of the group icon                                   |
+| svg       | string                                    | URL to SVG version of the group icon. Using the SVG icon is preferred. |
+| providers | [Provider](#provider)[]                   | Providers for the payment group                                        |
 
 ## HTTP response summary
 
@@ -752,13 +752,13 @@ General API HTTP status codes and what to expect of them.
 
 ##### Customer
 
-| Field     | Type   | Required           | Example              | Description    |
-| --------- | ------ | ------------------ | -------------------- | -------------- |
-| email     | string | <center>x</center> | john.doe@example.org | Email          |
-| firstName | string | <center>-</center> | John                 | First name     |
-| lastName  | string | <center>-</center> | Doe                  | Last name      |
-| phone     | string | <center>-</center> | 358451031234         | Phone number   |
-| vatId     | string | <center>-</center> | FI02454583           | VAT ID, if any |
+| Field     | Type   | Required           | Example              | Description                                     |
+| --------- | ------ | ------------------ | -------------------- | ----------------------------------------------- |
+| email     | string | <center>x</center> | john.doe@example.org | Email                                           |
+| firstName | string | <center>-</center> | John                 | First name (required for OPLasku and Collector) |
+| lastName  | string | <center>-</center> | Doe                  | Last name (required for OPLasku and Collector)  |
+| phone     | string | <center>-</center> | 358451031234         | Phone number                                    |
+| vatId     | string | <center>-</center> | FI02454583           | VAT ID, if any                                  |
 
 ##### Address
 
@@ -834,12 +834,13 @@ The form field values are rendered as hidden `<input>` elements in the form. See
 | `credit`     | Instalment and invoice payment methods: OP Lasku, Collector, Mash, Jousto, AfterPay |
 
 ##### PaymentMethodGroupData
-| Field           | Type                                       | Description                                                            |
-| --------------- | ------------------------------------------ | ---------------------------------------------------------------------- |
-| id              |  [PaymentMethodGroup](#paymentmethodgroup) | ID of the group                                                        |
-| name            | string                                     | Localized name of the group                                            |
-| icon            | string                                     | URL to PNG version of the group icon                                   |
-| svg             | string                                     | URL to SVG version of the group icon. Using the SVG icon is preferred. |
+
+| Field | Type                                      | Description                                                            |
+| ----- | ----------------------------------------- | ---------------------------------------------------------------------- |
+| id    | [PaymentMethodGroup](#paymentmethodgroup) | ID of the group                                                        |
+| name  | string                                    | Localized name of the group                                            |
+| icon  | string                                    | URL to PNG version of the group icon                                   |
+| svg   | string                                    | URL to SVG version of the group icon. Using the SVG icon is preferred. |
 
 ### Refund payment
 
