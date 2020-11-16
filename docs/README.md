@@ -383,9 +383,11 @@ Finally, mount the button to your element using **checkoutfinland.js**:
 ```javascript
 const applePayButton = checkoutFinland.applePayButton;
 
-// Check the availability of Apple Pay. This checks that the user is on a device & Safari browser which supports Apple Pay.
+// Check the availability of Apple Pay.
+// canMakePayment() checks that the user is on a device & Safari browser which supports Apple Pay.
 if (applePayButton.canMakePayment()) {
   // Mount the button to the element you created earlier, here e.g. #apple-pay-button.
+  // This will display the button and add onclick-actions.
   applePayButton.mount("#apple-pay-button", (redirectUrl) => {
     setTimeout(() => {
       window.location.replace(redirectUrl);
