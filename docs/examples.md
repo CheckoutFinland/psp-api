@@ -211,8 +211,53 @@ You can find example payloads and responses for all the requests, as well as [co
         }
       ]
     }
-  ]
-}
+  ],
+  "customProviders": {
+    "applepay": {
+      "parameters": [
+        {
+          "name": "checkout-transaction-id",
+          "value": "5770642a-9a02-4ca2-8eaa-cc6260a78eb6"
+        },
+        {
+          "name": "checkout-account",
+          "value": "test"
+        },
+        {
+          "name": "checkout-method",
+          "value": "POST"
+        },
+        {
+          "name": "checkout-algorithm",
+          "value": "sha256"
+        },
+        {
+          "name": "checkout-timestamp",
+          "value": "2018-07-06T11:10:14Z"
+        },
+        {
+          "name": "checkout-nonce",
+          "value": "4ae5346f-bfee-4350-ad03-046c9e836d5e"
+        },
+        {
+          "name": "signature",
+          "value": "fc0d880e3edd845711da5feda1b166491beded1f8d475a54f515f34bee889525"
+        },
+        {
+          "name": "amount",
+          "value": "15.25"
+        },
+        {
+          "name": "label",
+          "value": "Checkout Finland Oy"
+        },
+        {
+          "name": "currency",
+          "value": "EUR"
+        }
+      ]
+    }
+  }
 ```
 
 ### Get
@@ -273,7 +318,7 @@ signature: 4d84e3aedaa847b23e672ff3bc9c57ae5d1c1e84aec251ce39914eaf250bb8b2
   "items": [
     {
       "amount": 1590,
-      "stamp": "29858472952",
+      "stamp": "29858472952"
     }
   ],
   "callbackUrls": {
@@ -315,10 +360,10 @@ Email refund payload is otherwise the same (ie. for shop-in-shop merchants there
 ### HMAC calculation (node.js)
 
 ```javascript
-const crypto = require('crypto');
+const crypto = require("crypto");
 
-const ACCOUNT = '375917';
-const SECRET = 'SAIPPUAKAUPPIAS';
+const ACCOUNT = "375917";
+const SECRET = "SAIPPUAKAUPPIAS";
 
 /**
  * Calculate HMAC
@@ -328,49 +373,45 @@ const SECRET = 'SAIPPUAKAUPPIAS';
  * @param {object|undefined} body Request body or empty string for GET requests
  */
 const calculateHmac = (secret, params, body) => {
-  const hmacPayload =
-    Object.keys(params)
-      .sort()
-      .map((key) => [ key, params[key] ].join(':'))
-      .concat(body ? JSON.stringify(body) : '')
-      .join("\n");
+  const hmacPayload = Object.keys(params)
+    .sort()
+    .map((key) => [key, params[key]].join(":"))
+    .concat(body ? JSON.stringify(body) : "")
+    .join("\n");
 
-  return crypto
-    .createHmac('sha256', secret)
-    .update(hmacPayload)
-    .digest('hex');
+  return crypto.createHmac("sha256", secret).update(hmacPayload).digest("hex");
 };
 
 const headers = {
-  'checkout-account': ACCOUNT,
-  'checkout-algorithm': 'sha256',
-  'checkout-method': 'POST',
-  'checkout-nonce': '564635208570151',
-  'checkout-timestamp': '2018-07-06T10:01:31.904Z'
+  "checkout-account": ACCOUNT,
+  "checkout-algorithm": "sha256",
+  "checkout-method": "POST",
+  "checkout-nonce": "564635208570151",
+  "checkout-timestamp": "2018-07-06T10:01:31.904Z",
 };
 
 const body = {
-  stamp: 'unique-identifier-for-merchant',
-  reference: '3759170',
+  stamp: "unique-identifier-for-merchant",
+  reference: "3759170",
   amount: 1525,
-  currency: 'EUR',
-  language:'FI',
+  currency: "EUR",
+  language: "FI",
   items: [
     {
       unitPrice: 1525,
       units: 1,
       vatPercentage: 24,
-      productCode: '#1234',
-      deliveryDate: '2018-09-01'
-    }
+      productCode: "#1234",
+      deliveryDate: "2018-09-01",
+    },
   ],
   customer: {
-    email: 'test.customer@example.com'
+    email: "test.customer@example.com",
   },
   redirectUrls: {
-    success: 'https://ecom.example.com/cart/success',
-    cancel: 'https://ecom.example.com/cart/cancel'
-  }
+    success: "https://ecom.example.com/cart/success",
+    cancel: "https://ecom.example.com/cart/cancel",
+  },
 };
 
 // Expected HMAC: 3708f6497ae7cc55a2e6009fc90aa10c3ad0ef125260ee91b19168750f6d74f6
