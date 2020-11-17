@@ -320,12 +320,13 @@ To use Apple Pay, you need to register with Apple all of your web domains that w
 
 Next follow these steps:
 
-1. Download this domain association file **TODO CIHAN add link** and host it at `/.well-known/apple-developer-merchantid-domain-association` on your site.
-2. Next, go to Checkout Extranet and add your domain to the registered Apple Pay domains. **TODO CIHAN add link**
+- Download [**this domain association file**](https://pay.checkout.fi/.well-known/apple-developer-merchantid-domain-association) and host it at `/.well-known/apple-developer-merchantid-domain-association` on your site.
+  - For example, if you're registering https://example.com, make that file available at https://example.com/.well-known/apple-developer-merchantid-domain-association.
+- Next, go to Checkout Extranet and add your domain to the registered Apple Pay domains. **TODO CIHAN add link**
 
 _**Important note:** Apple’s documentation for Apple Pay on the Web describes their process of “merchant validation”, which Checkout Finland handles for you behind the scenes. You do not need to create an Apple Merchant ID, CSR, etc., as described in their documentation, and should instead just follow the two steps above._
 
-Now we are ready to implement Apple Pay to your store.
+Now we are ready to implement Apple Pay to your store page.
 
 ### 1. Set up **checkoutfinland.js** & HTML-element
 
@@ -341,8 +342,8 @@ Then add an `#apple-pay-button` -element to your site, and generate parameter `<
 
 ```php
 <div id="apple-pay-button">
-  <?php foreach ($response->customProviders->applepay->parameters as $parameter) : ?>
-    <input type="hidden" name="<?=$parameter->name?>" value="<?=$parameter->value?>">
+  <?php foreach ($response->customProviders->applepay->parameters as $param) : ?>
+    <input type="hidden" name="<?=$param->name?>" value="<?=$param->value?>">
   <?php endforeach; ?>
 </div>
 ```
@@ -350,9 +351,11 @@ Then add an `#apple-pay-button` -element to your site, and generate parameter `<
 #### JavaScript
 
 ```javascript
+const applePayParameters = response.customProviders.applepay.parameters;
+
 const responseToApplePayHtml = (response) =>
   `<div id="apple-pay-button">
-    ${response.customProviders.applepay.parameters.map(
+    ${applePayParameters.map(
       (param) =>
         `<input type='hidden' name='${param.name}' value='${param.value}' />`
     )}
@@ -361,33 +364,33 @@ const responseToApplePayHtml = (response) =>
 
 ### 2. Style your Apple Pay -button
 
-**Add CSS styles to the Apple Pay -button.** The styles below are an example of a simple Apple Pay -button, but feel free to style it to fit your site. More information on styling can be found from [the Apple documentation](https://developer.apple.com/documentation/apple_pay_on_the_web/displaying_apple_pay_buttons).
+**Add CSS styles to the Apple Pay -button.** The styles below are an example of a simple white Apple Pay -button, but you can style it to fit your site. More information on styling can be found from [the Apple documentation](https://developer.apple.com/documentation/apple_pay_on_the_web/displaying_apple_pay_buttons).
 
-```css
-#apple-pay-button {
-  display: none;
-  -webkit-appearance: -apple-pay-button;
-  -apple-pay-button-type: plain;
-  -apple-pay-button-style: white-outline;
-  height: 50px;
-  width: 100%;
-}
+```html
+<style>
+  #apple-pay-button {
+    display: none;
+    -webkit-appearance: -apple-pay-button;
+    -apple-pay-button-type: plain;
+    -apple-pay-button-style: white-outline;
+    height: 50px;
+    width: 100%;
+  }
+</style>
 ```
 
-_**Note:** In production, the Apple Pay -button must have the `display: none;` rule, and the Apple Pay button will be displayed with **checkoutfinland.js** in the next step. For styling purposes however, the button can be always displayed with `display: block;`._
+_**Note:** In production, the button should be hidden by default with `display: none;`, as the button will be displayed with **checkoutfinland.js** in the next step. For development purposes however, the button can be displayed with `display: block;`._
 
 ### 3. Mount an Apple Pay button to the HTML element
 
-Finally, mount the button to your element using **checkoutfinland.js**:
+Finally, we need to mount the button element using **checkoutfinland.js**. Mounting will display the button and add on-click -actions to initiate payment.
 
 ```javascript
 const applePayButton = checkoutFinland.applePayButton;
 
-// Check the availability of Apple Pay.
-// canMakePayment() checks that the user is on a device & Safari browser which supports Apple Pay.
+// canMakePayment() checks that the user is on a Safari browser which supports Apple Pay.
 if (applePayButton.canMakePayment()) {
   // Mount the button to the element you created earlier, here e.g. #apple-pay-button.
-  // This will display the button and add onclick-actions.
   applePayButton.mount("#apple-pay-button", (redirectUrl) => {
     setTimeout(() => {
       window.location.replace(redirectUrl);
@@ -396,7 +399,7 @@ if (applePayButton.canMakePayment()) {
 }
 ```
 
-_**Note:** The callback given to `mount()` is called on a successful payment, and is called with the merchants (your) Checkout success callback url. You can customize the actions after a successful payment. The example callback above will redirect the user to the success url after 1.5 seconds, to give time for the Apple Pay modal animation to finish._
+_**Note:** The callback given to `mount()` is called on a successful payment, and is called with the merchants (your) Checkout success redirect url. You can customize the actions after a successful payment. The example callback above will redirect the user to the success url after 1.5 seconds, to give time for the Apple Pay modal animation to finish._
 
 ## Token payments
 
