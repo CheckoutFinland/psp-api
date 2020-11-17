@@ -322,9 +322,9 @@ Next follow these steps:
 
 - Download [**this domain association file**](https://pay.checkout.fi/.well-known/apple-developer-merchantid-domain-association) and host it at `/.well-known/apple-developer-merchantid-domain-association` on your site.
   - For example, if you're registering https://example.com, make that file available at https://example.com/.well-known/apple-developer-merchantid-domain-association.
-- Next, go to Checkout Extranet and add your domain to the registered Apple Pay domains. **TODO CIHAN add link**
+- Next, go to Checkout Extranet and add your domain to the registered Apple Pay domains.
 
-_**Important note:** Apple’s documentation for Apple Pay on the Web describes their process of “merchant validation”, which Checkout Finland handles for you behind the scenes. You do not need to create an Apple Merchant ID, CSR, etc., as described in their documentation, and should instead just follow the two steps above._
+_**Important note:** Apple’s documentation for Apple Pay on the Web describes their process of “merchant validation”, which Checkout Finland handles for you behind the scenes. You **do not** need to create an Apple Merchant ID, CSR, etc., as described in their documentation, and should instead just follow the two steps above._
 
 Now we are ready to implement Apple Pay to your store page.
 
@@ -399,7 +399,7 @@ if (applePayButton.canMakePayment()) {
 }
 ```
 
-_**Note:** The callback given to `mount()` is called on a successful payment, and is called with the merchants (your) Checkout success redirect url. You can customize the actions after a successful payment. The example callback above will redirect the user to the success url after 1.5 seconds, to give time for the Apple Pay modal animation to finish._
+_**Note:** The callback given to `mount()` is called on a successful payment, and is called with the merchants (your) Checkout success redirect url. You can customize the actions after a successful payment. The example callback above will redirect the user to the success url after 1.5 seconds, to give time for the Apple Pay modal success-animation to finish._
 
 ## Token payments
 
