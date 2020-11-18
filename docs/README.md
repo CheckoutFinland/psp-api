@@ -303,6 +303,8 @@ Note, that at the moment HTTP 400 may occur also for 3rd party reasons - e.g. be
 
 ## Apple Pay
 
+**The Apple Pay button is rendered separately from other payment methods on the frontend**, as it requires custom JavaScript ran on the browser. Checkout Finland's Apple Pay implementation however uses the same [Payment Create-response](#response) which is already used for creating the payment wall.
+
 Checkout provides a frontend library **checkoutfinland.js** which makes implementing Apple Pay to your existing Checkout Finland payment wall simple.
 
 ### Prerequisites
