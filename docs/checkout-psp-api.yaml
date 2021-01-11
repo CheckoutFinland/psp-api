@@ -1486,6 +1486,7 @@ components:
           format: int64
           example: 1
           minimum: 1
+          maximum: 10000000
           description: Number of units
         vatPercentage:
           type: integer
@@ -1517,6 +1518,7 @@ components:
         merchant:
           type: string
           example: 375917
+          maxLength: 10
           description: Submerchant ID. Required for shop-in-shop payments, leave out from normal payments.
         stamp:
           type: string
@@ -1540,12 +1542,14 @@ components:
               description: |
                 Merchant who get's the commission money. This merchant id can not be deleted, has to be active and
                 has to have same reseller with the merchant who initiated/created the webtrade.
+              maxLength: 10
             amount:
               type: integer
               format: int32
               description: |
                 Commission amount in currency minor unit, eg. EUR cents. VAT not applicable.
                 This field is needed only for specific shop-in-shop payments, usually not needed.
+              maximum: 99999999
 
     # Status reporting URLs, either for user browser redirect or server-to-server callback
     # Called on various events
@@ -1558,12 +1562,14 @@ components:
         success:
           type: string
           example: "https://ecom.example.org/success"
+          maxLength: 300
           description: |
             URL to call when payment is succesfully paid.
             Can called multiple times; one must ensure idempotency of this endpoint.
         cancel:
           type: string
           example: "https://ecom.example.org/cancel"
+          maxLength: 300
           description: |
             URL to call when payment is cancelled and not fulfilled.
             Can called multiple times; one must ensure idempotency of this endpoint.
