@@ -186,7 +186,17 @@ See detailed [response documentation](#create-payment) for explanation.
         }
       ]
     }
-  ]
+  ],
+  "customProviders": {
+    "applepay": {
+      "parameters": [
+        {
+          "name": "amount",
+          "value": "15.25"
+        }
+      ]
+    }
+  }
 }
 ```
 
@@ -290,6 +300,108 @@ See detailed description from [refund payment request body section](#refund-paym
 | 422         | Used payment method provider does not support refunds |
 
 Note, that at the moment HTTP 400 may occur also for 3rd party reasons - e.g. because Nordea test API does not support refunds. See all provider limitations from [providers tab](/payment-method-providers#refunds).
+
+## Apple Pay
+
+**The Apple Pay button is rendered separately from other payment methods on the frontend**, as it requires custom JavaScript ran on the browser. Checkout Finland's Apple Pay implementation however uses the same [Payment Create-response](#response) which is already used for creating the payment wall.
+
+Checkout provides a frontend library **checkoutfinland.js** which makes implementing Apple Pay to your existing Checkout Finland payment wall simple.
+
+### Prerequisites
+
+Before you start, you need to:
+
+- **Enable Apple Pay for your merchant** in [Checkout Extranet > Payment Methods](https://extranet-beta.checkout.fi/trades/methods).
+  - After Apple Pay is enabled for your merchant, your [Payments Create-response's](#response) `customProviders`-field will contain parameters for your Apple Pay implementation, which are used later in [Step 1.](#3-mount-an-apple-pay-button-to-the-html-element)
+- **Serve your frontend application over HTTPS.** This is a requirement both in development and production. For development, we recommend serving your localhost server with [**ngrok**](https://ngrok.com/).
+- [**Verify your domain with Apple Pay**](#verifying-your-domain-with-apple-pay), both in development and production.
+
+#### Verifying your domain with Apple Pay
+
+To use Apple Pay, you need to register with Apple all of your web domains that will show an Apple Pay button. This includes both top-level domains (e.g., **exampleshop.com**) and subdomains (e.g., **shop.example.com**). You need to do this for domains you use in both production and testing. When testing locally, use a tool like [**ngrok**](https://ngrok.com/) to get an HTTPS domain.
+
+Next follow these steps:
+
+- Download [**this domain association file**](https://pay.checkout.fi/.well-known/apple-developer-merchantid-domain-association) and host it at `/.well-known/apple-developer-merchantid-domain-association` on your site.
+  - For example, if you're registering https://example.com, make that file available at https://example.com/.well-known/apple-developer-merchantid-domain-association.
+- Next, go to Checkout Extranet and add your domain to the registered Apple Pay domains.
+
+_**Important note:** Apple’s documentation for Apple Pay on the Web describes their process of “merchant validation”, which Checkout Finland handles for you behind the scenes. You **do not** need to create an Apple Merchant ID, CSR, etc., as described in their documentation, and should instead just follow the two steps above._
+
+Now we are ready to implement Apple Pay to your store page.
+
+### 1. Set up **checkoutfinland.js** & HTML-element
+
+First include **checkoutfinland.js** in your page:
+
+```html
+<script src="https://api.checkout.fi/static/checkoutfinland.js"></script>
+```
+
+Then add an `#apple-pay-button` -element to your site, and generate parameter `<input>`-elements inside it from the [Payments Create-response's](#response) `customProviders.applepay`-field:
+
+#### PHP
+
+```php
+<div id="apple-pay-button">
+  <?php foreach ($response->customProviders->applepay->parameters as $param) : ?>
+    <input type="hidden" name="<?=$param->name?>" value="<?=$param->value?>">
+  <?php endforeach; ?>
+</div>
+```
+
+#### JavaScript
+
+```javascript
+const applePayParameters = response.customProviders.applepay.parameters;
+
+const responseToApplePayHtml = (response) =>
+  `<div id="apple-pay-button">
+    ${applePayParameters.map(
+      (param) =>
+        `<input type='hidden' name='${param.name}' value='${param.value}' />`
+    )}
+  </div>`;
+```
+
+### 2. Style your Apple Pay -button
+
+**Add CSS styles to the Apple Pay -button.** The styles below are an example of a simple white Apple Pay -button, but you can style it to fit your site. More information on styling can be found from [the Apple documentation](https://developer.apple.com/documentation/apple_pay_on_the_web/displaying_apple_pay_buttons).
+
+```html
+<style>
+  #apple-pay-button {
+    display: none;
+    -webkit-appearance: -apple-pay-button;
+    -apple-pay-button-type: plain;
+    -apple-pay-button-style: white-outline;
+    height: 50px;
+    width: 100%;
+  }
+</style>
+```
+
+_**Note:** In production, the button should be hidden by default with `display: none;`, as the button will be displayed with **checkoutfinland.js** in the next step. For development purposes however, the button can be displayed with `display: block;`._
+
+### 3. Mount an Apple Pay button to the HTML element
+
+Finally, we need to mount the button element using **checkoutfinland.js**. Mounting will display the button and add on-click -actions to initiate payment.
+
+```javascript
+const applePayButton = checkoutFinland.applePayButton;
+
+// canMakePayment() checks that the user is on a Safari browser which supports Apple Pay.
+if (applePayButton.canMakePayment()) {
+  // Mount the button to the element you created earlier, here e.g. #apple-pay-button.
+  applePayButton.mount("#apple-pay-button", (redirectUrl) => {
+    setTimeout(() => {
+      window.location.replace(redirectUrl);
+    }, 1500);
+  });
+}
+```
+
+_**Note:** The callback given to `mount()` is called on a successful payment, and is called with the merchants (your) Checkout success redirect url. You can customize the actions after a successful payment. The example callback above will redirect the user to the success url after 1.5 seconds, to give time for the Apple Pay modal success-animation to finish._
 
 ## Token payments
 
@@ -725,7 +837,7 @@ General API HTTP status codes and what to expect of them.
 | language         | alpha2                                      | <center>x</center> | Payment's language, currently supported are `FI`, `SV`, and `EN`                                                                                                                                                                                                                                                                                                                                         |
 | orderId          | string                                      | <center>-</center> | Order ID. Used for e.g. Collector payments order ID. If not given, merchant reference is used instead.                                                                                                                                                                                                                                                                                                   |
 | items            | [Item](#item)[]                             | <center>x</center> | Array of items                                                                                                                                                                                                                                                                                                                                                                                           |
-| customer         | [Customer](#customer)                       | <center>x</center> | Customer information                                                                                                                                                                                                                                                                                                                                                                                     |
+| customer         | [Customer](#customer1)                      | <center>x</center> | Customer information                                                                                                                                                                                                                                                                                                                                                                                     |
 | deliveryAddress  | [Address](#address)                         | <center>-</center> | Delivery address                                                                                                                                                                                                                                                                                                                                                                                         |
 | invoicingAddress | [Address](#address)                         | <center>-</center> | Invoicing address                                                                                                                                                                                                                                                                                                                                                                                        |
 | redirectUrls     | [CallbackUrl](#callbackurl)                 | <center>x</center> | Where to redirect browser after a payment is paid or cancelled.                                                                                                                                                                                                                                                                                                                                          |
@@ -792,14 +904,15 @@ See [an example payload and response](/examples#create)
 
 The response JSON object contains the transaction ID of the payment and list of provider forms. It is highly recommended to render the icons and forms in the shop, but if this is not possible the response also contains a link to the hosted payment gateway. The response contains also HMAC verification headers and `cof-request-id` header. Storing or logging the request ID header is advised for possible debug needs.
 
-| Field         | Type                                                | Description                                                                                                                                |
-| ------------- | --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| transactionId | string                                              | Assigned transaction ID for the payment                                                                                                    |
-| href          | string                                              | URL to hosted payment gateway. Redirect (`HTTP GET`) user here if the payment forms cannot be rendered directly inside the web shop.       |
-| terms         | string                                              | Localized text with a link to the terms of payment                                                                                         |
-| groups        | [PaymentMethodGroupData](#paymentmethodgroupdata)[] | Array of payment method group data with localized names and URLs to icons. Contains only the groups found in the providers of the response |
-| reference     | string                                              | The bank reference used for the payments                                                                                                   |
-| providers     | [Provider](#provider)[]                             | Array of providers. Render these elements as HTML forms                                                                                    |
+| Field           | Type                                                | Description                                                                                                                                |
+| --------------- | --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| transactionId   | string                                              | Assigned transaction ID for the payment                                                                                                    |
+| href            | string                                              | URL to hosted payment gateway. Redirect (`HTTP GET`) user here if the payment forms cannot be rendered directly inside the web shop.       |
+| terms           | string                                              | Localized text with a link to the terms of payment                                                                                         |
+| groups          | [PaymentMethodGroupData](#paymentmethodgroupdata)[] | Array of payment method group data with localized names and URLs to icons. Contains only the groups found in the providers of the response |
+| reference       | string                                              | The bank reference used for the payments                                                                                                   |
+| providers       | [Provider](#provider)[]                             | Array of providers. Render these elements as HTML forms                                                                                    |
+| customProviders | object                                              | Providers which require custom implementation. Currently used only by [Apple Pay](#apple-pay).                                             |
 
 ##### Provider
 
