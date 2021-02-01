@@ -316,6 +316,8 @@ Before you start, you need to:
 - **Serve your frontend application over HTTPS.** This is a requirement both in development and production. For development, we recommend serving your localhost server with [**ngrok**](https://ngrok.com/).
 - [**Verify your domain with Apple Pay**](#verifying-your-domain-with-apple-pay), both in development and production.
 
+Additionally, development and testing should be done on an **MacOS or iOS Safari browser**, as other browsers do not support Apple Pay and will not render the Apple Pay button.
+
 #### Verifying your domain with Apple Pay
 
 To use Apple Pay, you need to register with Apple all of your web domains that will show an Apple Pay button. This includes both top-level domains (e.g., **exampleshop.com**) and subdomains (e.g., **shop.example.com**). You need to do this for domains you use in both production and testing. When testing locally, use a tool like [**ngrok**](https://ngrok.com/) to get an HTTPS domain.
