@@ -273,6 +273,89 @@ paths:
         default:
           $ref: "#/components/responses/Error"
 
+  /payments/{transactionId}/activate-invoice:
+    post:
+      tags:
+        - payments
+      summary: Activate invoice
+      description: |
+        Manually activate invoice by transaction ID. Can only be used if payment was paid with Collector and is in pending status.
+      operationId: activateInvoiceByTransactionId
+      parameters:
+        - name: transactionId
+          in: path
+          description: Transaction ID of payment to activate invoice
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: 93ee8d18-10db-410b-92ac-7d6e49369ce3
+        - name: checkout-account
+          in: header
+          description: Merchant ID
+          example: 375917
+          schema:
+            type: integer
+            format: int32
+        - name: checkout-algorithm
+          in: header
+          description: HMAC algorithm
+          example: sha512
+          schema:
+            type: string
+            enum:
+              - sha256
+              - sha512
+        - name: checkout-method
+          in: header
+          description: HTTP method of the request
+          example: POST
+          schema:
+            type: string
+            enum:
+              - GET
+              - POST
+        - name: checkout-transaction-id
+          in: header
+          description: The same transaction ID as in route
+          schema:
+            type: string
+            format: uuid
+            example: 93ee8d18-10db-410b-92ac-7d6e49369ce3
+        - name: checkout-timestamp
+          in: header
+          description: Current timestamp in ISO 8601 format
+          example: "2018-08-08T10:10:59Z"
+          schema:
+            type: string
+            format: date-time
+        - name: checkout-nonce
+          in: header
+          description: Unique random identifier
+          example: 39da40b8-5fb0-499c-869d-35e575b9a6cd
+          schema:
+            type: string
+        - name: signature
+          in: header
+          description: HMAC signature calculated over the request headers and payload
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Invoice activated succesfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ActivateInvoiceResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        default:
+          $ref: "#/components/responses/Error"
+
   /merchants/payment-providers:
     get:
       tags:
@@ -1370,6 +1453,10 @@ components:
           $ref: "#/components/schemas/Address"
         invoicingAddress:
           $ref: "#/components/schemas/Address"
+        manualInvoiceActivation:
+          type: boolean
+          example: false
+          description: If paid with invoice payment method, the invoice will not be activated automatically immediately. Currently only supported with Collector.
         redirectUrls:
           $ref: "#/components/schemas/Callbacks"
         callbackUrls:
@@ -2166,6 +2253,19 @@ components:
           type: string
           description: Payment method provider
           example: osuuspankki
+
+    ActivateInvoiceResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+            - ok
+            - error
+        message:
+          type: string
+          description: Response details
+          example: Collector invoice activated
 
     SettlementIdItem:
       type: object
