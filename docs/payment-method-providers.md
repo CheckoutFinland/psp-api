@@ -16,7 +16,6 @@ Nordea | `nordea` |  Username: 123456<br>Password: 1111<br>Security code: any
 Handelsbanken<br>POP Pankki<br>Säästöpankki<br>OmaSP | `handelsbanken`<br>`pop`<br>`saastopankki`<br>`omasp` |  Username: 11111111<br>Password: 123456<br>Security code: 123456
 Aktia | `aktia` |  Username: 12345678<br>Password: 123456<br>Security code: 1234
 S-Pankki | `spankki` |  Username: 12345678<br>Password: 9999<br>Security code: 1234
-Ålandsbanken | `alandsbanken`|  Username: 12345678<br>Password: 1234<br>Security code: any
 Danske | `danske` |  Danske test account login requires using real Danske credentials
 Visa | `creditcard` |  Card number: 4153013999700024<br>Expiry date: 11/2023<br>CVC: 024
 Mastercard | `creditcard` |  Card number: 5353299308701770<br>Expiry date: 11/2023<br>CVC: 770
@@ -28,6 +27,7 @@ MobilePay | `mobilepay` |  Testing is not possible
 Siirto | `siirto` | Testing is not possible
 OP Lasku | `oplasku` | Testing is not possible
 Jousto | `jousto` | Testing is not possible
+Ålandsbanken | `alandsbanken`|  Testing is not possible
 
 
 ## Test cards for tokenization
