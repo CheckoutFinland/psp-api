@@ -667,7 +667,7 @@ No request body required.
 
 ##### Response
 
-Revert will return `HTTP 200` when successful.
+Activation will return `HTTP 200` when successful.
 
 | field   | type   | description                                   |
 | --------| ------ | --------------------------------------------- |
