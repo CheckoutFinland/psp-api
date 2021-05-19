@@ -51,7 +51,7 @@ checkout-timestamp:2018-07-05T11:19:25.950Z\n
 REQUEST BODY
 ```
 
-See also code examples of [HMAC calculation in node.js](/examples#hmac-calculation-node-js) and [HMAC calculation in PHP](/examples#hmac-calculation-php).
+See also code examples of [HMAC calculation in node.js](/examples#hmac-calculation-node-js), [HMAC calculation in PHP](/examples#hmac-calculation-php), and [HMAC calculation in Ruby](/examples#hmac-calculation-ruby).
 
 ### Test credentials
 
