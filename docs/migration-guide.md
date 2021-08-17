@@ -40,7 +40,7 @@ The new Payment API is completely different from the legacy E2 Interface. We've 
   - Payload for Sales Channel payments completely different from normal payment
   - Error replies were HTML pages with limited information on how to fix the problem
 
-- New Payment API payments are initialized with a JSON POST to `https://service.paytrail.com/payments`
+- New Payment API payments are initialized with a JSON POST to `https://api.checkout.fi/payments`
   - Merchant [authentication info in headers](/#headers-and-request-signing)
   - Signature calculation payload includes headers in alphabetical order and the full body payload
   - HMAC signed [JSON response](/#response)
@@ -69,7 +69,7 @@ The new Payment API is completely different from the legacy E2 Interface. We've 
   - Headers contained MD5 encoded signature
   - JSON response
 
-- New API refunds are done with a JSON POST to `https://service.paytrail.com/payments/{transactionId}/refund`
+- New API refunds are done with a JSON POST to `https://api.checkout.fi/payments/{transactionId}/refund`
   - Refund API supports [callback URLs too](/#http-request-body)
   - HMAC signed [JSON response](/#response2)
 
@@ -79,7 +79,7 @@ The new Payment API is completely different from the legacy E2 Interface. We've 
   - Merchant defined order number used for locating the payment
   - JSON response with status and payment method ID
 
-- New status API is called with GET to `https://service.paytrail.com/payments/{transactionId}`
+- New status API is called with GET to `https://api.checkout.fi/payments/{transactionId}`
   - Payment API issued [transaction ID used](/#get)
   - HMAC signed [JSON response](/#response1) with more information than just the status
 
