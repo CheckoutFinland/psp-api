@@ -24,7 +24,7 @@ The new API offers a lot of improvements, including but not limited to:
   - [Card Tokenization](#token-payments)
 - Server-to-server callbacks for more reliable webshop integration
 - Developer friendly APIs
-- Beatiful, accessible, and mobile friendly hosted payment wall and landing pages
+- Beautiful, accessible, and mobile friendly hosted payment wall and landing pages
 
 ## Changes in the new API
 
