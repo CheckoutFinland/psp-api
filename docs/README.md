@@ -135,8 +135,7 @@ See all available fields from [create payment request body section](#create-paym
       "unitPrice": 1590,
       "units": 1,
       "vatPercentage": 24,
-      "productCode": "#927502759",
-      "deliveryDate": "2018-03-07"
+      "productCode": "#927502759"
     }
   ],
   "customer": {
