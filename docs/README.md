@@ -881,7 +881,7 @@ General API HTTP status codes and what to expect of them.
 | units         | integer                   | <center>x</center> | 5                                    | Quantity, how many items ordered                                                              |
 | vatPercentage | integer                   | <center>x</center> | 24                                   | VAT percentage                                                                                |
 | productCode   | string                    | <center>x</center> | 9a                                   | Merchant product code. May appear on invoices of certain payment methods.                     |
-| deliveryDate  | string                    | <center>x</center> | 2019-12-31                           | When is this item going to be delivered                                                       |
+| deliveryDate  | string                    | <center>-</center> | 2019-12-31                           | When is this item going to be delivered. This field is deprecated but remains here as a reference for old integrations.                                                       |
 | description   | string                    | <center>-</center> | Bear suits for adults                | Item description. May appear on invoices of certain payment methods.                          |
 | category      | string                    | <center>-</center> | fur suits                            | Merchant specific item category                                                               |
 | orderId       | string                    | <center>-</center> |                                      | Item level order ID (suborder ID). Mainly useful for Shop-in-Shop purchases.                  |
