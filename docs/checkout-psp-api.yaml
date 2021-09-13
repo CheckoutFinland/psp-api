@@ -1559,7 +1559,6 @@ components:
         - units
         - vatPercentage
         - productCode
-        - deliveryDate
       properties:
         unitPrice:
           type: integer
