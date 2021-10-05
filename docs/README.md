@@ -1,3 +1,7 @@
+<p class="warning">
+  Checkout PSP API is deprecated. Documentation for the new Paytrail Payment API is available at [https://services.paytrail.com](https://services.paytrail.com).
+</p>
+
 <img src="images/checkout-logo-vaaka-RGB.png" alt="Checkout Finland Oy" style="width: 200px;">
 
 # Checkout PSP API
